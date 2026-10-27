@@ -20,32 +20,40 @@ gsap.registerPlugin(ScrollTrigger);
 
 const INSTAGRAM_PROFILE_URL: string | undefined = undefined;
 
-function InstagramProfileIcon() {
+function InstagramProfileLink() {
   const icon = <Instagram size={20} aria-hidden="true" />;
+  const label = (
+    <>
+      <span className="social-label-full">Explore HABLAR on Instagram</span>
+      <span className="social-label-compact" aria-hidden="true">Instagram</span>
+    </>
+  );
 
   if (INSTAGRAM_PROFILE_URL) {
     return (
       <a
-        className="social-icon"
+        className="social-link"
         href={INSTAGRAM_PROFILE_URL}
         target="_blank"
         rel="noreferrer"
-        aria-label="Visit HABLAR on Instagram"
+        aria-label="Explore HABLAR on Instagram (opens in a new tab)"
+        data-testid="link-instagram"
       >
         {icon}
+        {label}
       </a>
     );
   }
 
   return (
     <span
-      className="social-icon"
-      role="link"
-      aria-disabled="true"
-      aria-label="Instagram profile link not set yet"
-      tabIndex={0}
+      className="social-link is-unavailable"
+      role="note"
+      data-testid="status-instagram"
     >
       {icon}
+      <span className="social-label-full">Instagram not available yet</span>
+      <span className="social-label-compact" aria-hidden="true">Instagram unavailable</span>
     </span>
   );
 }
@@ -85,7 +93,7 @@ function Header() {
         <a className="nav-plain" href="#how-it-works">How it feels</a>
         <a className="nav-plain" href="#our-promise">Our promise</a>
         <ThemeSelector />
-        <InstagramProfileIcon />
+        <InstagramProfileLink />
         <a className="nav-cta" href="#launch-note">Keep me posted</a>
       </nav>
     </header>
@@ -104,7 +112,7 @@ function Footer() {
           <a href={`${import.meta.env.BASE_URL}#how-it-works`}>How it feels</a>
           <Link href="/privacy">Privacy Notice</Link>
           <Link href="/terms">Terms &amp; Conditions</Link>
-          <InstagramProfileIcon />
+          <InstagramProfileLink />
         </nav>
       </div>
       <p className="footer-note">HABLAR is a listening space, not therapy, diagnosis, professional mental-health care, or emergency support. If you may be in immediate danger, contact local emergency services or a trusted person nearby.</p>

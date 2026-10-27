@@ -526,7 +526,7 @@ html {
   --theme-surface-soft: #f5fcf8;
   --theme-surface-warm: #fff7e9;
   --theme-border: #e7d8cb;
-  --theme-accent: #d13e79;
+  --theme-accent: #b22560;
   --theme-accent-button: #c32767;
   --theme-accent-soft: #f4d7df;
   --theme-secondary: #087a68;
@@ -537,55 +537,55 @@ html {
 }
 
 html[data-theme="darker"] {
-  --theme-page: #191820;
-  --theme-text: #f4eff5;
-  --theme-muted: #c4bdc9;
-  --theme-surface: #26242e;
-  --theme-surface-soft: #242a2d;
-  --theme-surface-warm: #2b252d;
-  --theme-border: #4b4652;
-  --theme-accent: #f08aae;
-  --theme-accent-button: #ad3e69;
-  --theme-accent-soft: #49303d;
-  --theme-secondary: #78d6c1;
-  --theme-secondary-soft: #293b3a;
-  --theme-focus: #f3c36b;
-  --theme-hero-glow: linear-gradient(135deg, #674e42 0%, #56384d 48%, #254b49 100%);
+  --theme-page: #302a31;
+  --theme-text: #f7eff3;
+  --theme-muted: #d2c5cd;
+  --theme-surface: #3b333c;
+  --theme-surface-soft: #403a37;
+  --theme-surface-warm: #443631;
+  --theme-border: #64535c;
+  --theme-accent: #ff9dbf;
+  --theme-accent-button: #993657;
+  --theme-accent-soft: #593c49;
+  --theme-secondary: #77dbc4;
+  --theme-secondary-soft: #294942;
+  --theme-focus: #ffd071;
+  --theme-hero-glow: linear-gradient(135deg, #71563f 0%, #684052 48%, #31564f 100%);
   color-scheme: dark;
 }
 
 html[data-theme="blue-green"] {
-  --theme-page: #f1f8f6;
-  --theme-text: #213b39;
-  --theme-muted: #526b67;
+  --theme-page: #f1f6fb;
+  --theme-text: #203448;
+  --theme-muted: #4c5d6d;
   --theme-surface: #ffffff;
-  --theme-surface-soft: #e4f2ed;
-  --theme-surface-warm: #eaf4f1;
-  --theme-border: #c8ded7;
-  --theme-accent: #08766e;
-  --theme-accent-button: #086d66;
-  --theme-accent-soft: #d2ebe5;
-  --theme-secondary: #176f65;
+  --theme-surface-soft: #e2f2ed;
+  --theme-surface-warm: #e9f1f9;
+  --theme-border: #c8d8e3;
+  --theme-accent: #2359a4;
+  --theme-accent-button: #2359a4;
+  --theme-accent-soft: #dde7f6;
+  --theme-secondary: #126b55;
   --theme-secondary-soft: #dcefe8;
-  --theme-focus: #174f4b;
-  --theme-hero-glow: linear-gradient(135deg, #c5e4cb 0%, #b8ded7 48%, #d4e8ee 100%);
+  --theme-focus: #154c70;
+  --theme-hero-glow: linear-gradient(135deg, #c8ddf6 0%, #c1e5df 52%, #d9e9f2 100%);
 }
 
 html[data-theme="soft-lavender"] {
-  --theme-page: #faf8ff;
-  --theme-text: #383348;
-  --theme-muted: #69637a;
+  --theme-page: #faf7fc;
+  --theme-text: #3a3048;
+  --theme-muted: #61576b;
   --theme-surface: #ffffff;
-  --theme-surface-soft: #f1eef9;
-  --theme-surface-warm: #f4effa;
-  --theme-border: #ddd5eb;
-  --theme-accent: #7656a5;
-  --theme-accent-button: #694795;
-  --theme-accent-soft: #e9def5;
-  --theme-secondary: #547a78;
-  --theme-secondary-soft: #e5f0ef;
-  --theme-focus: #594080;
-  --theme-hero-glow: linear-gradient(135deg, #efe0c8 0%, #e9d7ef 46%, #d2e9e5 100%);
+  --theme-surface-soft: #f0eafb;
+  --theme-surface-warm: #fbedf4;
+  --theme-border: #ded3e7;
+  --theme-accent: #70429b;
+  --theme-accent-button: #70406f;
+  --theme-accent-soft: #ecdef4;
+  --theme-secondary: #a13768;
+  --theme-secondary-soft: #f8e0eb;
+  --theme-focus: #62366f;
+  --theme-hero-glow: linear-gradient(135deg, #e8dcf7 0%, #f3d8e8 52%, #e8e2f5 100%);
 }
 
 [data-theme] body,
@@ -618,6 +618,8 @@ html[data-theme="soft-lavender"] {
 [data-theme] .nav-links a:hover,
 [data-theme] .footer-links a:hover,
 [data-theme] .legal-content a:hover { color: var(--theme-accent); }
+[data-theme] .social-icon:hover { color: var(--theme-accent); background: color-mix(in srgb, var(--theme-accent) 12%, transparent); }
+[data-theme] .social-icon:focus-visible { outline: 3px solid var(--theme-focus); outline-offset: 3px; }
 [data-theme] .topbar,
 [data-theme] .legal-top { color: var(--theme-text); }
 [data-theme] .nav-cta,
@@ -626,6 +628,9 @@ html[data-theme="soft-lavender"] {
 [data-theme] .connection-cta { background: var(--theme-accent-button); color: #fff !important; }
 [data-theme] .button-quiet,
 [data-theme] .theme-select { color: var(--theme-text); background: var(--theme-surface); border-color: var(--theme-border); }
+[data-theme] .button-quiet { background: color-mix(in srgb, var(--theme-surface) 88%, transparent); }
+[data-theme] .launch-sticky-dock { background: var(--theme-page); border-color: var(--theme-border); }
+[data-theme] .launch-sticky-cta { border-color: var(--theme-surface); }
 [data-theme] .hero { background: var(--theme-surface-warm); }
 [data-theme] .hero::before { background: var(--theme-hero-glow); }
 [data-theme] .launch-status { background: var(--theme-accent-soft); color: var(--theme-accent); }
@@ -685,6 +690,7 @@ html[data-theme="soft-lavender"] {
   border-color: var(--theme-secondary);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-secondary) 20%, transparent);
 }
+[data-theme] .phone-country-select:focus-visible { outline-color: var(--theme-focus); }
 [data-theme] .consent { color: var(--theme-muted); }
 [data-theme] .consent input { accent-color: var(--theme-secondary); }
 [data-theme] .prototype-note { color: var(--theme-muted) !important; }
@@ -755,7 +761,9 @@ html[data-theme="soft-lavender"] {
 [data-theme] .theme-select:focus-visible,
 [data-theme] button:focus-visible,
 [data-theme] a:focus-visible,
-[data-theme] input:focus-visible {
+[data-theme] input:focus-visible,
+[data-theme] select:focus-visible,
+[data-theme] .social-icon:focus-visible {
   outline: 3px solid var(--theme-focus);
   outline-offset: 3px;
 }
@@ -767,6 +775,7 @@ html[data-theme="soft-lavender"] {
 [data-theme] .country-popover { background: var(--theme-surface); border-color: var(--theme-border); }
 [data-theme] .country-popover [cmdk-root],
 [data-theme] .country-popover [cmdk-input] { background: var(--theme-surface); color: var(--theme-text); }
+[data-theme] .theme-select option { background: var(--theme-surface); color: var(--theme-text); }
 [data-theme] .country-option { color: var(--theme-text); }
 [data-theme] .country-option[data-selected="true"] { background: var(--theme-secondary-soft); color: var(--theme-secondary); }
 [data-theme] .boundary-icon { background: var(--theme-accent-soft); color: var(--theme-accent); }

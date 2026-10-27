@@ -380,7 +380,60 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 
 function Router() {
   const [location] = useLocation();
+  const [showLaunchCta, setShowLaunchCta] = useState(true);
+  const isLegalPage = location === '/privacy' || location === '/terms';
   usePageSeo(location);
+  useEffect(() => {
+    const signupSection = document.getElementById('launch-note');
+    const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
+
+    if (isLegalPage && scrollport) {
+      let frame = 0;
+      const updateVisibility = () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          const cta = document.querySelector<HTMLElement>('.launch-sticky-cta');
+          if (!cta || document.activeElement === cta) return;
+          const ctaRect = cta.getBoundingClientRect();
+          const legalText = document.querySelectorAll<HTMLElement>(
+            '#legal-main h1, #legal-main h2, #legal-main p, #legal-main li, #legal-main a',
+          );
+          const overlapsText = Array.from(legalText).some((element) => {
+            const rect = element.getBoundingClientRect();
+            return rect.left < ctaRect.right
+              && rect.right > ctaRect.left
+              && rect.top < ctaRect.bottom
+              && rect.bottom > ctaRect.top;
+          });
+          setShowLaunchCta(!overlapsText);
+        });
+      };
+
+      updateVisibility();
+      const cta = document.querySelector<HTMLElement>('.launch-sticky-cta');
+      cta?.addEventListener('blur', updateVisibility);
+      scrollport.addEventListener('scroll', updateVisibility, { passive: true });
+      window.addEventListener('resize', updateVisibility);
+      return () => {
+        cancelAnimationFrame(frame);
+        cta?.removeEventListener('blur', updateVisibility);
+        scrollport.removeEventListener('scroll', updateVisibility);
+        window.removeEventListener('resize', updateVisibility);
+      };
+    }
+
+    if (location !== '/' || !signupSection || !scrollport) {
+      setShowLaunchCta(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowLaunchCta(!entry.isIntersecting),
+      { root: scrollport, threshold: 0.01 },
+    );
+    observer.observe(signupSection);
+    return () => observer.disconnect();
+  }, [location]);
   return (
     <RoutedErrorBoundary>
       <>
@@ -392,13 +445,17 @@ function Router() {
             <Route component={NotFound} />
           </Switch>
         </div>
-        <div className="launch-sticky-dock">
+        <div
+          className={`launch-sticky-dock${showLaunchCta ? '' : ' is-obscured'}${isLegalPage ? ' is-legal-page' : ''}`}
+          aria-hidden={!showLaunchCta}
+        >
           <a
             className="launch-sticky-cta"
             href={`${import.meta.env.BASE_URL}#launch-note`}
             aria-label="Sign up for HABLAR launch updates"
+            tabIndex={showLaunchCta ? 0 : -1}
           >
-          Get launch updates
+            Get launch updates
             <ArrowUpRight size={17} aria-hidden="true" />
           </a>
         </div>

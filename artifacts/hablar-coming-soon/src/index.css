@@ -75,7 +75,7 @@ button, input { font: inherit; }
 a { color: inherit; }
 
 .app-scrollport {
-  height: calc(100dvh - 76px - env(safe-area-inset-bottom, 0px));
+  height: 100dvh;
   overflow-y: auto;
   overscroll-behavior: contain;
   scroll-behavior: smooth;
@@ -127,18 +127,14 @@ a { color: inherit; }
 .launch-sticky-dock {
   position: fixed;
   z-index: 50;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: calc(76px + env(safe-area-inset-bottom, 0px));
+  right: max(20px, calc(env(safe-area-inset-right, 0px) + 16px));
+  bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 16px));
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 max(24px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px);
-  border-top: 1px solid #eee2d9;
-  background: #fffdf8;
-  box-shadow: 0 -5px 16px rgba(103, 70, 61, .06);
+  pointer-events: none;
 }
+.launch-sticky-dock.is-obscured { visibility: hidden; }
 .launch-sticky-cta {
   display: inline-flex;
   align-items: center;
@@ -156,6 +152,7 @@ a { color: inherit; }
   line-height: 1.2;
   text-decoration: none;
   transition: transform .2s ease, box-shadow .2s ease;
+  pointer-events: auto;
 }
 .launch-sticky-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(117, 42, 73, .3); }
 .launch-sticky-cta:focus-visible { outline: 3px solid #075c54; outline-offset: 4px; }
@@ -445,12 +442,13 @@ a { color: inherit; }
   .signup-panel { gap: 28px; padding: 40px 6%; }
 }
 @media (max-width: 680px) {
-  .app-scrollport { height: calc(100dvh - 64px - env(safe-area-inset-bottom, 0px)); }
+  .launch-sticky-dock.is-legal-page {
+    top: calc(env(safe-area-inset-top, 0px) + 130px);
+    bottom: auto;
+  }
   .launch-sticky-dock {
-    height: calc(64px + env(safe-area-inset-bottom, 0px));
-    justify-content: center;
-    padding-right: max(16px, env(safe-area-inset-right, 0px));
-    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    right: max(16px, calc(env(safe-area-inset-right, 0px) + 12px));
+    bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px));
   }
   .launch-sticky-cta {
     min-height: 42px;

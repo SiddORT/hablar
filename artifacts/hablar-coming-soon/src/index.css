@@ -354,6 +354,8 @@ a { color: inherit; }
 .legal-content p, .legal-content li { color: #514d4a; font-size: 1rem; line-height: 1.8; }
 .legal-content ul { padding-left: 22px; }
 .legal-back { display: inline-flex; align-items: center; gap: 8px; margin-top: 35px; color: #d83d77; font-weight: 700; text-decoration: none; }
+.legal-back-top { margin: 0 0 24px; min-height: 44px; max-width: 100%; }
+.legal-back-top svg { flex-shrink: 0; }
 .legal-page .footer-links { flex-wrap: wrap; }
 .notfound { min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 30px; }
 

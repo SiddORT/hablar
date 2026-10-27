@@ -181,6 +181,7 @@ export default function LegalPage({ page, footer }: { page: 'privacy' | 'terms';
         </nav>
       </header>
       <main id="legal-main" tabIndex={-1} className="legal-content" aria-labelledby="legal-title">
+        <Link className="legal-back legal-back-top" href="/"><ArrowLeft size={16} aria-hidden="true" /> Back to HABLAR</Link>
         <article>
           <span className="section-kicker">HABLAR / Pre-launch website</span>
           <h1 id="legal-title">{title}</h1>

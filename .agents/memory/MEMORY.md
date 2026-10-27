@@ -1,0 +1,1 @@
+- [Contact-data key rotation](contact-data-key-rotation.md) — Keep `SESSION_SECRET` stable; rotating it requires re-encrypting contact fields and recomputing lookup hashes.

@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: waitlist
+    description: HABLAR launch notification signups
 paths:
   /healthz:
     get:
@@ -24,6 +26,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /waitlist:
+    post:
+      operationId: createWaitlistSignup
+      tags: [waitlist]
+      summary: Join the HABLAR launch waitlist
+      description: Stores consented contact details encrypted in PostgreSQL.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaitlistSignupInput"
+      responses:
+        "201":
+          description: Signup accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WaitlistSignupResponse"
+        "422":
+          description: Invalid contact details or missing consent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +60,39 @@ components:
           type: string
       required:
         - status
+    WaitlistSignupInput:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: [string, "null"]
+          format: email
+          maxLength: 254
+        phone:
+          type: [string, "null"]
+          description: International number with a country code; spaces, parentheses, and hyphens are removed before validation
+          maxLength: 32
+        consent:
+          type: boolean
+          description: Explicit consent to process the supplied contact for one launch update
+        termsAccepted:
+          type: boolean
+          description: Acceptance of the linked Terms and Conditions
+      required:
+        - consent
+        - termsAccepted
+    WaitlistSignupResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    ApiError:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+        - detail
 

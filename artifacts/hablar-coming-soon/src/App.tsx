@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useCreateWaitlistSignup } from '@workspace/api-client-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -71,27 +72,56 @@ function Footer() {
 
 function Signup() {
   const [status, setStatus] = useState('');
-  function previewSubmit(event: FormEvent<HTMLFormElement>) {
+  const signup = useCreateWaitlistSignup();
+  function submitSignup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
     const email = String(data.get('email') || '').trim();
     const phone = String(data.get('phone') || '').trim();
     const consent = data.get('consent') === 'on';
+    const termsAccepted = data.get('termsAccepted') === 'on';
     if (!email && !phone) {
-      setStatus('Add an email address or phone number to preview the form.');
+      setStatus('Add an email address or phone number.');
       return;
     }
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setStatus('Please check the email address format.');
       return;
     }
-    if (!consent) {
-      setStatus('Please choose whether you agree to receive a launch note.');
+    const normalizedPhone = phone.replace(/[\s().-]/g, '');
+    if (normalizedPhone && !/^\+[1-9]\d{7,14}$/.test(normalizedPhone)) {
+      setStatus('Add a country code, for example +91 98765 43210.');
       return;
     }
-    setStatus('Prototype only: nothing was sent or saved. Your details stay in this page only.');
-    form.reset();
+    if (!consent) {
+      setStatus('Please consent to the one-time launch update.');
+      return;
+    }
+    if (!termsAccepted) {
+      setStatus('Please agree to the Terms & Conditions.');
+      return;
+    }
+    setStatus('');
+    signup.mutate(
+      {
+        data: {
+          email: email || null,
+          phone: normalizedPhone || null,
+          consent,
+          termsAccepted,
+        },
+      },
+      {
+        onSuccess: (response) => {
+          setStatus(response.message);
+          form.reset();
+        },
+        onError: (error) => {
+          setStatus(error.message || 'The sign-up could not be saved. Please try again.');
+        },
+      },
+    );
   }
   return (
     <section className="signup-section" id="launch-note">
@@ -99,19 +129,26 @@ function Signup() {
         <div>
           <span className="section-kicker">A note when we open?</span>
           <h2>Let the good news find you.</h2>
-          <p>Leave an email, a phone number, or both. This is only a front-end preview, so your details will not leave this page.</p>
+          <p>Leave an email, a phone number, or both. Your contact details are encrypted before they are stored. Please review the draft policies before signing up.</p>
         </div>
-        <form className="form-wrap" onSubmit={previewSubmit} noValidate>
+        <form className="form-wrap" onSubmit={submitSignup} noValidate>
           <label className="form-label" htmlFor="email">Email address <span style={{ fontWeight: 400, color: '#888' }}>— optional</span></label>
           <input className="contact-input" id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" />
           <label className="form-label" htmlFor="phone">Phone number <span style={{ fontWeight: 400, color: '#888' }}>— optional</span></label>
-          <input className="contact-input" id="phone" name="phone" type="tel" autoComplete="tel" placeholder="+1 555 123 4567" />
+          <input className="contact-input" id="phone" name="phone" type="tel" autoComplete="tel" placeholder="+91 98765 43210" />
           <label className="consent">
             <input type="checkbox" name="consent" required />
-            <span>I consent to HABLAR using the contact details I provide for one launch update, as explained in the <Link href="/privacy" target="_blank" rel="noreferrer">Privacy Notice</Link>, and I agree to the <Link href="/terms" target="_blank" rel="noreferrer">Terms &amp; Conditions</Link>.</span>
+            <span>I consent to HABLAR processing my contact details solely to send one launch update, as described in the <Link href="/privacy" target="_blank" rel="noreferrer">Privacy Notice</Link>.</span>
           </label>
-          <button className="button-primary form-submit" type="submit">Preview the sign-up <ArrowUpRight size={17} aria-hidden="true" /></button>
-          <p className="prototype-note">Prototype only · No submission, API, or data storage is connected.</p>
+          <label className="consent">
+            <input type="checkbox" name="termsAccepted" required />
+            <span>I agree to the <Link href="/terms" target="_blank" rel="noreferrer">Terms &amp; Conditions</Link>.</span>
+          </label>
+          <button className="button-primary form-submit" type="submit" disabled={signup.isPending}>
+            {signup.isPending ? 'Saving your place…' : 'Send me the first update'}
+            <ArrowUpRight size={17} aria-hidden="true" />
+          </button>
+          <p className="prototype-note">Contact fields are encrypted in the database. This privacy notice and the terms are drafts for review.</p>
           <p className="form-status" role="status" aria-live="polite">{status}</p>
         </form>
       </div>
@@ -215,12 +252,12 @@ function Home() {
 const legalCopy = {
   privacy: {
     title: 'Privacy, with care.',
-    intro: 'This is a draft privacy notice for review. The HABLAR service is not yet launched, and this page does not collect or transmit contact details.',
+    intro: 'This is a draft privacy notice for review. Submitting the launch form sends the contact details you choose to provide to HABLAR’s API.',
     sections: [
-      ['What this prototype does', 'The launch form is a visual interaction only. When you preview it, the page checks the fields in your browser and then displays a notice. It does not send a request, store information, or save your details.'],
-      ['Future service details need review', 'Before launch, HABLAR must document what information the service will handle, why it is needed, how long it is kept, who can access it, and how people can ask questions or exercise their choices. Those operational details are not established here.'],
-      ['Choices and contact', 'The prototype consent checkbox demonstrates a possible opt-in for launch updates. No message is sent and no contact list is created in this preview.'],
-      ['Questions and updates', 'This draft will need an appropriate contact channel and a clear effective date before publication.'],
+      ['What the launch form stores', 'The email address and/or phone number you submit is encrypted with AES-GCM before storage in PostgreSQL. A keyed, non-reversible lookup digest is used only to avoid duplicate contacts. HABLAR does not return or display stored contact details through this website.'],
+      ['Purpose and consent', 'Contact details are used only to send one launch update. The form records the consent version, privacy-notice version, terms version, and server-side consent time. You must actively consent and accept the terms before submitting.'],
+      ['Retention and your choices', 'The retention period, data-controller details, applicable jurisdiction, contact channel for access or deletion requests, and how to withdraw consent still need to be completed. This draft is not a complete GDPR notice and does not claim legal compliance.'],
+      ['Before publication', 'HABLAR must confirm its legal entity and contact details, retention schedule, infrastructure processors and transfer details, and a practical process for privacy requests before collecting public sign-ups.'],
     ],
   },
   terms: {
@@ -243,7 +280,7 @@ function LegalPage({ page }: { page: 'privacy' | 'terms' }) {
       <article className="legal-content">
         <span className="section-kicker">HABLAR / {page}</span>
         <h1>{content.title}</h1>
-        <div className="draft-banner"><strong>Draft for review — not final legal text.</strong> This prototype does not claim legal compliance. The content needs review and completion before publication.</div>
+        <div className="draft-banner"><strong>Draft for review — not final legal text.</strong> This page does not claim legal compliance. The content needs review and completion before public sign-ups.</div>
         <p>{content.intro}</p>
         {content.sections.map(([heading, text]) => <section key={heading}><h2>{heading}</h2><p>{text}</p></section>)}
         <Link className="legal-back" href="/"><ArrowLeft size={16} /> Back to HABLAR</Link>

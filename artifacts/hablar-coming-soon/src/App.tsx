@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCreateWaitlistSignup } from '@workspace/api-client-react';
+import { defaultCountries, parseCountry } from 'react-international-phone';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -11,7 +12,14 @@ import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
+const phoneCountries = defaultCountries.map(parseCountry);
 gsap.registerPlugin(ScrollTrigger);
+
+function countryFlag(iso2: string) {
+  return [...iso2.toUpperCase()]
+    .map((letter) => String.fromCodePoint(letter.charCodeAt(0) + 127397))
+    .join('');
+}
 
 function usePageMotion() {
   useEffect(() => {
@@ -76,16 +84,19 @@ function Footer() {
 
 function Signup() {
   const [status, setStatus] = useState('');
+  const [phone, setPhone] = useState('');
+  const [phoneCountry, setPhoneCountry] = useState('in');
   const signup = useCreateWaitlistSignup();
   function submitSignup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
     const email = String(data.get('email') || '').trim();
-    const phone = String(data.get('phone') || '').trim();
+    const phoneNumber = phone.trim();
+    const country = phoneCountries.find((item) => item.iso2 === phoneCountry);
     const consent = data.get('consent') === 'on';
     const termsAccepted = data.get('termsAccepted') === 'on';
-    if (!email && !phone) {
+    if (!email && !phoneNumber) {
       setStatus('Add an email address or phone number.');
       return;
     }
@@ -93,7 +104,16 @@ function Signup() {
       setStatus('Please check the email address format.');
       return;
     }
-    const normalizedPhone = phone.replace(/[\s().-]/g, '');
+    if (phoneNumber && !/^[\d\s().+-]+$/.test(phoneNumber)) {
+      setStatus('Use numbers and phone formatting only.');
+      return;
+    }
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    const normalizedPhone = phoneNumber
+      ? phoneNumber.startsWith('+')
+        ? `+${phoneDigits}`
+        : `+${country?.dialCode || '91'}${phoneDigits}`
+      : '';
     if (normalizedPhone && !/^\+[1-9]\d{7,14}$/.test(normalizedPhone)) {
       setStatus('Add a country code, for example +91 98765 43210.');
       return;
@@ -120,6 +140,8 @@ function Signup() {
         onSuccess: (response) => {
           setStatus(response.message);
           form.reset();
+          setPhone('');
+          setPhoneCountry('in');
         },
         onError: (error) => {
           setStatus(error.message || 'The sign-up could not be saved. Please try again.');
@@ -139,7 +161,30 @@ function Signup() {
           <label className="form-label" htmlFor="email">Email address <span style={{ fontWeight: 400, color: '#888' }}>— optional</span></label>
           <input className="contact-input" id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" />
           <label className="form-label" htmlFor="phone">Phone number <span style={{ fontWeight: 400, color: '#888' }}>— optional</span></label>
-          <input className="contact-input" id="phone" name="phone" type="tel" autoComplete="tel" placeholder="+91 98765 43210" />
+          <div className="phone-entry-row">
+            <select
+              className="phone-country-select"
+              aria-label="Country calling code"
+              value={phoneCountry}
+              onChange={(event) => setPhoneCountry(event.target.value)}
+            >
+              {phoneCountries.map((country) => (
+                <option key={country.iso2} value={country.iso2}>
+                  {countryFlag(country.iso2)} {country.name} (+{country.dialCode})
+                </option>
+              ))}
+            </select>
+            <input
+              className="contact-input phone-local-input"
+              id="phone"
+              name="phone"
+              type="tel"
+              autoComplete="tel-national"
+              placeholder="98765 43210"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+            />
+          </div>
           <label className="consent">
             <input type="checkbox" name="consent" required />
             <span>I consent to HABLAR processing my contact details solely to send one launch update, as described in the <Link href="/privacy" target="_blank" rel="noreferrer">Privacy Notice</Link>.</span>

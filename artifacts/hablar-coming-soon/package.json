@@ -75,6 +75,7 @@
     "zod": "catalog:"
   },
   "dependencies": {
-    "gsap": "^3.15.0"
+    "gsap": "^3.15.0",
+    "react-international-phone": "^4.8.0"
   }
 }

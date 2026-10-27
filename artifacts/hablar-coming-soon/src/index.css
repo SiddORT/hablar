@@ -279,6 +279,10 @@ a { color: inherit; }
 .form-label { display: block; font-size: 13px; font-weight: 700; margin: 0 0 8px; }
 .contact-input { width: 100%; border: 1px solid #dce7df; outline: none; border-radius: 12px; padding: 14px 15px; margin-bottom: 16px; background: #fffefa; color: #454545; }
 .contact-input:focus { border-color: #19a987; box-shadow: 0 0 0 3px rgba(25,169,135,.12); }
+.phone-entry-row { display: grid; grid-template-columns: minmax(142px, .9fr) minmax(0, 1fr); gap: 8px; margin-bottom: 16px; }
+.phone-country-select { width: 100%; min-width: 0; height: 50px; border: 1px solid #dce7df; border-radius: 12px; padding: 0 10px; background: #fffefa; color: #454545; font: inherit; font-size: 12px; }
+.phone-country-select:focus { outline: none; border-color: #19a987; box-shadow: 0 0 0 3px rgba(25,169,135,.12); }
+.phone-local-input { min-width: 0; margin-bottom: 0; padding: 14px 12px; }
 .consent { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; line-height: 1.55; color: #716f6c; margin: 2px 0 17px; }
 .consent input { accent-color: #16a783; margin-top: 2px; }
 .form-submit { width: 100%; }
@@ -356,6 +360,9 @@ a { color: inherit; }
   .signup-section { padding: 72px 0 80px; }
   .signup-panel { grid-template-columns: 1fr; padding: 38px 22px; border-radius: 28px; gap: 25px; }
   .form-wrap { padding: 21px; border-radius: 19px; }
+  .phone-entry-row { grid-template-columns: minmax(124px, .85fr) minmax(0, 1fr); gap: 7px; }
+  .phone-country-select { padding: 0 7px; font-size: 11px; }
+  .phone-local-input { padding: 13px 9px; font-size: 13px; }
   .footer-inner { width: calc(100% - 40px); flex-direction: column; align-items: flex-start; }
   .footer-note { width: calc(100% - 40px); }
   .footer-links { flex-wrap: wrap; }

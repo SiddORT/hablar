@@ -21,6 +21,7 @@ function usePageMotion() {
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) return;
+    const scroller = document.querySelector<HTMLElement>('.app-scrollport');
     const context = gsap.context(() => {
       gsap.fromTo('.hero-reveal', { opacity: 0, y: 22 }, {
         opacity: 1, y: 0, duration: .9, stagger: .13, ease: 'power3.out', delay: .12,
@@ -28,12 +29,12 @@ function usePageMotion() {
       gsap.utils.toArray<HTMLElement>('.scroll-reveal, .hr-reveal').forEach((element) => {
         gsap.fromTo(element, { y: 22 }, {
           y: 0, duration: .68, ease: 'power2.out',
-          scrollTrigger: { trigger: element, start: 'top 88%', once: true },
+          scrollTrigger: { trigger: element, scroller: scroller ?? undefined, start: 'top 88%', once: true },
         });
       });
       gsap.fromTo('.emotion-card', { y: 16 }, {
         y: 0, duration: .7, ease: 'power2.out',
-        scrollTrigger: { trigger: '.emotion-circle', start: 'top 80%', once: true },
+        scrollTrigger: { trigger: '.emotion-circle', scroller: scroller ?? undefined, start: 'top 80%', once: true },
       });
     });
     return () => context.revert();
@@ -190,6 +191,13 @@ function Signup() {
 
 function Home() {
   usePageMotion();
+  useEffect(() => {
+    const targetId = window.location.hash.slice(1);
+    if (!targetId) return;
+    requestAnimationFrame(() => {
+      document.getElementById(decodeURIComponent(targetId))?.scrollIntoView({ behavior: 'instant' });
+    });
+  }, []);
   const emotions = [
     { label: 'Crying', position: '0% 0%', copy: 'If tears come, you do not have to hold them back.' },
     { label: 'Sad', position: '50% 0%', copy: 'You can bring the heavy days, too.' },
@@ -337,12 +345,26 @@ function Router() {
   usePageSeo(location);
   return (
     <RoutedErrorBoundary>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/privacy"><LegalPage page="privacy" footer={<Footer />} /></Route>
-        <Route path="/terms"><LegalPage page="terms" footer={<Footer />} /></Route>
-        <Route component={NotFound} />
-      </Switch>
+      <>
+        <div className="app-scrollport">
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/privacy"><LegalPage page="privacy" footer={<Footer />} /></Route>
+            <Route path="/terms"><LegalPage page="terms" footer={<Footer />} /></Route>
+            <Route component={NotFound} />
+          </Switch>
+        </div>
+        <div className="launch-sticky-dock">
+          <a
+            className="launch-sticky-cta"
+            href={`${import.meta.env.BASE_URL}#launch-note`}
+            aria-label="Sign up for HABLAR launch updates"
+          >
+          Get launch updates
+            <ArrowUpRight size={17} aria-hidden="true" />
+          </a>
+        </div>
+      </>
     </RoutedErrorBoundary>
   );
 }

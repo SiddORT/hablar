@@ -62,16 +62,24 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html, body, #root { height: 100%; }
 body {
   margin: 0;
   background: #fffdf8;
   color: #454545;
   font-family: 'DM Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 button, input { font: inherit; }
 a { color: inherit; }
 
+.app-scrollport {
+  height: calc(100dvh - 76px - env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
 .site-shell { overflow: hidden; }
 .topbar {
   width: min(1240px, calc(100% - 64px));
@@ -101,6 +109,41 @@ a { color: inherit; }
   transition: transform .2s ease, box-shadow .2s ease;
 }
 .nav-cta:hover, .button-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(220, 46, 112, .24); }
+.launch-sticky-dock {
+  position: fixed;
+  z-index: 50;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: calc(76px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 max(24px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid #eee2d9;
+  background: #fffdf8;
+  box-shadow: 0 -5px 16px rgba(103, 70, 61, .06);
+}
+.launch-sticky-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 50px;
+  padding: 13px 21px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #e7337d;
+  box-shadow: 0 8px 22px rgba(117, 42, 73, .25);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.launch-sticky-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(117, 42, 73, .3); }
+.launch-sticky-cta:focus-visible { outline: 3px solid #075c54; outline-offset: 4px; }
 .hero {
   width: min(1240px, calc(100% - 64px));
   min-height: 600px;
@@ -386,6 +429,20 @@ a { color: inherit; }
   .signup-panel { gap: 28px; padding: 40px 6%; }
 }
 @media (max-width: 680px) {
+  .app-scrollport { height: calc(100dvh - 64px - env(safe-area-inset-bottom, 0px)); }
+  .launch-sticky-dock {
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    justify-content: center;
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+  }
+  .launch-sticky-cta {
+    min-height: 42px;
+    gap: 7px;
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+  .launch-sticky-cta svg { width: 15px; height: 15px; }
   .topbar { width: calc(100% - 36px); height: 96px; }
   .brand-mini { width: 54px; height: 67px; }
   .topbar .brand-mini { width: 66px; }

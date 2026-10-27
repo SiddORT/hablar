@@ -144,7 +144,11 @@ export default function LegalPage({ page, footer }: { page: 'privacy' | 'terms';
     const target = document.getElementById(window.location.hash.slice(1) || 'legal-main');
     target?.focus({ preventScroll: true });
     if (window.location.hash) target?.scrollIntoView({ behavior: 'instant' });
-    else window.scrollTo({ top: 0, behavior: 'instant' });
+    else {
+      const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
+      if (scrollport) scrollport.scrollTo({ top: 0, behavior: 'instant' });
+      else window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }, [page, title]);
 
   return (

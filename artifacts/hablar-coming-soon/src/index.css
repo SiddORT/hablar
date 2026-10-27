@@ -96,6 +96,21 @@ a { color: inherit; }
 .nav-links { display: flex; gap: 34px; align-items: center; font-size: 14px; font-weight: 700; }
 .nav-links a { text-decoration: none; transition: color .2s ease; }
 .nav-links a:hover { color: #e52e78; }
+.social-icon {
+  display: inline-flex;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: inherit;
+  text-decoration: none;
+  transition: color .2s ease, background-color .2s ease;
+}
+.social-icon:hover { color: #e52e78; background: rgba(231, 51, 125, .08); }
+.social-icon:focus-visible { outline: 3px solid #075c54; outline-offset: 3px; }
+.social-icon[aria-disabled="true"] { cursor: default; }
 .nav-cta, .button-primary {
   background: #e7337d;
   color: white !important;

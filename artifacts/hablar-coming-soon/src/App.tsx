@@ -5,7 +5,7 @@ import { CountryPicker, phoneCountries } from '@/components/country-picker';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { ArrowDown, ArrowUpRight, Check, ShieldCheck } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, Check, Instagram, ShieldCheck } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
@@ -17,6 +17,38 @@ import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
 
 const queryClient = new QueryClient();
 gsap.registerPlugin(ScrollTrigger);
+
+const INSTAGRAM_PROFILE_URL: string | undefined = undefined;
+
+function InstagramProfileIcon() {
+  const icon = <Instagram size={20} aria-hidden="true" />;
+
+  if (INSTAGRAM_PROFILE_URL) {
+    return (
+      <a
+        className="social-icon"
+        href={INSTAGRAM_PROFILE_URL}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Visit HABLAR on Instagram"
+      >
+        {icon}
+      </a>
+    );
+  }
+
+  return (
+    <span
+      className="social-icon"
+      role="link"
+      aria-disabled="true"
+      aria-label="Instagram profile link not set yet"
+      tabIndex={0}
+    >
+      {icon}
+    </span>
+  );
+}
 
 function usePageMotion() {
   useEffect(() => {
@@ -53,6 +85,7 @@ function Header() {
         <a className="nav-plain" href="#how-it-works">How it feels</a>
         <a className="nav-plain" href="#our-promise">Our promise</a>
         <ThemeSelector />
+        <InstagramProfileIcon />
         <a className="nav-cta" href="#launch-note">Keep me posted</a>
       </nav>
     </header>
@@ -71,6 +104,7 @@ function Footer() {
           <a href={`${import.meta.env.BASE_URL}#how-it-works`}>How it feels</a>
           <Link href="/privacy">Privacy Notice</Link>
           <Link href="/terms">Terms &amp; Conditions</Link>
+          <InstagramProfileIcon />
         </nav>
       </div>
       <p className="footer-note">HABLAR is a listening space, not therapy, diagnosis, professional mental-health care, or emergency support. If you may be in immediate danger, contact local emergency services or a trusted person nearby.</p>

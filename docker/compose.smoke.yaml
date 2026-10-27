@@ -1,0 +1,20 @@
+# Disposable CI database ONLY. Never use this override on a deployed stack.
+services:
+  api:
+    depends_on:
+      smoke-db:
+        condition: service_healthy
+  smoke-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: smoke
+      POSTGRES_PASSWORD: smoke-only-not-production
+      POSTGRES_DB: smoke
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smoke -d smoke"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [backend]

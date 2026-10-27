@@ -1,0 +1,49 @@
+name: hablar
+services:
+  api:
+    image: ${API_IMAGE:-hablar-api:local}
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    env_file:
+      - path: ${API_ENV_FILE:-.env.api}
+        format: raw
+    environment:
+      PORT: "8080"
+      # Only the internal nginx proxy reaches the API. It overwrites forwarded IPs.
+      FORWARDED_ALLOW_IPS: "*"
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [backend]
+
+  website:
+    image: ${WEBSITE_IMAGE:-hablar-website:local}
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/website.Dockerfile
+    environment:
+      API_UPSTREAM: http://api:8080
+      NGINX_ENVSUBST_FILTER: ^API_UPSTREAM$
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+      - /etc/nginx/conf.d:size=1m,uid=101,gid=101,mode=0755
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [backend]
+
+networks:
+  backend:

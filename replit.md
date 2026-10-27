@@ -4,6 +4,7 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Run & Operate
 
+- Production containers and GHCR delivery: see `docs/containers.md`.
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages

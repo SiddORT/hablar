@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "HABLAR — Coming Soon"
+description = "A joyful, responsive coming-soon landing page for HABLAR, a safe and anonymous listening space. Includes animated brand storytelling, an email/phone signup prototype, and draft privacy and terms routes for the future service."
+version = "1.0.0"
+id = "artifacts/hablar-coming-soon"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25179
+
+[services.development]
+run = "pnpm --filter @workspace/hablar-coming-soon run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/hablar-coming-soon", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/hablar-coming-soon/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25179"
+BASE_PATH = "/"

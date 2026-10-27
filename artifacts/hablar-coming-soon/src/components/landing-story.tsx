@@ -35,7 +35,7 @@ export function AboutServices() {
               <span className="hr-eyebrow">Our services</span>
               <h2 id="services-heading">A space to talk freely,<br /><em>when we open.</em></h2>
             </div>
-            <p className="hr-status"><span className="hr-status-dot" aria-hidden="true" />Planned, not yet available</p>
+            <p className="hr-status"><span className="hr-status-dot" aria-hidden="true" />Planned and coming soon.</p>
           </div>
           <p className="hr-service-lede">We intend to offer a space where you can talk through your thoughts or a difficult moment, and be listened to.</p>
           <ul className="hr-principles" aria-label="The spirit of future conversations">
@@ -71,7 +71,7 @@ export function Philosophy() {
         </div>
         <div className="ls-philo-copy">
           <p>At HABLAR, we do not want you to have to explain who you are, where you are from, or share more than you are comfortable with. Our aim is a space where your thoughts, feelings and story come first, so you can be truly yourself.</p>
-          <p className="ls-note">How anonymity and confidentiality would work in a future service, including their limits, will need to be clearly explained before anyone uses it. Nothing here guarantees them today.</p>
+          <p className="ls-note">How anonymity and confidentiality would work in a future service, including their limits, will need to be clearly explained before anyone uses it.</p>
           <p>Putting endless thoughts into words can help you see things more clearly. Sharing what you have been holding may help you feel lighter, and can bring new perspectives. Sometimes, all you need is a genuine conversation with someone willing to listen the way you want.</p>
           <p>In a world increasingly shaped by technology and artificial intelligence, we believe human connection matters: behind every conversation is a person with emotions and a story. Every story deserves a space, and every person deserves to be heard.</p>
         </div>
@@ -134,7 +134,7 @@ function MissionFlipCard({ id, label, title, detail, image, imageAlt = '' }: Mis
                 tabIndex={isFlipped ? -1 : 0}
                 onClick={showDetails}
               >
-                Hover or tap to explore
+              Hover or tap to explore
               </button>
             </div>
           </div>

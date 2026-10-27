@@ -35,6 +35,20 @@ server {
     location /brand/ {
         try_files $uri =404;
     }
+    location = /privacy {
+        try_files /privacy/index.html =404;
+        add_header Cache-Control "no-cache";
+    }
+    location = /terms {
+        try_files /terms/index.html =404;
+        add_header Cache-Control "no-cache";
+    }
+    location = /robots.txt {
+        try_files $uri =404;
+    }
+    location = /sitemap.xml {
+        try_files $uri =404;
+    }
     location / {
         try_files $uri $uri/ /index.html;
         add_header Cache-Control "no-cache";

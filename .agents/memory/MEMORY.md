@@ -1,3 +1,4 @@
 - [Contact-data key rotation](contact-data-key-rotation.md) — Keep `SESSION_SECRET` stable; rotating it requires re-encrypting contact fields and recomputing lookup hashes.
 - [Pre-launch service claims](pre-launch-service-claims.md) — Preserve the human-listening vision without turning aspirational anonymity or confidentiality into current guarantees.
 - [Container runtime scope](container-runtime.md) — Python API packaging was approved; nested Docker exec failures can prevent local health checks.
+- [Static SEO route delivery](seo-routing.md) — SPA fallbacks can serve homepage metadata despite generated legal-page files; check direct URL responses.

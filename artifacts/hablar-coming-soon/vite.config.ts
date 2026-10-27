@@ -1,7 +1,9 @@
 import path from 'path';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv, type UserConfig } from 'vite';
+import { normalizeSiteOrigin } from './src/lib/seo';
+import { seoPlugin } from './seo-plugin';
 
 import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
 
@@ -27,9 +29,15 @@ if (!basePath) {
   );
 }
 
-export default defineConfig({
+export default defineConfig(async ({ mode }): Promise<UserConfig> => {
+  const env = loadEnv(mode, import.meta.dirname, 'SITE_ORIGIN');
+  const origin = normalizeSiteOrigin(process.env.SITE_ORIGIN ?? env.SITE_ORIGIN ?? '');
+  if (!origin) console.warn('SITE_ORIGIN is not configured: HABLAR will be noindex, with crawling disabled and no canonical URLs or sitemap entries.');
+  return {
   base: basePath,
+  define: { __SITE_ORIGIN__: JSON.stringify(origin) },
   plugins: [
+    seoPlugin(origin, basePath),
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),
@@ -78,4 +86,5 @@ export default defineConfig({
     host: '0.0.0.0',
     allowedHosts: true,
   },
+  };
 });

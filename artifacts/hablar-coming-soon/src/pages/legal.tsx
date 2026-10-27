@@ -140,32 +140,11 @@ export default function LegalPage({ page, footer }: { page: 'privacy' | 'terms';
   const title = page === 'privacy' ? 'Privacy Notice' : 'Terms & Conditions';
   const sections = page === 'privacy' ? privacySections : termsSections;
   useEffect(() => {
-    const previousTitle = document.title;
-    document.title = `${title} | HABLAR`;
-    const description = `${title} for HABLAR’s pre-launch website, including current practices and matters requiring owner and legal review.`;
-    const metadata = [
-      ['meta[name="description"]', description],
-      ['meta[property="og:title"]', document.title],
-      ['meta[property="og:description"]', description],
-      ['meta[name="twitter:title"]', document.title],
-      ['meta[name="twitter:description"]', description],
-    ].map(([selector, value]) => {
-      const element = document.querySelector<HTMLMetaElement>(selector);
-      const previous = element?.content;
-      if (element) element.content = value;
-      return { element, previous };
-    });
     // Wouter preserves scroll between routes; open each policy at its heading or named section.
     const target = document.getElementById(window.location.hash.slice(1) || 'legal-main');
     target?.focus({ preventScroll: true });
     if (window.location.hash) target?.scrollIntoView({ behavior: 'instant' });
     else window.scrollTo({ top: 0, behavior: 'instant' });
-    return () => {
-      document.title = previousTitle;
-      metadata.forEach(({ element, previous }) => {
-        if (element && previous !== undefined) element.content = previous;
-      });
-    };
   }, [page, title]);
 
   return (

@@ -28,6 +28,8 @@ services:
     build:
       context: .
       dockerfile: docker/website.Dockerfile
+      args:
+        SITE_ORIGIN: ${SITE_ORIGIN:-}
     environment:
       API_UPSTREAM: http://api:8080
       NGINX_ENVSUBST_FILTER: ^API_UPSTREAM$

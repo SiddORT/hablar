@@ -28,6 +28,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
+      - run: pnpm --filter @workspace/hablar-coming-soon run test:seo
       - uses: docker/setup-buildx-action@v3
       - name: Build and smoke check both production images
         run: bash scripts/container-smoke.sh
@@ -69,6 +70,8 @@ jobs:
         with:
           context: .
           file: docker/${{ matrix.service }}.Dockerfile
+          build-args: |
+            SITE_ORIGIN=${{ vars.SITE_ORIGIN }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.metadata.outputs.tags }}

@@ -47,13 +47,33 @@ configuration includes credentials.
 | `HTTP_PORT` | Compose `.env` / shell | Host website port, default `8080`. |
 | `BIND_ADDRESS` | Compose `.env` / shell | Defaults to `127.0.0.1`. Set deliberately if exposing to a host proxy/network. |
 | `WEBSITE_IMAGE`, `API_IMAGE` | Compose `.env` / shell | Local image names by default; replace with GHCR references to pull published images. |
+| `SITE_ORIGIN` | Website build argument / Compose `.env` / GitHub repository variable | Verified public HTTPS origin, without a path or trailing route. Used for canonical URLs, social URLs and the sitemap. Blank produces a noindex build with crawling disabled and an empty sitemap; no preview hostname is substituted. |
 
-Only nginx is exposed on the host. It serves the SPA at `/`, falls back to
-`index.html` for `/privacy` and `/terms`, and proxies `/api` without stripping
+Only nginx is exposed on the host. It serves the SPA at `/`, serves
+route-specific HTML heads for `/privacy` and `/terms`, and proxies `/api` without stripping
 the prefix. Missing API URLs return API errors, not HTML. Static assets under
 `/brand` are included. The website's `BASE_PATH=/`, `NODE_ENV=production` and
 config-required `PORT=8080` are supplied **at build time**. The static website
 does not read runtime Vite variables; don't put secrets in Vite settings.
+
+### Search and sharing configuration
+
+No production domain has been verified in this repository. Once the owner has
+verified the public origin, set `SITE_ORIGIN` in Compose's `.env` before building,
+or pass `--build-arg SITE_ORIGIN="$SITE_ORIGIN"` to `docker build`. GHCR builds use
+the GitHub repository variable `SITE_ORIGIN` (not a secret). For a direct Vite
+build, supply `SITE_ORIGIN` in the build environment or the website artifact's
+`.env.production.local`. The value must be an HTTPS origin only; preview hosts,
+credentials, ports, paths, queries and fragments are rejected.
+
+Rebuild the website after changing the origin; setting a runtime variable on an
+existing static image cannot change its metadata. With an origin configured,
+`/robots.txt` allows public pages and points to `/sitemap.xml`, which lists `/`,
+`/privacy` and `/terms`. Without it, all page heads are `noindex`, robots disallows
+crawling, and the valid sitemap has no entries. This explicitly prevents
+indexing the wrong host while the public domain is undecided.
+
+SEO checks: `pnpm --filter @workspace/hablar-coming-soon run test:seo`.
 
 The API defaults to `PORT=8080` and binds `0.0.0.0`. Compose fixes that port
 to match nginx. Standalone API containers can set another `PORT`; their

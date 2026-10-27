@@ -25,8 +25,12 @@ curl -fsS "$base/healthz" | grep -qx ok
 curl -fsS "$base/api/healthz" | grep -q '"status":"ok"'
 home="$(curl -fsS "$base/")"
 for route in privacy terms; do
-  test "$(curl -fsS "$base/$route")" = "$home"
+  policy="$(curl -fsS "$base/$route")"
+  if [ "$route" = privacy ]; then title="Privacy Notice"; else title="Terms &amp; Conditions"; fi
+  printf '%s' "$policy" | grep -q "<title data-hablar-seo>$title | HABLAR</title>"
 done
+curl -fsS "$base/robots.txt" | grep -q 'User-agent:'
+curl -fsS "$base/sitemap.xml" | grep -q '<urlset'
 curl -fsS "$base/brand/hablar-logo-transparent.png" -o /dev/null
 asset="$(printf '%s' "$home" | grep -oE '/assets/[^"]+\.js' | head -1)"
 test -n "$asset"

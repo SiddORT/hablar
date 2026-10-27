@@ -120,6 +120,7 @@ function MissionFlipCard({ id, label, title, detail, image, imageAlt = '' }: Mis
 export function PurposeMission() {
   return (
     <section className="ls-wrap" id="purpose" aria-label="Our purpose and mission">
+      <h2 className="sr-only">Our purpose and mission</h2>
       <div className="ls-inner ls-pm">
         <MissionFlipCard
           id="purpose-card"

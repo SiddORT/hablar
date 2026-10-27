@@ -11,6 +11,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import NotFound from '@/pages/not-found';
 import LegalPage from '@/pages/legal';
+import { usePageSeo } from '@/lib/use-page-seo';
 import { AboutServices, Philosophy, PurposeMission, ClosingLine } from '@/components/landing-story';
 
 const queryClient = new QueryClient();
@@ -275,7 +276,7 @@ function Home() {
 
       <section className="values-wrap" id="our-promise">
         <div className="section values-layout">
-          <div className="values-big scroll-reveal">Listening is a kind of <span>care.</span></div>
+          <h2 className="values-big scroll-reveal">Listening is a kind of <span>care.</span></h2>
           <div className="values-copy scroll-reveal">
             We believe people deserve a space where their words are not measured, ranked, or rushed. A good listener does not need to have lived your story to make room for it.
             <div className="value-points">
@@ -335,6 +336,8 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 }
 
 function Router() {
+  const [location] = useLocation();
+  usePageSeo(location);
   return (
     <RoutedErrorBoundary>
       <Switch>

@@ -9,6 +9,7 @@ COPY artifacts/hablar-coming-soon/ artifacts/hablar-coming-soon/
 COPY attached_assets/ attached_assets/
 RUN pnpm install --frozen-lockfile
 # The production site is hosted at /. PORT is required while loading Vite config.
+ARG SITE_ORIGIN
 RUN NODE_ENV=production PORT=8080 BASE_PATH=/ pnpm --filter @workspace/hablar-coming-soon run build
 
 FROM nginxinc/nginx-unprivileged:1.28-alpine AS runtime

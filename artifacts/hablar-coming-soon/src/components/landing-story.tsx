@@ -1,7 +1,9 @@
+import { useRef, useState, type MouseEvent } from 'react';
 import { Link } from 'wouter';
 import { ShieldCheck, Phone, LockKeyhole } from 'lucide-react';
 import './landing-story.css';
 import './landing-about-refresh.css';
+import './purpose-mission-flip.css';
 
 export function AboutServices() {
   return (
@@ -71,20 +73,103 @@ export function Philosophy() {
   );
 }
 
+type MissionFlipCardProps = {
+  id: string;
+  label: string;
+  title: string;
+  detail: string;
+  image: string;
+};
+
+function MissionFlipCard({ id, label, title, detail, image }: MissionFlipCardProps) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const frontButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLButtonElement>(null);
+
+  const showDetails = (_event: MouseEvent<HTMLButtonElement>) => {
+    setIsFlipped(true);
+    requestAnimationFrame(() => backButtonRef.current?.focus());
+  };
+
+  const showFront = (_event: MouseEvent<HTMLButtonElement>) => {
+    setIsFlipped(false);
+    requestAnimationFrame(() => frontButtonRef.current?.focus());
+  };
+
+  return (
+    <article
+      className={`pm-flip-card ${isFlipped ? 'is-flipped' : ''}`}
+      aria-label={`${label} card`}
+      onPointerEnter={(event) => {
+        if (event.pointerType === 'mouse') setIsFlipped(true);
+      }}
+      onPointerLeave={(event) => {
+        if (event.pointerType === 'mouse' && !event.currentTarget.contains(document.activeElement)) {
+          setIsFlipped(false);
+        }
+      }}
+    >
+      <div className="pm-flip-scene">
+        <div className="pm-flip-inner">
+          <div className="pm-flip-face pm-flip-front" id={`${id}-front`} aria-hidden={isFlipped}>
+            <img src={`${import.meta.env.BASE_URL}brand/${image}`} alt="" />
+            <div className="pm-front-shade" aria-hidden="true" />
+            <div className="pm-front-content">
+              <span className="pm-front-label">{label}</span>
+              <h3 id={`${id}-front-title`}>{title}</h3>
+              <button
+                ref={frontButtonRef}
+                type="button"
+                className="pm-flip-cue"
+                aria-expanded={isFlipped}
+                aria-controls={`${id}-back`}
+                tabIndex={isFlipped ? -1 : 0}
+                onClick={showDetails}
+              >
+                Hover or tap to explore
+              </button>
+            </div>
+          </div>
+
+          <div className="pm-flip-face pm-flip-back" id={`${id}-back`} aria-hidden={!isFlipped}>
+            <span className="pm-back-label">{label}</span>
+            <p className="pm-back-copy">{detail}</p>
+            <button
+              ref={backButtonRef}
+              type="button"
+              className="pm-flip-cue pm-flip-cue-back"
+              aria-expanded={isFlipped}
+              aria-controls={`${id}-front`}
+              tabIndex={isFlipped ? 0 : -1}
+              onClick={showFront}
+            >
+              Back to the front
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export function PurposeMission() {
   return (
     <section className="ls-wrap" id="purpose" aria-label="Our purpose and mission">
       <div className="ls-inner ls-pm">
-        <article className="ls-pm-card a">
-          <span className="section-kicker">Our purpose</span>
-          <h3>To give people a safe space to talk and be heard.</h3>
-          <p>Simple, and deeply meaningful to us.</p>
-        </article>
-        <article className="ls-pm-card b" id="mission">
-          <span className="section-kicker">Our mission</span>
-          <h3>A space where everyone feels heard, valued, and free to express themselves.</h3>
-          <p>We believe talking can help ease loneliness and foster meaningful human conversations in an increasingly AI-driven world.</p>
-        </article>
+        <MissionFlipCard
+          id="purpose-card"
+          label="Our purpose"
+          title="To give people a safe space to talk and be heard."
+          detail="Simple, and deeply meaningful to us."
+          image="hablar-listening-moment.png"
+        />
+        <MissionFlipCard
+          id="mission-card"
+          label="Our mission"
+          title="A space where everyone feels heard, valued, and free to express themselves."
+          detail="We believe talking can help ease loneliness and foster meaningful human conversations in an increasingly AI-driven world."
+          image="hablar-mascot-grid.png"
+        />
       </div>
     </section>
   );

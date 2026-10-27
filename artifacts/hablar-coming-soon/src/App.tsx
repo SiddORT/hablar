@@ -27,6 +27,10 @@ function usePageMotion() {
           scrollTrigger: { trigger: element, start: 'top 88%', once: true },
         });
       });
+      gsap.fromTo('.emotion-card', { opacity: 0, y: 18 }, {
+        opacity: 1, y: 0, duration: .62, stagger: .1, ease: 'power2.out',
+        scrollTrigger: { trigger: '.emotion-sequence', start: 'top 84%', once: true },
+      });
       gsap.to('.mascot-crop', {
         y: -8, duration: 2.4, repeat: -1, yoyo: true, ease: 'sine.inOut',
       });
@@ -158,6 +162,14 @@ function Signup() {
 
 function Home() {
   usePageMotion();
+  const emotions = [
+    { label: 'Crying', position: '0% 0%', copy: 'If tears come, you do not have to hold them back.' },
+    { label: 'Sad', position: '50% 0%', copy: 'You can bring the heavy days, too.' },
+    { label: 'Unsure', position: '100% 0%', copy: 'You can begin without knowing exactly what you feel.' },
+    { label: 'Happy', position: '0% 100%', copy: 'Your small wins and bright moments belong here.' },
+    { label: 'Very happy', position: '50% 100%', copy: 'There is room for the big, joyful moments.' },
+    { label: 'Feeling loved', position: '100% 100%', copy: 'Share the warmth when your heart feels full.' },
+  ];
   return (
     <main className="site-shell">
       <Header />
@@ -197,17 +209,29 @@ function Home() {
         </div>
       </section>
 
-      <section className="section steps-section">
+      <section className="section emotions-section">
         <div className="section-heading scroll-reveal">
-          <span className="section-kicker">No script required</span>
-          <h2>There is no right way to show up.</h2>
-          <p>Think of HABLAR as a pause in the noise: a place to say what is on your mind and be met with care.</p>
+          <span className="section-kicker">Every feeling belongs</span>
+          <h2>There is no wrong way to feel.</h2>
+          <p>Bring the tears, the uncertainty, the joy, or whatever is here today. HABLAR meets you with care, just as you are.</p>
         </div>
-        <div className="steps-list">
-          <article className="step scroll-reveal"><span className="step-num">01 / ARRIVE</span><h3>Come as you are.</h3><p>There is no checklist, backstory, or “big enough” reason you need to bring.</p></article>
-          <article className="step scroll-reveal"><span className="step-num">02 / SAY IT</span><h3>Speak as you feel.</h3><p>Take your time. Start anywhere. A pause is welcome too.</p></article>
-          <article className="step scroll-reveal"><span className="step-num">03 / BE HEARD</span><h3>Let it land.</h3><p>Someone listens with care, without trying to turn your feelings into a label.</p></article>
-        </div>
+        <ol className="emotion-sequence" aria-label="Six feelings welcomed at HABLAR">
+          {emotions.map((emotion, index) => (
+            <li className="emotion-card" key={emotion.label}>
+              <div
+                className="emotion-art"
+                role="img"
+                aria-label={`${emotion.label} expression of the HABLAR mascot`}
+                style={{ backgroundPosition: emotion.position }}
+              />
+              <div className="emotion-card-copy">
+                <span className="emotion-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <h3>{emotion.label}</h3>
+                <p>{emotion.copy}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </section>
 
       <section className="values-wrap" id="our-promise">

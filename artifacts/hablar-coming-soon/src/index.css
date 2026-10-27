@@ -221,22 +221,37 @@ a { color: inherit; }
 .story-copy strong { color: #454545; }
 .pill-row { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 28px; }
 .pill { border-radius: 99px; padding: 10px 14px; font-size: 12px; font-weight: 700; background: white; border: 1px solid #e1eee7; color: #477365; }
-.steps-section { padding-top: 116px; padding-bottom: 120px; }
-.steps-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.step {
-  min-height: 270px;
-  border-radius: 28px;
-  padding: 29px;
+.emotions-section { padding-top: 116px; padding-bottom: 120px; }
+.emotion-sequence {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.emotion-card {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 26px;
   background: #fff;
   border: 1px solid #f0e8df;
   box-shadow: 0 12px 35px rgba(108, 91, 70, .045);
-  position: relative;
 }
-.step:nth-child(2) { background: #fff7ea; transform: translateY(21px); }
-.step:nth-child(3) { background: #f2fbf8; }
-.step-num { color: #e33d7c; font: 700 13px 'Montserrat', sans-serif; letter-spacing: .12em; }
-.step h3 { font: 700 22px 'Montserrat', sans-serif; letter-spacing: -.035em; margin: 48px 0 12px; }
-.step p { font-size: 15px; line-height: 1.7; color: #77706d; margin: 0; }
+.emotion-card:nth-child(3n + 2) { background: #fffaf1; }
+.emotion-card:nth-child(3n) { background: #f5fbf8; }
+.emotion-art {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-image: url('/brand/hablar-mascot-grid.png');
+  background-size: 300% 200%;
+  background-repeat: no-repeat;
+  background-color: #fff;
+}
+.emotion-card-copy { min-height: 142px; padding: 19px 22px 22px; }
+.emotion-index { color: #d13e79; font: 700 11px 'Montserrat', sans-serif; letter-spacing: .14em; }
+.emotion-card h3 { font: 700 21px 'Montserrat', sans-serif; letter-spacing: -.035em; margin: 7px 0 8px; color: #454545; }
+.emotion-card p { font-size: 14px; line-height: 1.65; color: #77706d; margin: 0; }
 .values-wrap { background: #fff7e9; padding: 1px 0; }
 .values-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 70px; align-items: center; }
 .values-big { font: 700 clamp(37px, 5vw, 63px)/1.08 'Montserrat', sans-serif; letter-spacing: -.055em; }
@@ -325,11 +340,12 @@ a { color: inherit; }
   .mascot-stage { height: 300px; border-radius: 28px; }
   .mascot-crop { width: 230px; height: 200px; }
   .story-copy h2 { font-size: 37px; }
-  .steps-section { padding-top: 75px; padding-bottom: 75px; }
-  .steps-list { grid-template-columns: 1fr; gap: 14px; }
-  .step { min-height: 215px; padding: 25px; }
-  .step:nth-child(2) { transform: none; }
-  .step h3 { margin-top: 31px; }
+  .emotions-section { padding-top: 75px; padding-bottom: 75px; }
+  .emotion-sequence { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .emotion-card { border-radius: 20px; }
+  .emotion-card-copy { min-height: 152px; padding: 15px 15px 18px; }
+  .emotion-card h3 { font-size: 18px; }
+  .emotion-card p { font-size: 13px; line-height: 1.55; }
   .values-layout { grid-template-columns: 1fr; gap: 25px; }
   .value-points { grid-template-columns: 1fr; gap: 14px; }
   .quote-section { padding: 70px 0; }

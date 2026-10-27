@@ -5,11 +5,12 @@ import { defaultCountries, parseCountry } from 'react-international-phone';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { ArrowDown, ArrowLeft, ArrowUpRight, Check, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, Check, ShieldCheck, Sparkles } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import NotFound from '@/pages/not-found';
+import LegalPage from '@/pages/legal';
 
 const queryClient = new QueryClient();
 const phoneCountries = defaultCountries.map(parseCountry);
@@ -70,12 +71,11 @@ function Footer() {
           <img src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`} alt="HABLAR" />
           <p>A little more room to be human. Come as you are.</p>
         </div>
-        <div className="footer-links">
-          <a href="#how-it-works">How it feels</a>
-          <Link href="/privacy">Privacy draft</Link>
-          <Link href="/terms">Terms draft</Link>
-          <a href="#launch-note">Launch updates</a>
-        </div>
+        <nav className="footer-links" aria-label="Footer navigation">
+          <a href={`${import.meta.env.BASE_URL}#how-it-works`}>How it feels</a>
+          <Link href="/privacy">Privacy Notice</Link>
+          <Link href="/terms">Terms &amp; Conditions</Link>
+        </nav>
       </div>
       <p className="footer-note">HABLAR is a listening space, not therapy, diagnosis, professional mental-health care, or emergency support. If you may be in immediate danger, contact local emergency services or a trusted person nearby.</p>
     </footer>
@@ -319,47 +319,6 @@ function Home() {
   );
 }
 
-const legalCopy = {
-  privacy: {
-    title: 'Privacy, with care.',
-    intro: 'This is a draft privacy notice for review. Submitting the launch form sends the contact details you choose to provide to HABLAR’s API.',
-    sections: [
-      ['What the launch form stores', 'The email address and/or phone number you submit is encrypted with AES-GCM before storage in PostgreSQL. A keyed, non-reversible lookup digest is used only to avoid duplicate contacts. HABLAR does not return or display stored contact details through this website.'],
-      ['Purpose and consent', 'Contact details are used only to send one launch update. The form records the consent version, privacy-notice version, terms version, and server-side consent time. You must actively consent and accept the terms before submitting.'],
-      ['Retention and your choices', 'The retention period, data-controller details, applicable jurisdiction, contact channel for access or deletion requests, and how to withdraw consent still need to be completed. This draft is not a complete GDPR notice and does not claim legal compliance.'],
-      ['Before publication', 'HABLAR must confirm its legal entity and contact details, retention schedule, infrastructure processors and transfer details, and a practical process for privacy requests before collecting public sign-ups.'],
-    ],
-  },
-  terms: {
-    title: 'A few things to know.',
-    intro: 'This is draft terms content for review, not final service terms. It describes the intended spirit of HABLAR and is not a complete agreement.',
-    sections: [
-      ['What HABLAR is', 'HABLAR is intended to be a warm, anonymous listening space where people can speak freely and feel heard. The service is being developed; availability, features, and operating details may change.'],
-      ['What HABLAR is not', 'HABLAR is not therapy, diagnosis, professional mental-health care, medical advice, or emergency support. Listeners are not a substitute for qualified professionals.'],
-      ['Urgent support', 'If you or someone else may be in immediate danger, contact local emergency services or a trusted person who can help in person. Do not rely on HABLAR for urgent or crisis response.'],
-      ['Before the service opens', 'Final terms should explain eligibility, service availability, account and privacy practices, safety processes, limitations, and a way to contact the service. Those details require review before publication.'],
-    ],
-  },
-};
-
-function LegalPage({ page }: { page: 'privacy' | 'terms' }) {
-  const content = legalCopy[page];
-  return (
-    <main className="legal-page">
-      <div className="legal-top"><Link href="/" className="brand-mini"><img src="/brand/hablar-logo-reference.jpeg" alt="HABLAR home" /></Link></div>
-      <article className="legal-content">
-        <span className="section-kicker">HABLAR / {page}</span>
-        <h1>{content.title}</h1>
-        <div className="draft-banner"><strong>Draft for review — not final legal text.</strong> This page does not claim legal compliance. The content needs review and completion before public sign-ups.</div>
-        <p>{content.intro}</p>
-        {content.sections.map(([heading, text]) => <section key={heading}><h2>{heading}</h2><p>{text}</p></section>)}
-        <Link className="legal-back" href="/"><ArrowLeft size={16} /> Back to HABLAR</Link>
-      </article>
-      <Footer />
-    </main>
-  );
-}
-
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>;
@@ -370,8 +329,8 @@ function Router() {
     <RoutedErrorBoundary>
       <Switch>
         <Route path="/" component={Home} />
-        <Route path="/privacy"><LegalPage page="privacy" /></Route>
-        <Route path="/terms"><LegalPage page="terms" /></Route>
+        <Route path="/privacy"><LegalPage page="privacy" footer={<Footer />} /></Route>
+        <Route path="/terms"><LegalPage page="terms" footer={<Footer />} /></Route>
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>

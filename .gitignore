@@ -42,6 +42,10 @@ __pycache__/
 !.vscode/extensions.json
 
 # misc
+.env
+.env.*
+!.env.example
+!.env.api.example
 /.sass-cache
 /connect.lock
 /coverage

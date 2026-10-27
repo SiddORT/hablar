@@ -60,6 +60,8 @@ services:
       NGINX_ENVSUBST_FILTER: ^API_UPSTREAM$
     ports:
       - "${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-8080}:8080"
+    volumes:
+      - /var/www/habler.co.in/deploy/certs:/etc/nginx/certs:ro
     depends_on:
       api:
         condition: service_healthy
@@ -80,3 +82,4 @@ networks:
 
 volumes:
   postgres_data:
+  

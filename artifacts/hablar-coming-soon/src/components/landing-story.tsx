@@ -187,9 +187,9 @@ export function ClosingLine() {
 export default function LandingStory() {
   return (
     <>
+      <PurposeMission />
       <AboutServices />
       <Philosophy />
-      <PurposeMission />
       <SafetyPrivacy />
       <ClosingLine />
     </>

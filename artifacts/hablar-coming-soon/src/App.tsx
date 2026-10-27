@@ -244,6 +244,7 @@ function Home() {
         </div>
       </section>
 
+      <PurposeMission />
       <AboutServices />
 
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">
@@ -288,9 +289,8 @@ function Home() {
       </section>
 
       <Philosophy />
-      <PurposeMission />
 
-      <section className="section quote-section">
+      <section className="section quote-section" id="connection" aria-labelledby="connection-heading">
         <div className="connection-card scroll-reveal">
           <img
             src={`${import.meta.env.BASE_URL}brand/hablar-indian-table-talk.webp`}
@@ -303,8 +303,14 @@ function Home() {
           <div className="connection-copy">
             <p className="photo-disclosure">Illustrative stock photo, not HABLAR users or listeners.</p>
             <span className="section-kicker">A human moment</span>
-            <h2>A little lighter, together.</h2>
+            <h2 id="connection-heading">A little lighter, together.</h2>
             <p>Sometimes the nicest thing is having someone meet your words with care, share a smile, and stay awhile.</p>
+            <div className="connection-actions">
+              <p className="connection-launch-note">HABLAR is coming soon. Sign up for a launch update.</p>
+              <a className="button-primary connection-cta" href="#launch-note">
+                Keep me posted <ArrowDown size={16} aria-hidden="true" />
+              </a>
+            </div>
           </div>
         </div>
       </section>

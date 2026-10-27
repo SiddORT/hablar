@@ -71,6 +71,7 @@ function Footer() {
         </nav>
       </div>
       <p className="footer-note">HABLAR is a listening space, not therapy, diagnosis, professional mental-health care, or emergency support. If you may be in immediate danger, contact local emergency services or a trusted person nearby.</p>
+      <p className="footer-copyright">Copyright © 2026 HABLAR</p>
     </footer>
   );
 }

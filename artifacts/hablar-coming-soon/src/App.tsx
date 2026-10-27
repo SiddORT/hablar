@@ -13,6 +13,7 @@ import NotFound from '@/pages/not-found';
 import LegalPage from '@/pages/legal';
 import { usePageSeo } from '@/lib/use-page-seo';
 import { AboutServices, PurposeMission, ClosingLine } from '@/components/landing-story';
+import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
 
 const queryClient = new QueryClient();
 gsap.registerPlugin(ScrollTrigger);
@@ -51,6 +52,7 @@ function Header() {
         <a className="nav-plain" href="#about" data-testid="link-about">About HABLAR</a>
         <a className="nav-plain" href="#how-it-works">How it feels</a>
         <a className="nav-plain" href="#our-promise">Our promise</a>
+        <ThemeSelector />
         <a className="nav-cta" href="#launch-note">Keep me posted</a>
       </nav>
     </header>
@@ -375,9 +377,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
+        <ThemeProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+            <Router />
+          </WouterRouter>
+        </ThemeProvider>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

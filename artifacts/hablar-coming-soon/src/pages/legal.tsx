@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { Link } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
+import { ThemeSelector } from '@/components/theme-selector';
 
 type LegalSection = { id: string; title: string; body: ReactNode };
 
@@ -162,6 +163,7 @@ export default function LegalPage({ page, footer }: { page: 'privacy' | 'terms';
           <Link href="/privacy" aria-current={page === 'privacy' ? 'page' : undefined}>Privacy Notice</Link>
           <Link href="/terms" aria-current={page === 'terms' ? 'page' : undefined}>Terms &amp; Conditions</Link>
         </nav>
+        <ThemeSelector />
       </header>
       <main id="legal-main" tabIndex={-1} className="legal-content" aria-labelledby="legal-title">
         <Link className="legal-back legal-back-top" href="/"><ArrowLeft size={16} aria-hidden="true" /> Back to HABLAR</Link>

@@ -10,6 +10,7 @@
   min-height: 440px;
   border-radius: 28px;
   perspective: 1400px;
+  filter: drop-shadow(0 18px 34px rgb(103 70 61 / 8%));
 }
 
 .pm-flip-inner {
@@ -33,37 +34,41 @@
   justify-content: center;
   padding: 32px;
   overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 70%);
   border-radius: inherit;
-  color: #fff;
+  color: #454545;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 
 .pm-flip-front {
   justify-content: flex-end;
-  background: #9e3f60;
+  background: linear-gradient(135deg, rgb(244 215 223 / 76%), rgb(255 247 233 / 70%));
 }
 
 .pm-flip-card:nth-child(2) .pm-flip-front {
-  background: #20594f;
+  background: linear-gradient(135deg, rgb(230 248 240 / 82%), rgb(198 240 229 / 68%));
 }
 
 .pm-flip-back {
   transform: rotateY(180deg);
-  background: #74354d;
+  background: linear-gradient(135deg, rgb(255 225 165 / 78%), rgb(255 208 223 / 74%));
 }
 
 .pm-flip-card:nth-child(2) .pm-flip-back {
-  background: #19493f;
+  background: linear-gradient(135deg, rgb(198 240 229 / 82%), rgb(245 251 248 / 76%));
 }
 
 .pm-front-label,
 .pm-back-label {
   display: inline-flex;
   padding: 7px 11px;
+  border: 1px solid rgb(255 255 255 / 72%);
   border-radius: 999px;
-  color: #fff;
-  background: rgb(38 44 45 / 38%);
+  color: #454545;
+  background: rgb(255 255 255 / 56%);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: .14em;
@@ -72,7 +77,7 @@
 
 .pm-flip-face h3 {
   margin: 18px 0 20px;
-  color: #fff;
+  color: #454545;
   font: 700 clamp(27px, 3vw, 38px)/1.16 'Montserrat', sans-serif;
   letter-spacing: -.045em;
   text-wrap: balance;
@@ -81,7 +86,7 @@
 .pm-detail {
   max-width: 36ch;
   margin: 20px 0 28px;
-  color: #fff;
+  color: #454545;
   font: 500 clamp(18px, 2vw, 23px)/1.6 'DM Sans', sans-serif;
   text-wrap: pretty;
 }
@@ -92,18 +97,18 @@
   justify-content: center;
   min-height: 44px;
   padding: 10px 16px;
-  border: 1px solid #fff;
+  border: 1px solid rgb(69 69 69 / 28%);
   border-radius: 999px;
-  color: #fff;
-  background: #262c2d;
+  color: #454545;
+  background: rgb(255 255 255 / 72%);
   font: 700 12px/1.4 'DM Sans', sans-serif;
   cursor: pointer;
 }
 
 .pm-flip-cue:hover,
 .pm-flip-cue:focus-visible {
-  color: #262c2d;
-  background: #fff;
+  color: #fff;
+  background: #454545;
 }
 
 .pm-flip-cue:focus-visible {

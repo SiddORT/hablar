@@ -1,8 +1,8 @@
-.ls-wrap { padding: 100px 0; }
+.ls-wrap { padding: 76px 0; }
 .ls-inner { width: min(1120px, calc(100% - 64px)); margin: 0 auto; }
 .ls-title { font: 700 clamp(32px, 4vw, 50px)/1.1 'Montserrat', sans-serif; letter-spacing: -.05em; color: #454545; margin: 14px 0 18px; max-width: 760px; }
 .ls-cols p, .ls-philo-copy p, .ls-block p { font-size: 16px; line-height: 1.75; color: #716b68; margin: 0; }
-.ls-philo { background: #f5fcf8; padding: 100px 0; }
+.ls-philo { background: #f5fcf8; padding: 76px 0; }
 .ls-philo-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 60px; }
 .ls-philo-copy { display: grid; gap: 18px; }
 .ls-note { background: #fff; border-left: 3px solid #17b89a; padding: 14px 18px; border-radius: 0 14px 14px 0; font-size: 14px !important; }
@@ -13,11 +13,11 @@
 .ls-block h3 { font: 700 18px 'Montserrat', sans-serif; color: #454545; margin: 10px 0 8px; }
 .ls-legal { font-size: 14px; color: #736b68; line-height: 1.7; margin: 24px 0 0; }
 .ls-legal a { color: #9b2855; font-weight: 700; }
-.ls-closing { padding: 30px 20px 90px; text-align: center; }
+.ls-closing { padding: 24px 20px 56px; text-align: center; }
 .ls-closing p { font: 700 clamp(26px, 3.6vw, 44px)/1.2 'Montserrat', sans-serif; letter-spacing: -.04em; color: #454545; margin: 0; }
 .ls-closing span { color: #e7337d; }
 @media (max-width: 760px) {
-  .ls-wrap, .ls-philo { padding: 70px 0; }
+  .ls-wrap, .ls-philo { padding: 50px 0; }
   .ls-inner { width: calc(100% - 40px); }
   .ls-philo-grid, .ls-safety { grid-template-columns: 1fr; gap: 18px; }
 }

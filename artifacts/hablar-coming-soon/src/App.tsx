@@ -36,8 +36,8 @@ function usePageMotion() {
         });
       });
       gsap.fromTo('.emotion-card', { opacity: 0, y: 18 }, {
-        opacity: 1, y: 0, duration: .62, stagger: .1, ease: 'power2.out',
-        scrollTrigger: { trigger: '.emotion-sequence', start: 'top 84%', once: true },
+        opacity: 1, y: 0, duration: .8, ease: 'power2.out',
+        scrollTrigger: { trigger: '.emotion-circle', start: 'top 80%', once: true },
       });
       gsap.to('.mascot-crop', {
         y: -8, duration: 2.4, repeat: -1, yoyo: true, ease: 'sine.inOut',
@@ -254,29 +254,30 @@ function Home() {
         </div>
       </section>
 
-      <section className="section emotions-section">
-        <div className="section-heading scroll-reveal">
-          <span className="section-kicker">Every feeling belongs</span>
-          <h2>There is no wrong way to feel.</h2>
-          <p>Bring the tears, the uncertainty, the joy, or whatever is here today. HABLAR meets you with care, just as you are.</p>
+      <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">
+        <div className="emotion-circle">
+          <div className="emotion-center scroll-reveal">
+            <span className="section-kicker">Every feeling belongs</span>
+            <h2 id="feelings-heading">Different feelings. Same welcome.</h2>
+            <p>There is room here for tears, for joy, and for not being sure yet. HABLAR meets you with care, just as you are.</p>
+          </div>
+          <ul className="emotion-ring" role="list" aria-label="Six feelings welcomed at HABLAR">
+            {emotions.map((emotion, index) => (
+              <li className={`emotion-card slot-${index}`} key={emotion.label}>
+                <div
+                  className="emotion-art"
+                  role="img"
+                  aria-label={`${emotion.label} expression of the HABLAR mascot`}
+                  style={{ backgroundPosition: emotion.position }}
+                />
+                <div className="emotion-card-copy">
+                  <h3>{emotion.label}</h3>
+                  <p>{emotion.copy}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ol className="emotion-sequence" aria-label="Six feelings welcomed at HABLAR">
-          {emotions.map((emotion, index) => (
-            <li className="emotion-card" key={emotion.label}>
-              <div
-                className="emotion-art"
-                role="img"
-                aria-label={`${emotion.label} expression of the HABLAR mascot`}
-                style={{ backgroundPosition: emotion.position }}
-              />
-              <div className="emotion-card-copy">
-                <span className="emotion-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-                <h3>{emotion.label}</h3>
-                <p>{emotion.copy}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
       </section>
 
       <section className="values-wrap" id="our-promise">

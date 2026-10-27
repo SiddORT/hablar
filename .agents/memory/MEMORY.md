@@ -1,1 +1,2 @@
 - [Contact-data key rotation](contact-data-key-rotation.md) — Keep `SESSION_SECRET` stable; rotating it requires re-encrypting contact fields and recomputing lookup hashes.
+- [Pre-launch service claims](pre-launch-service-claims.md) — Preserve the human-listening vision without turning aspirational anonymity or confidentiality into current guarantees.

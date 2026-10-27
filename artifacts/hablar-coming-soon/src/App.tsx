@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCreateWaitlistSignup } from '@workspace/api-client-react';
-import { defaultCountries, parseCountry } from 'react-international-phone';
+import { CountryPicker, phoneCountries } from '@/components/country-picker';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -11,16 +11,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import NotFound from '@/pages/not-found';
 import LegalPage from '@/pages/legal';
+import { AboutServices, Philosophy, PurposeMission, SafetyPrivacy, ClosingLine } from '@/components/landing-story';
 
 const queryClient = new QueryClient();
-const phoneCountries = defaultCountries.map(parseCountry);
 gsap.registerPlugin(ScrollTrigger);
-
-function countryFlag(iso2: string) {
-  return [...iso2.toUpperCase()]
-    .map((letter) => String.fromCodePoint(letter.charCodeAt(0) + 127397))
-    .join('');
-}
 
 function usePageMotion() {
   useEffect(() => {
@@ -55,6 +49,7 @@ function Header() {
         <img src="/brand/hablar-logo-reference.jpeg" alt="HABLAR — Your safe space to express" />
       </Link>
       <nav className="nav-links" aria-label="Main navigation">
+        <a className="nav-plain" href="#about" data-testid="link-about">About HABLAR</a>
         <a className="nav-plain" href="#how-it-works">How it feels</a>
         <a className="nav-plain" href="#our-promise">Our promise</a>
         <a className="nav-cta" href="#launch-note">Keep me posted</a>
@@ -73,6 +68,7 @@ function Footer() {
         </div>
         <nav className="footer-links" aria-label="Footer navigation">
           <a href={`${import.meta.env.BASE_URL}#how-it-works`}>How it feels</a>
+          <a href={`${import.meta.env.BASE_URL}#safety-privacy`} data-testid="link-safety-privacy">Safety &amp; privacy</a>
           <Link href="/privacy">Privacy Notice</Link>
           <Link href="/terms">Terms &amp; Conditions</Link>
         </nav>
@@ -162,18 +158,7 @@ function Signup() {
           <input className="contact-input" id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" />
           <label className="form-label" htmlFor="phone">Phone number <span style={{ fontWeight: 400, color: '#888' }}>— optional</span></label>
           <div className="phone-entry-row">
-            <select
-              className="phone-country-select"
-              aria-label="Country calling code"
-              value={phoneCountry}
-              onChange={(event) => setPhoneCountry(event.target.value)}
-            >
-              {phoneCountries.map((country) => (
-                <option key={country.iso2} value={country.iso2}>
-                  {countryFlag(country.iso2)} {country.name} (+{country.dialCode})
-                </option>
-              ))}
-            </select>
+            <CountryPicker value={phoneCountry} onChange={setPhoneCountry} />
             <input
               className="contact-input phone-local-input"
               id="phone"
@@ -254,6 +239,8 @@ function Home() {
         </div>
       </section>
 
+      <AboutServices />
+
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">
         <div className="emotion-circle">
           <div className="emotion-center scroll-reveal">
@@ -295,6 +282,9 @@ function Home() {
         </div>
       </section>
 
+      <Philosophy />
+      <PurposeMission />
+
       <section className="section quote-section">
         <div className="connection-card scroll-reveal">
           <img src="/brand/hablar-listening-moment.png" alt="Three people sharing a warm, supportive conversation" />
@@ -313,6 +303,8 @@ function Home() {
         </div>
       </div>
 
+      <SafetyPrivacy />
+      <ClosingLine />
       <Signup />
       <Footer />
     </main>

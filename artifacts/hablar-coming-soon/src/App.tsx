@@ -11,7 +11,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import NotFound from '@/pages/not-found';
 import LegalPage from '@/pages/legal';
-import { AboutServices, Philosophy, PurposeMission, SafetyPrivacy, ClosingLine } from '@/components/landing-story';
+import { AboutServices, Philosophy, PurposeMission, ClosingLine } from '@/components/landing-story';
 
 const queryClient = new QueryClient();
 gsap.registerPlugin(ScrollTrigger);
@@ -65,7 +65,6 @@ function Footer() {
         </div>
         <nav className="footer-links" aria-label="Footer navigation">
           <a href={`${import.meta.env.BASE_URL}#how-it-works`}>How it feels</a>
-          <a href={`${import.meta.env.BASE_URL}#safety-privacy`} data-testid="link-safety-privacy">Safety &amp; privacy</a>
           <Link href="/privacy">Privacy Notice</Link>
           <Link href="/terms">Terms &amp; Conditions</Link>
         </nav>
@@ -306,7 +305,6 @@ function Home() {
         </div>
       </div>
 
-      <SafetyPrivacy />
       <ClosingLine />
       <Signup />
       <Footer />

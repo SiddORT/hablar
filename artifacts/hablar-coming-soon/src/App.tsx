@@ -233,7 +233,6 @@ function Home() {
               loading="lazy"
               decoding="async"
             />
-            <p className="photo-disclosure">Illustrative stock photo, not HABLAR users or listeners.</p>
           </div>
           <div className="story-copy scroll-reveal">
             <span className="section-kicker">A little breathing room</span>
@@ -302,7 +301,6 @@ function Home() {
             decoding="async"
           />
           <div className="connection-copy">
-            <p className="photo-disclosure">Illustrative stock photo, not HABLAR users or listeners.</p>
             <span className="section-kicker">A human moment</span>
             <h2 id="connection-heading">A little lighter, together.</h2>
             <p>Sometimes the nicest thing is having someone meet your words with care, share a smile, and stay awhile.</p>

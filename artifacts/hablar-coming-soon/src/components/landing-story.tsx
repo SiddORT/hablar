@@ -26,7 +26,7 @@ export function AboutServices() {
             loading="lazy"
             decoding="async"
           />
-          <figcaption><span className="hr-photo-mark" aria-hidden="true">H</span><span>A moment to listen.<br /><strong>A little room to be yourself.</strong><small>Illustrative stock photo, not HABLAR users or listeners.</small></span></figcaption>
+          <figcaption><span className="hr-photo-mark" aria-hidden="true">H</span><span>A moment to listen.<br /><strong>A little room to be yourself.</strong></span></figcaption>
         </figure>
 
         <section className="hr-services hr-reveal" id="services" aria-labelledby="services-heading">
@@ -85,11 +85,9 @@ type MissionFlipCardProps = {
   label: string;
   title: string;
   detail: string;
-  image: string;
-  imageAlt?: string;
 };
 
-function MissionFlipCard({ id, label, title, detail, image, imageAlt = '' }: MissionFlipCardProps) {
+function MissionFlipCard({ id, label, title, detail }: MissionFlipCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -97,8 +95,6 @@ function MissionFlipCard({ id, label, title, detail, image, imageAlt = '' }: Mis
       className="pm-flip-card"
       aria-labelledby={`${id}-title`}
     >
-      <img src={`${import.meta.env.BASE_URL}brand/${image}`} alt={imageAlt} width={1400} height={933} loading="lazy" decoding="async" />
-      <div className="pm-front-shade" aria-hidden="true" />
       <div className="pm-front-content">
         <span className="pm-front-label">{label}</span>
         <h3 id={`${id}-title`}>{title}</h3>
@@ -127,19 +123,14 @@ export function PurposeMission() {
           label="Our purpose"
           title="To give people a safe space to talk and be heard."
           detail="Simple, and deeply meaningful to us."
-          image="hablar-indian-conversation.webp"
-          imageAlt="A woman in green listening to a woman in yellow seated opposite her"
         />
         <MissionFlipCard
           id="mission-card"
           label="Our mission"
           title="A space where everyone feels heard, valued, and free to express themselves."
           detail="We believe talking can help ease loneliness and foster meaningful human conversations in an increasingly AI-driven world."
-          image="hablar-indian-table-talk.webp"
-          imageAlt="A woman and man looking at each other in conversation across a table with a notebook and laptop"
         />
       </div>
-      <p className="photo-disclosure ls-inner">Illustrative stock photography. People pictured are not HABLAR users or listeners and do not endorse HABLAR.</p>
     </section>
   );
 }

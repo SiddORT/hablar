@@ -5,10 +5,9 @@
   align-items: start;
 }
 
-/* Keep the photograph visible in every state; details are a native-button
-   disclosure, not a hover-only flip that hides the heading or moves focus. */
+/* Details remain a native-button disclosure without hiding the heading
+   or moving focus. Solid brand colors keep both states readable. */
 .pm-flip-card {
-  --pm-tint: rgba(104, 36, 62, .34);
   position: relative;
   isolation: isolate;
   display: flex;
@@ -18,41 +17,11 @@
   overflow: hidden;
   border-radius: 28px;
   color: #fff;
-  background: #38232d;
+  background: #9e3f60;
 }
 
 .pm-flip-card:nth-child(2) {
-  --pm-tint: rgba(13, 78, 72, .34);
-  background: #193a35;
-}
-
-.pm-flip-card > img,
-.pm-front-shade {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.pm-flip-card > img {
-  z-index: -2;
-  object-fit: cover;
-  object-position: center 35%;
-  filter: brightness(.72);
-  transition: filter .25s ease;
-}
-
-.pm-front-shade {
-  z-index: -1;
-  /* A stable dark text scrim preserves contrast even when the photo brightens. */
-  background: linear-gradient(180deg, var(--pm-tint) 0%, rgba(18, 22, 23, .72) 48%, rgba(18, 22, 23, .95) 100%);
-}
-
-.pm-flip-card:focus-within > img { filter: brightness(1); }
-
-@media (hover: hover) and (pointer: fine) {
-  .pm-flip-card:hover > img { filter: brightness(1); }
+  background: #20594f;
 }
 
 .pm-front-content { width: 100%; padding: 32px; }
@@ -110,19 +79,9 @@
   outline-offset: 4px;
 }
 
-.photo-disclosure {
-  color: #686158;
-  font: 400 12px/1.6 'DM Sans', sans-serif;
-  margin-top: 14px;
-}
-
 @media (max-width: 760px) {
   .ls-pm { grid-template-columns: 1fr; gap: 16px; }
   .pm-flip-card { min-height: 420px; border-radius: 26px; }
   .pm-front-content { padding: 25px; }
   .pm-front-content h3 { font-size: clamp(26px, 8vw, 34px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pm-flip-card > img { transition: none; }
 }

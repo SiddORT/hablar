@@ -1,4 +1,4 @@
-import { useRef, useState, type MouseEvent } from 'react';
+import { useState } from 'react';
 import { Link } from 'wouter';
 import { ShieldCheck, Phone, LockKeyhole } from 'lucide-react';
 import './landing-story.css';
@@ -19,14 +19,14 @@ export function AboutServices() {
 
         <figure className="hr-photo hr-reveal">
           <img
-            src={`${import.meta.env.BASE_URL}brand/hablar-phone-conversation.webp`}
-            alt="A woman in a green sweater holding a phone to her ear beside a window"
-            width={933}
-            height={1400}
+            src={`${import.meta.env.BASE_URL}brand/hablar-indian-phone.webp`}
+            alt="A man holding a phone to his ear and a coffee mug, with a woman seated nearby"
+            width={1400}
+            height={933}
             loading="lazy"
             decoding="async"
           />
-          <figcaption><span className="hr-photo-mark" aria-hidden="true">H</span><span>A moment to listen.<br /><strong>A little room to be yourself.</strong></span></figcaption>
+          <figcaption><span className="hr-photo-mark" aria-hidden="true">H</span><span>A moment to listen.<br /><strong>A little room to be yourself.</strong><small>Illustrative stock photo, not HABLAR users or listeners.</small></span></figcaption>
         </figure>
 
         <section className="hr-services hr-reveal" id="services" aria-labelledby="services-heading">
@@ -90,71 +90,28 @@ type MissionFlipCardProps = {
 };
 
 function MissionFlipCard({ id, label, title, detail, image, imageAlt = '' }: MissionFlipCardProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
-  const frontButtonRef = useRef<HTMLButtonElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
-
-  const showDetails = (_event: MouseEvent<HTMLButtonElement>) => {
-    setIsFlipped(true);
-    requestAnimationFrame(() => backButtonRef.current?.focus());
-  };
-
-  const showFront = (_event: MouseEvent<HTMLButtonElement>) => {
-    setIsFlipped(false);
-    requestAnimationFrame(() => frontButtonRef.current?.focus());
-  };
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <article
-      className={`pm-flip-card ${isFlipped ? 'is-flipped' : ''}`}
-      aria-label={`${label} card`}
-      onPointerEnter={(event) => {
-        if (event.pointerType === 'mouse') setIsFlipped(true);
-      }}
-      onPointerLeave={(event) => {
-        if (event.pointerType === 'mouse' && !event.currentTarget.contains(document.activeElement)) {
-          setIsFlipped(false);
-        }
-      }}
+      className="pm-flip-card"
+      aria-labelledby={`${id}-title`}
     >
-      <div className="pm-flip-scene">
-        <div className="pm-flip-inner">
-          <div className="pm-flip-face pm-flip-front" id={`${id}-front`} aria-hidden={isFlipped}>
-            <img src={`${import.meta.env.BASE_URL}brand/${image}`} alt={imageAlt} loading="lazy" decoding="async" />
-            <div className="pm-front-shade" aria-hidden="true" />
-            <div className="pm-front-content">
-              <span className="pm-front-label">{label}</span>
-              <h3 id={`${id}-front-title`}>{title}</h3>
-              <button
-                ref={frontButtonRef}
-                type="button"
-                className="pm-flip-cue"
-                aria-expanded={isFlipped}
-                aria-controls={`${id}-back`}
-                tabIndex={isFlipped ? -1 : 0}
-                onClick={showDetails}
-              >
-              Hover or tap to explore
-              </button>
-            </div>
-          </div>
-
-          <div className="pm-flip-face pm-flip-back" id={`${id}-back`} aria-hidden={!isFlipped}>
-            <span className="pm-back-label">{label}</span>
-            <p className="pm-back-copy">{detail}</p>
-            <button
-              ref={backButtonRef}
-              type="button"
-              className="pm-flip-cue pm-flip-cue-back"
-              aria-expanded={isFlipped}
-              aria-controls={`${id}-front`}
-              tabIndex={isFlipped ? 0 : -1}
-              onClick={showFront}
-            >
-              Back to the front
-            </button>
-          </div>
-        </div>
+      <img src={`${import.meta.env.BASE_URL}brand/${image}`} alt={imageAlt} width={1400} height={933} loading="lazy" decoding="async" />
+      <div className="pm-front-shade" aria-hidden="true" />
+      <div className="pm-front-content">
+        <span className="pm-front-label">{label}</span>
+        <h3 id={`${id}-title`}>{title}</h3>
+        <p className="pm-detail" id={`${id}-detail`} hidden={!isExpanded}>{detail}</p>
+        <button
+          type="button"
+          className="pm-flip-cue"
+          aria-expanded={isExpanded}
+          aria-controls={`${id}-detail`}
+          onClick={() => setIsExpanded((expanded) => !expanded)}
+        >
+          {isExpanded ? 'Show less' : `Explore ${label.toLowerCase()}`}
+        </button>
       </div>
     </article>
   );
@@ -169,17 +126,19 @@ export function PurposeMission() {
           label="Our purpose"
           title="To give people a safe space to talk and be heard."
           detail="Simple, and deeply meaningful to us."
-          image="hablar-room-to-talk.webp"
-          imageAlt="Two women facing each other in conversation beside a sofa in a sunlit room"
+          image="hablar-indian-conversation.webp"
+          imageAlt="A woman in green listening to a woman in yellow seated opposite her"
         />
         <MissionFlipCard
           id="mission-card"
           label="Our mission"
           title="A space where everyone feels heard, valued, and free to express themselves."
           detail="We believe talking can help ease loneliness and foster meaningful human conversations in an increasingly AI-driven world."
-          image="hablar-mascot-grid.png"
+          image="hablar-indian-table-talk.webp"
+          imageAlt="A woman and man looking at each other in conversation across a table with a notebook and laptop"
         />
       </div>
+      <p className="photo-disclosure ls-inner">Illustrative stock photography. People pictured are not HABLAR users or listeners and do not endorse HABLAR.</p>
     </section>
   );
 }

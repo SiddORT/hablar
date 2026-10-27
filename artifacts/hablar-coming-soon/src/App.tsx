@@ -225,11 +225,14 @@ function Home() {
         <div className="story-inner">
           <div className="story-photo scroll-reveal">
             <img
-              src={`${import.meta.env.BASE_URL}brand/hablar-listening-moment.png`}
-              alt="Three people seated together, sharing a warm, supportive conversation"
-              width={1024}
-              height={1024}
+              src={`${import.meta.env.BASE_URL}brand/hablar-indian-conversation.webp`}
+              alt="A woman in green listening to a woman in yellow seated opposite her"
+              width={1400}
+              height={933}
+              loading="lazy"
+              decoding="async"
             />
+            <p className="photo-disclosure">Illustrative stock photo, not HABLAR users or listeners.</p>
           </div>
           <div className="story-copy scroll-reveal">
             <span className="section-kicker">A little breathing room</span>
@@ -290,14 +293,15 @@ function Home() {
       <section className="section quote-section">
         <div className="connection-card scroll-reveal">
           <img
-            src={`${import.meta.env.BASE_URL}brand/hablar-cafe-conversation.webp`}
-            alt="Two men listening and talking across a café table with coffee mugs"
-            width={1200}
-            height={800}
+            src={`${import.meta.env.BASE_URL}brand/hablar-indian-table-talk.webp`}
+            alt="A woman and man looking at each other in conversation across a table with a notebook and laptop"
+            width={1400}
+            height={933}
             loading="lazy"
             decoding="async"
           />
           <div className="connection-copy">
+            <p className="photo-disclosure">Illustrative stock photo, not HABLAR users or listeners.</p>
             <span className="section-kicker">A human moment</span>
             <h2>A little lighter, together.</h2>
             <p>Sometimes the nicest thing is having someone meet your words with care, share a smile, and stay awhile.</p>

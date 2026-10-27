@@ -304,7 +304,7 @@ a { color: inherit; }
 .boundary-icon { width: 36px; height: 36px; flex: 0 0 36px; border-radius: 50%; color: #a76828; background: #fff0d5; display: grid; place-items: center; font-weight: 800; }
 .boundary p { font-size: 13px; line-height: 1.65; color: #736b68; margin: 0; }
 .boundary strong { color: #4d4947; }
-.signup-section { padding: 105px 0 120px; }
+.signup-section { padding: 105px 0 0; }
 .signup-panel { background: #eaf8f2; border-radius: 38px; padding: 65px 8%; display: grid; grid-template-columns: .9fr 1.1fr; gap: 55px; align-items: center; }
 .signup-panel h2 { font: 700 clamp(35px, 4vw, 51px)/1.08 'Montserrat', sans-serif; letter-spacing: -.05em; margin: 13px 0 17px; }
 .signup-panel p { color: #6e7671; font-size: 16px; line-height: 1.7; margin: 0; }
@@ -395,7 +395,7 @@ a { color: inherit; }
   .connection-card img { height: 260px; border-radius: 19px; }
   .connection-copy { padding: 10px 12px 22px; }
   .boundary-inner { width: calc(100% - 40px); }
-  .signup-section { padding: 72px 0 80px; }
+  .signup-section { padding: 72px 0 0; }
   .signup-panel { grid-template-columns: 1fr; padding: 38px 22px; border-radius: 28px; gap: 25px; }
   .form-wrap { padding: 21px; border-radius: 19px; }
   .phone-entry-row { grid-template-columns: minmax(124px, .85fr) minmax(0, 1fr); gap: 7px; }

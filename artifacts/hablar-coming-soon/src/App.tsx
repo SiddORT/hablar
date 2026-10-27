@@ -67,7 +67,7 @@ function Footer() {
     <footer className="footer">
       <div className="footer-inner">
         <div className="footer-brand">
-          <img src="/brand/hablar-logo-reference.jpeg" alt="HABLAR" />
+          <img src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`} alt="HABLAR" />
           <p>A little more room to be human. Come as you are.</p>
         </div>
         <div className="footer-links">

@@ -289,7 +289,14 @@ function Home() {
 
       <section className="section quote-section">
         <div className="connection-card scroll-reveal">
-          <img src="/brand/hablar-listening-moment.png" alt="Three people sharing a warm, supportive conversation" />
+          <img
+            src={`${import.meta.env.BASE_URL}brand/hablar-cafe-conversation.webp`}
+            alt="Two men listening and talking across a café table with coffee mugs"
+            width={1200}
+            height={800}
+            loading="lazy"
+            decoding="async"
+          />
           <div className="connection-copy">
             <span className="section-kicker">A human moment</span>
             <h2>A little lighter, together.</h2>

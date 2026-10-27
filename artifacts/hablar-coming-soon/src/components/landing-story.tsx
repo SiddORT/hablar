@@ -18,7 +18,14 @@ export function AboutServices() {
         </header>
 
         <figure className="hr-photo hr-reveal">
-          <img src={`${import.meta.env.BASE_URL}brand/hablar-listening-moment.png`} alt="Three people sitting together in conversation, listening with care." />
+          <img
+            src={`${import.meta.env.BASE_URL}brand/hablar-phone-conversation.webp`}
+            alt="A woman in a green sweater holding a phone to her ear beside a window"
+            width={933}
+            height={1400}
+            loading="lazy"
+            decoding="async"
+          />
           <figcaption><span className="hr-photo-mark" aria-hidden="true">H</span><span>A moment to listen.<br /><strong>A little room to be yourself.</strong></span></figcaption>
         </figure>
 
@@ -79,9 +86,10 @@ type MissionFlipCardProps = {
   title: string;
   detail: string;
   image: string;
+  imageAlt?: string;
 };
 
-function MissionFlipCard({ id, label, title, detail, image }: MissionFlipCardProps) {
+function MissionFlipCard({ id, label, title, detail, image, imageAlt = '' }: MissionFlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const frontButtonRef = useRef<HTMLButtonElement>(null);
   const backButtonRef = useRef<HTMLButtonElement>(null);
@@ -112,7 +120,7 @@ function MissionFlipCard({ id, label, title, detail, image }: MissionFlipCardPro
       <div className="pm-flip-scene">
         <div className="pm-flip-inner">
           <div className="pm-flip-face pm-flip-front" id={`${id}-front`} aria-hidden={isFlipped}>
-            <img src={`${import.meta.env.BASE_URL}brand/${image}`} alt="" />
+            <img src={`${import.meta.env.BASE_URL}brand/${image}`} alt={imageAlt} loading="lazy" decoding="async" />
             <div className="pm-front-shade" aria-hidden="true" />
             <div className="pm-front-content">
               <span className="pm-front-label">{label}</span>
@@ -161,7 +169,8 @@ export function PurposeMission() {
           label="Our purpose"
           title="To give people a safe space to talk and be heard."
           detail="Simple, and deeply meaningful to us."
-          image="hablar-listening-moment.png"
+          image="hablar-room-to-talk.webp"
+          imageAlt="Two women facing each other in conversation beside a sofa in a sunlit room"
         />
         <MissionFlipCard
           id="mission-card"

@@ -59,7 +59,9 @@ services:
       API_UPSTREAM: http://api:8080
       NGINX_ENVSUBST_FILTER: ^API_UPSTREAM$
     ports:
-      - "${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-8080}:8080"
+      - "80:8081"
+      - "443:8443"
+      - "127.0.0.1:8080:8080"
     volumes:
       - /var/www/habler.co.in/deploy/certs:/etc/nginx/certs:ro
     depends_on:

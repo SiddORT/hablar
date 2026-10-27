@@ -78,7 +78,7 @@ function Header() {
   return (
     <header className="topbar">
       <Link href="/" className="brand-mini" aria-label="HABLAR home">
-        <img src="/brand/hablar-logo-reference.jpeg" alt="HABLAR — Your safe space to express" />
+        <img src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`} alt="HABLAR — Your safe space to express" />
       </Link>
       <nav className="nav-links" aria-label="Main navigation">
         <a className="nav-plain" href="#about" data-testid="link-about">About HABLAR</a>

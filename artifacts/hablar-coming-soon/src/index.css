@@ -630,7 +630,6 @@ html[data-theme="soft-lavender"] {
 [data-theme] .emotion-card p,
 [data-theme] .connection-copy p,
 [data-theme] .signup-panel p { color: var(--theme-muted); }
-[data-theme] .logo-art,
 [data-theme] .floating-note,
 [data-theme] .pill,
 [data-theme] .emotion-card,

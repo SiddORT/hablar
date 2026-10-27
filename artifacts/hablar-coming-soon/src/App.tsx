@@ -12,7 +12,7 @@ import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter
 import NotFound from '@/pages/not-found';
 import LegalPage from '@/pages/legal';
 import { usePageSeo } from '@/lib/use-page-seo';
-import { AboutServices, Philosophy, PurposeMission, ClosingLine } from '@/components/landing-story';
+import { AboutServices, PurposeMission, ClosingLine } from '@/components/landing-story';
 
 const queryClient = new QueryClient();
 gsap.registerPlugin(ScrollTrigger);
@@ -26,13 +26,13 @@ function usePageMotion() {
         opacity: 1, y: 0, duration: .9, stagger: .13, ease: 'power3.out', delay: .12,
       });
       gsap.utils.toArray<HTMLElement>('.scroll-reveal, .hr-reveal').forEach((element) => {
-        gsap.fromTo(element, { opacity: 0, y: 26 }, {
-          opacity: 1, y: 0, duration: .78, ease: 'power2.out',
+        gsap.fromTo(element, { y: 22 }, {
+          y: 0, duration: .68, ease: 'power2.out',
           scrollTrigger: { trigger: element, start: 'top 88%', once: true },
         });
       });
-      gsap.fromTo('.emotion-card', { opacity: 0, y: 18 }, {
-        opacity: 1, y: 0, duration: .8, ease: 'power2.out',
+      gsap.fromTo('.emotion-card', { y: 16 }, {
+        y: 0, duration: .7, ease: 'power2.out',
         scrollTrigger: { trigger: '.emotion-circle', start: 'top 80%', once: true },
       });
     });
@@ -288,8 +288,6 @@ function Home() {
           </div>
         </div>
       </section>
-
-      <Philosophy />
 
       <section className="section quote-section" id="connection" aria-labelledby="connection-heading">
         <div className="connection-card scroll-reveal">

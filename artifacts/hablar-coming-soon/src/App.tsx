@@ -210,24 +210,26 @@ function Home() {
     <main className="site-shell">
       <Header />
       <section className="hero">
-        <div className="hero-copy">
-          <div className="hero-intro hero-reveal">
-            <span className="launch-status">Coming soon</span>
-            <span className="eyebrow"><i aria-hidden="true" /> A listening space is on its way</span>
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <div className="hero-intro hero-reveal">
+              <span className="launch-status">Coming soon</span>
+              <span className="eyebrow"><i aria-hidden="true" /> A listening space is on its way</span>
+            </div>
+            <h1 className="hero-reveal">Your safe place <span>to express.</span></h1>
+            <p className="hero-lede hero-reveal">Some days you need advice. Some days you just need someone to hear you. HABLAR is making space for the second one.</p>
+            <div className="hero-actions hero-reveal">
+              <a className="button-primary" href="#launch-note">Save me a seat <ArrowDown size={16} aria-hidden="true" /></a>
+              <a className="button-quiet" href="#how-it-works">Get to know us</a>
+            </div>
+            <p className="hero-footnote hero-reveal">No fixing. No labels. Just a human being, listening.</p>
           </div>
-          <h1 className="hero-reveal">Your safe place <span>to express.</span></h1>
-          <p className="hero-lede hero-reveal">Some days you need advice. Some days you just need someone to hear you. HABLAR is making space for the second one.</p>
-          <div className="hero-actions hero-reveal">
-            <a className="button-primary" href="#launch-note">Save me a seat <ArrowDown size={16} aria-hidden="true" /></a>
-            <a className="button-quiet" href="#how-it-works">Get to know us</a>
+          <div className="hero-art hero-reveal" aria-label="HABLAR brand artwork">
+            <div className="floating-note one">A softer kind of space</div>
+            <div className="scribble" aria-hidden="true" />
+            <div className="logo-art"><img src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`} alt="HABLAR, your safe space to express" /></div>
+            <div className="floating-note two">Come as you are</div>
           </div>
-          <p className="hero-footnote hero-reveal">No fixing. No labels. Just a human being, listening.</p>
-        </div>
-        <div className="hero-art hero-reveal" aria-label="HABLAR brand artwork">
-          <div className="floating-note one">A softer kind of space</div>
-          <div className="scribble" aria-hidden="true" />
-          <div className="logo-art"><img src="/brand/hablar-logo-reference.jpeg" alt="HABLAR, your safe space to express" /></div>
-          <div className="floating-note two">Come as you are</div>
         </div>
       </section>
 

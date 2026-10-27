@@ -1,31 +1,52 @@
 import { Link } from 'wouter';
 import { ShieldCheck, Phone, LockKeyhole } from 'lucide-react';
 import './landing-story.css';
+import './landing-about-refresh.css';
 
 export function AboutServices() {
   return (
-    <section className="ls-wrap" id="about" aria-labelledby="about-heading">
-      <div className="ls-inner">
-        <div className="ls-about">
-          <span className="section-kicker">About HABLAR</span>
-          <h2 id="about-heading" className="ls-title">More connected than ever. Still, so many feel unheard.</h2>
-          <p className="ls-lede">Sometimes, all you need is to be heard. HABLAR is being built to offer a space where you can speak out and express yourself freely, because the first step toward feeling better can be knowing you are not alone in the journey.</p>
-        </div>
+    <section className="hablar-refresh hr-section" id="about" aria-labelledby="about-heading">
+      <div className="hr-shell">
+        <header className="hr-intro hr-reveal">
+          <span className="hr-eyebrow"><span className="hr-spark" aria-hidden="true" /> About HABLAR</span>
+          <h2 id="about-heading">More connected than ever.<br /><span>Still, so many feel unheard.</span></h2>
+          <p className="hr-lede">Sometimes, all you need is to be heard.</p>
+          <p className="hr-body">HABLAR is being built as a space where you can speak out and express yourself freely. Because a first step toward feeling better can be knowing you are not alone in the journey.</p>
+          <div className="hr-signoff" aria-hidden="true"><span /> A little room to be heard</div>
+        </header>
 
-        <div className="ls-services" id="services" aria-labelledby="services-heading">
-          <div className="ls-services-head">
-            <span className="section-kicker">Our services <em className="ls-tag">Planned, not yet available</em></span>
-            <h2 id="services-heading" className="ls-title">A space to talk freely, when we open.</h2>
-            <p>We intend to offer a space where you can talk through your thoughts or a difficult moment, and be listened to.</p>
+        <figure className="hr-photo hr-reveal">
+          <img src={`${import.meta.env.BASE_URL}brand/hablar-listening-moment.png`} alt="Three people sitting together in conversation, listening with care." />
+          <figcaption><span className="hr-photo-mark" aria-hidden="true">H</span><span>A moment to listen.<br /><strong>A little room to be yourself.</strong></span></figcaption>
+        </figure>
+
+        <section className="hr-services hr-reveal" id="services" aria-labelledby="services-heading">
+          <div className="hr-services-top">
+            <div>
+              <span className="hr-eyebrow">Our services</span>
+              <h2 id="services-heading">A space to talk freely,<br /><em>when we open.</em></h2>
+            </div>
+            <p className="hr-status"><span className="hr-status-dot" aria-hidden="true" />Planned, not yet available</p>
           </div>
-          <ul className="ls-nos" role="list">
-            <li>No labels</li><li>No assumptions</li><li>No judgment</li><li>Just real conversation</li>
+          <p className="hr-service-lede">We intend to offer a space where you can talk through your thoughts or a difficult moment, and be listened to.</p>
+          <ul className="hr-principles" aria-label="The spirit of future conversations">
+            <li>No labels</li>
+            <li>No assumptions</li>
+            <li>No judgment</li>
+            <li className="hr-principle-last">Just real conversation</li>
           </ul>
-          <div className="ls-cols">
-            <p>We believe being heard can make a difference. Our hope is that a conversation at HABLAR, in that very moment, might bring a little clarity, comfort, or a fresh perspective, and a reminder that you matter, and so do your feelings and thoughts.</p>
-            <p>We aim to make it a warm space where you can speak freely, cry if you need to, laugh if you want to, or simply sit in silence with someone there. A reminder that you are not alone.</p>
+          <div className="hr-details">
+            <article className="hr-detail">
+              <span className="hr-detail-index" aria-hidden="true">01</span>
+              <p>We believe being heard can make a difference. Our hope is that a conversation at HABLAR, in that very moment, might bring a little clarity, comfort, or a fresh perspective—and a reminder that you matter, and so do your feelings and thoughts.</p>
+            </article>
+            <article className="hr-detail">
+              <span className="hr-detail-index" aria-hidden="true">02</span>
+              <p>We aim to make it a warm space where you can speak freely, cry if you need to, laugh if you want to, or simply sit in silence with someone there. A reminder that you are not alone.</p>
+            </article>
           </div>
-        </div>
+          <p className="hr-closing">HABLAR <span>— Come as you are. Speak as you feel.</span></p>
+        </section>
       </div>
     </section>
   );

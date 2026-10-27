@@ -24,7 +24,7 @@ function usePageMotion() {
       gsap.fromTo('.hero-reveal', { opacity: 0, y: 22 }, {
         opacity: 1, y: 0, duration: .9, stagger: .13, ease: 'power3.out', delay: .12,
       });
-      gsap.utils.toArray<HTMLElement>('.scroll-reveal').forEach((element) => {
+      gsap.utils.toArray<HTMLElement>('.scroll-reveal, .hr-reveal').forEach((element) => {
         gsap.fromTo(element, { opacity: 0, y: 26 }, {
           opacity: 1, y: 0, duration: .78, ease: 'power2.out',
           scrollTrigger: { trigger: element, start: 'top 88%', once: true },

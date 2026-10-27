@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState, type PointerEvent } from 'react';
 import { Link } from 'wouter';
 import { ShieldCheck, Phone, LockKeyhole } from 'lucide-react';
 import './landing-story.css';
@@ -80,34 +80,81 @@ export function Philosophy() {
   );
 }
 
-type MissionFlipCardProps = {
+type VisionMissionCardProps = {
   id: string;
   label: string;
   title: string;
   detail: string;
 };
 
-function MissionFlipCard({ id, label, title, detail }: MissionFlipCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+function VisionMissionCard({ id, label, title, detail }: VisionMissionCardProps) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
+  const frontButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLButtonElement>(null);
+
+  const showBack = () => {
+    setIsFlipped(true);
+    requestAnimationFrame(() => backButtonRef.current?.focus());
+  };
+
+  const showFront = () => {
+    setIsFlipped(false);
+    requestAnimationFrame(() => frontButtonRef.current?.focus());
+  };
+
+  const handlePointerEnter = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType === 'mouse') setIsFlipped(true);
+  };
+
+  const handlePointerLeave = () => {
+    if (!cardRef.current?.contains(document.activeElement)) setIsFlipped(false);
+  };
 
   return (
     <article
-      className="pm-flip-card"
-      aria-labelledby={`${id}-title`}
+      ref={cardRef}
+      className={`pm-flip-card${isFlipped ? ' is-flipped' : ''}`}
+      aria-label={label}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setIsFlipped(false);
+        }
+      }}
     >
-      <div className="pm-front-content">
-        <span className="pm-front-label">{label}</span>
-        <h3 id={`${id}-title`}>{title}</h3>
-        <p className="pm-detail" id={`${id}-detail`} hidden={!isExpanded}>{detail}</p>
-        <button
-          type="button"
-          className="pm-flip-cue"
-          aria-expanded={isExpanded}
-          aria-controls={`${id}-detail`}
-          onClick={() => setIsExpanded((expanded) => !expanded)}
-        >
-          {isExpanded ? 'Show less' : `Explore ${label.toLowerCase()}`}
-        </button>
+      <div className="pm-flip-inner">
+        <div className="pm-flip-face pm-flip-front" aria-hidden={isFlipped}>
+          <span className="pm-front-label">{label}</span>
+          <h3 id={`${id}-title`}>{title}</h3>
+          <button
+            ref={frontButtonRef}
+            type="button"
+            className="pm-flip-cue"
+            tabIndex={isFlipped ? -1 : 0}
+            aria-expanded={isFlipped}
+            aria-controls={`${id}-detail`}
+            onClick={showBack}
+          >
+            Hover or tap to flip
+          </button>
+        </div>
+        <div className="pm-flip-face pm-flip-back" aria-hidden={!isFlipped}>
+          <span className="pm-back-label">{label}</span>
+          <p className="pm-detail" id={`${id}-detail`}>{detail}</p>
+          <button
+            ref={backButtonRef}
+            type="button"
+            className="pm-flip-cue"
+            tabIndex={isFlipped ? 0 : -1}
+            aria-expanded={isFlipped}
+            aria-controls={`${id}-detail`}
+            onClick={showFront}
+          >
+            Back to the front
+          </button>
+        </div>
       </div>
     </article>
   );
@@ -115,16 +162,16 @@ function MissionFlipCard({ id, label, title, detail }: MissionFlipCardProps) {
 
 export function PurposeMission() {
   return (
-    <section className="ls-wrap" id="purpose" aria-label="Our purpose and mission">
-      <h2 className="sr-only">Our purpose and mission</h2>
+    <section className="ls-wrap" id="purpose" aria-label="Our vision and mission">
+      <h2 className="sr-only">Our vision and mission</h2>
       <div className="ls-inner ls-pm">
-        <MissionFlipCard
-          id="purpose-card"
-          label="Our purpose"
+        <VisionMissionCard
+          id="vision-card"
+          label="Our vision"
           title="To give people a safe space to talk and be heard."
           detail="Simple, and deeply meaningful to us."
         />
-        <MissionFlipCard
+        <VisionMissionCard
           id="mission-card"
           label="Our mission"
           title="A space where everyone feels heard, valued, and free to express themselves."

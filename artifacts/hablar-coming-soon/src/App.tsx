@@ -5,7 +5,7 @@ import { CountryPicker, phoneCountries } from '@/components/country-picker';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { ArrowDown, ArrowUpRight, Check, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, Check, ShieldCheck } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
@@ -33,9 +33,6 @@ function usePageMotion() {
       gsap.fromTo('.emotion-card', { opacity: 0, y: 18 }, {
         opacity: 1, y: 0, duration: .8, ease: 'power2.out',
         scrollTrigger: { trigger: '.emotion-circle', start: 'top 80%', once: true },
-      });
-      gsap.to('.mascot-crop', {
-        y: -8, duration: 2.4, repeat: -1, yoyo: true, ease: 'sine.inOut',
       });
     });
     return () => context.revert();
@@ -205,7 +202,10 @@ function Home() {
       <Header />
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow hero-reveal"><i /> A listening space is on its way</span>
+          <div className="hero-intro hero-reveal">
+            <span className="launch-status">Coming soon</span>
+            <span className="eyebrow"><i aria-hidden="true" /> A listening space is on its way</span>
+          </div>
           <h1 className="hero-reveal">Your safe place <span>to express.</span></h1>
           <p className="hero-lede hero-reveal">Some days you need advice. Some days you just need someone to hear you. HABLAR is making space for the second one.</p>
           <div className="hero-actions hero-reveal">
@@ -224,10 +224,13 @@ function Home() {
 
       <section className="story-band" id="how-it-works">
         <div className="story-inner">
-          <div className="mascot-stage scroll-reveal" aria-label="Smiling HABLAR mascot">
-            <Sparkles className="spark a" size={34} aria-hidden="true" />
-            <Sparkles className="spark b" size={22} aria-hidden="true" />
-            <div className="mascot-crop" role="img" aria-label="The HABLAR mascot smiling warmly" />
+          <div className="story-photo scroll-reveal">
+            <img
+              src={`${import.meta.env.BASE_URL}brand/hablar-listening-moment.png`}
+              alt="Three people seated together, sharing a warm, supportive conversation"
+              width={1024}
+              height={1024}
+            />
           </div>
           <div className="story-copy scroll-reveal">
             <span className="section-kicker">A little breathing room</span>

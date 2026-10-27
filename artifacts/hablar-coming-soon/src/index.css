@@ -128,6 +128,17 @@ a { color: inherit; }
 }
 .hero-copy, .hero-art { position: relative; z-index: 1; }
 .hero-copy { padding: 4px 0 10px; max-width: 610px; }
+.hero-intro { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.launch-status {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #f4d7df;
+  color: #9e3c68;
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 800;
+}
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -142,7 +153,7 @@ a { color: inherit; }
   font-size: 11px;
   font-weight: 800;
 }
-.eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: #17b89a; box-shadow: 0 0 0 4px #ddf5ed; }
+.eyebrow i { flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: #17b89a; box-shadow: 0 0 0 4px #ddf5ed; }
 .hero h1 {
   color: #454545;
   font-family: 'Montserrat', sans-serif;
@@ -202,22 +213,17 @@ a { color: inherit; }
   align-items: center;
   gap: 64px;
 }
-.mascot-stage {
-  height: 400px;
+.story-photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 400px;
+  padding: 8px;
   border-radius: 38px;
   background: #e6f8f0;
-  display: grid;
-  place-items: center;
-  position: relative;
   overflow: hidden;
+  box-shadow: 0 18px 36px rgba(85, 91, 80, .1);
 }
-.mascot-stage::before, .mascot-stage::after { content: ''; position: absolute; border-radius: 50%; background: #ffd683; opacity: .65; }
-.mascot-stage::before { width: 250px; height: 250px; top: -90px; left: -35px; }
-.mascot-stage::after { width: 170px; height: 170px; right: -55px; bottom: -35px; background: #f6a4c5; }
-.mascot-crop { position: relative; z-index: 1; width: 290px; height: 255px; background-image: url('/brand/hablar-mascot-grid.png'); background-size: 300% 200%; background-position: 100% 100%; background-repeat: no-repeat; filter: drop-shadow(0 18px 16px rgba(85, 91, 80, .13)); }
-.spark { position: absolute; z-index: 2; color: #e43a7b; font-size: 34px; font-weight: 700; }
-.spark.a { left: 18%; top: 20%; transform: rotate(-12deg); }
-.spark.b { right: 19%; top: 27%; color: #ec9d28; font-size: 22px; }
+.story-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 42%; border-radius: 30px; }
 .story-copy h2 { font-family: 'Montserrat', sans-serif; font-size: clamp(35px, 4vw, 51px); line-height: 1.12; letter-spacing: -.05em; margin: 17px 0; }
 .story-copy p { max-width: 490px; font-size: 17px; line-height: 1.75; color: #716b68; }
 .story-copy strong { color: #454545; }
@@ -392,8 +398,8 @@ a { color: inherit; }
   .section-heading { margin-bottom: 37px; }
   .section-heading p { font-size: 15px; }
   .story-inner { width: calc(100% - 40px); grid-template-columns: 1fr; gap: 35px; padding: 60px 0; }
-  .mascot-stage { height: 300px; border-radius: 28px; }
-  .mascot-crop { width: 230px; height: 200px; }
+  .story-photo { border-radius: 28px; }
+  .story-photo img { border-radius: 20px; }
   .story-copy h2 { font-size: 37px; }
   .emotions-section { padding-top: 75px; padding-bottom: 75px; }
   .emotion-circle { grid-template-areas: "a b" "c d" "m m" "e f"; gap: 10px; }

@@ -14,10 +14,15 @@ import fastapi_app
 from email_delivery import (
     CONFIRMATION_COPY,
     CONFIRMATION_SUBJECT,
+    EMAIL_BLUE,
+    EMAIL_GREEN,
+    EMAIL_LOGO_CID,
+    EMAIL_PAGE_BG,
     SIGN_OFF,
     admin_notification_message,
     confirmation_message,
     email_configuration,
+    launch_update_message,
     _send_smtp,
 )
 
@@ -107,6 +112,21 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         )
         return response, pool
 
+    def assert_branded_email(self, message):
+        html_part = message.get_body(preferencelist=("html",))
+        self.assertIsNotNone(html_part)
+        html_content = html_part.get_content()
+        self.assertIn(f"cid:{EMAIL_LOGO_CID}", html_content)
+        self.assertIn(EMAIL_PAGE_BG, html_content)
+        self.assertIn(EMAIL_BLUE, html_content)
+        self.assertIn(EMAIL_GREEN, html_content)
+        logo_parts = [
+            part for part in message.walk()
+            if part.get_content_type() == "image/png"
+        ]
+        self.assertEqual(len(logo_parts), 1)
+        self.assertEqual(logo_parts[0]["Content-ID"], f"<{EMAIL_LOGO_CID}>")
+
     async def test_new_email_signup_sends_confirmation_and_admin_notice(self):
         with patch.object(fastapi_app, "send_email", new_callable=AsyncMock) as send:
             response, pool = await self.submit(email="person@example.com")
@@ -184,6 +204,10 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("Submission time (UTC)", admin_text)
         self.assertIn("person@example.com", admin_text)
         self.assertIn("+14155550123", admin_text)
+        launch_update = launch_update_message("person@example.com")
+
+        for branded_email in (confirmation, launch_update, admin):
+            self.assert_branded_email(branded_email)
 
     async def test_smtp_recipient_refusal_is_not_treated_as_a_success(self):
         settings, missing = email_configuration()
@@ -198,6 +222,11 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         with patch("email_delivery.smtplib.SMTP", return_value=server):
             with self.assertRaises(smtplib.SMTPRecipientsRefused):
                 _send_smtp(settings, confirmation_message("person@example.com"))
+
+        self.assertEqual(
+            server.send_message.call_args.args[0]["From"],
+            "HABLAR <hello@example.com>",
+        )
 
     async def test_missing_smtp_settings_are_reported_without_blocking_signup(self):
         os.environ.pop("SMTP_PASSWORD")

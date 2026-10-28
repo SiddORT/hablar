@@ -9,7 +9,9 @@ import ssl
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from email.message import EmailMessage
-from email.utils import parseaddr
+from email.utils import formataddr, parseaddr
+from functools import lru_cache
+from pathlib import Path
 
 
 CONFIRMATION_SUBJECT = "You’re on the list — HABLAR is coming soon"
@@ -28,6 +30,35 @@ LAUNCH_UPDATE_COPY = (
 )
 SIGN_OFF = "HABLAR — Come as you are. Speak as you feel."
 _EMAIL_PATTERN = re.compile(r"^[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+$")
+EMAIL_PAGE_BG = "#f1f6fb"
+EMAIL_TEXT = "#203448"
+EMAIL_MUTED = "#4c5d6d"
+EMAIL_SURFACE = "#ffffff"
+EMAIL_SURFACE_SOFT = "#e2f2ed"
+EMAIL_BORDER = "#c8d8e3"
+EMAIL_BLUE = "#2359a4"
+EMAIL_GREEN = "#126b55"
+EMAIL_LOGO_CID = "hablar-email-logo"
+EMAIL_LOGO_PATH = (
+    Path(__file__).resolve().parent / "assets" / "hablar-email-logo.png"
+)
+
+
+@lru_cache(maxsize=1)
+def _email_logo_bytes() -> bytes:
+    return EMAIL_LOGO_PATH.read_bytes()
+
+
+def _add_branded_html(message: EmailMessage, content: str) -> None:
+    message.add_alternative(content, subtype="html")
+    html_part = message.get_payload()[-1]
+    html_part.add_related(
+        _email_logo_bytes(),
+        maintype="image",
+        subtype="png",
+        cid=f"<{EMAIL_LOGO_CID}>",
+        disposition="inline",
+    )
 
 
 @dataclass(frozen=True)
@@ -104,7 +135,8 @@ def confirmation_message(recipient: str) -> EmailMessage:
     message["Subject"] = CONFIRMATION_SUBJECT
     message["To"] = recipient
     message.set_content(f"{CONFIRMATION_COPY}\n\n{SIGN_OFF}")
-    message.add_alternative(
+    _add_branded_html(
+        message,
         f"""\
 <!doctype html>
 <html lang="en">
@@ -113,25 +145,27 @@ def confirmation_message(recipient: str) -> EmailMessage:
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{html.escape(CONFIRMATION_SUBJECT)}</title>
   </head>
-  <body style="margin:0;background:#f7f3ed;color:#28352f;font-family:Arial,Helvetica,sans-serif;">
+  <body style="margin:0;padding:0;background:{EMAIL_PAGE_BG};color:{EMAIL_TEXT};font-family:Arial,Helvetica,sans-serif;">
     <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your HABLAR signup is confirmed.</div>
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7f3ed;padding:32px 14px;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="{EMAIL_PAGE_BG}" style="background:{EMAIL_PAGE_BG};padding:32px 14px;">
       <tr><td align="center">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#fff;border-radius:18px;overflow:hidden;">
-          <tr><td style="padding:30px 32px 12px;background:#e9f0e8;color:#35594c;font-size:13px;font-weight:bold;letter-spacing:2px;">HABLAR</td></tr>
-          <tr><td style="padding:24px 32px 8px;">
-            <h1 style="margin:0 0 18px;font-size:25px;line-height:1.3;color:#28352f;">You’re on the list</h1>
-            <p style="margin:0;font-size:16px;line-height:1.7;">{html.escape(CONFIRMATION_COPY)}</p>
-            <p style="margin:26px 0 0;font-size:15px;line-height:1.6;font-weight:bold;color:#35594c;">{html.escape(SIGN_OFF)}</p>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:{EMAIL_SURFACE};border:1px solid {EMAIL_BORDER};border-radius:18px;overflow:hidden;">
+          <tr><td align="center" bgcolor="{EMAIL_SURFACE_SOFT}" style="padding:22px 24px;background:{EMAIL_SURFACE_SOFT};border-bottom:4px solid {EMAIL_GREEN};">
+            <img src="cid:{EMAIL_LOGO_CID}" width="104" alt="HABLAR" style="display:block;width:104px;max-width:100%;height:auto;border:0;">
           </td></tr>
-          <tr><td style="padding:18px 32px 28px;color:#66716b;font-size:12px;line-height:1.6;">You received this message because an email address was used to sign up for HABLAR updates.</td></tr>
+          <tr><td height="4" bgcolor="{EMAIL_BLUE}" style="height:4px;background:{EMAIL_BLUE};font-size:0;line-height:4px;">&nbsp;</td></tr>
+          <tr><td style="padding:24px 32px 8px;color:{EMAIL_TEXT};">
+            <h1 style="margin:0 0 18px;font-size:25px;line-height:1.3;color:{EMAIL_TEXT};">You’re on the list</h1>
+            <p style="margin:0;font-size:16px;line-height:1.7;">{html.escape(CONFIRMATION_COPY)}</p>
+            <p style="margin:26px 0 0;font-size:15px;line-height:1.6;font-weight:bold;color:{EMAIL_GREEN};">{html.escape(SIGN_OFF)}</p>
+          </td></tr>
+          <tr><td bgcolor="{EMAIL_PAGE_BG}" style="padding:18px 32px 28px;background:{EMAIL_PAGE_BG};color:{EMAIL_MUTED};font-size:12px;line-height:1.6;">You received this message because an email address was used to sign up for HABLAR updates.</td></tr>
         </table>
       </td></tr>
     </table>
   </body>
 </html>
 """,
-        subtype="html",
     )
     return message
 
@@ -141,7 +175,8 @@ def launch_update_message(recipient: str) -> EmailMessage:
     message["Subject"] = LAUNCH_UPDATE_SUBJECT
     message["To"] = recipient
     message.set_content(f"{LAUNCH_UPDATE_COPY}\n\n{SIGN_OFF}")
-    message.add_alternative(
+    _add_branded_html(
+        message,
         f"""\
 <!doctype html>
 <html lang="en">
@@ -150,15 +185,18 @@ def launch_update_message(recipient: str) -> EmailMessage:
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{html.escape(LAUNCH_UPDATE_SUBJECT)}</title>
   </head>
-  <body style="margin:0;background:#f7f3ed;color:#28352f;font-family:Arial,Helvetica,sans-serif;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7f3ed;padding:32px 14px;">
+  <body style="margin:0;padding:0;background:{EMAIL_PAGE_BG};color:{EMAIL_TEXT};font-family:Arial,Helvetica,sans-serif;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="{EMAIL_PAGE_BG}" style="background:{EMAIL_PAGE_BG};padding:32px 14px;">
       <tr><td align="center">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#fff;border-radius:18px;overflow:hidden;">
-          <tr><td style="padding:30px 32px 12px;background:#e9f0e8;color:#35594c;font-size:13px;font-weight:bold;letter-spacing:2px;">HABLAR</td></tr>
-          <tr><td style="padding:24px 32px 28px;">
-            <h1 style="margin:0 0 18px;font-size:25px;line-height:1.3;color:#28352f;">A HABLAR update</h1>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:{EMAIL_SURFACE};border:1px solid {EMAIL_BORDER};border-radius:18px;overflow:hidden;">
+          <tr><td align="center" bgcolor="{EMAIL_SURFACE_SOFT}" style="padding:22px 24px;background:{EMAIL_SURFACE_SOFT};border-bottom:4px solid {EMAIL_GREEN};">
+            <img src="cid:{EMAIL_LOGO_CID}" width="104" alt="HABLAR" style="display:block;width:104px;max-width:100%;height:auto;border:0;">
+          </td></tr>
+          <tr><td height="4" bgcolor="{EMAIL_BLUE}" style="height:4px;background:{EMAIL_BLUE};font-size:0;line-height:4px;">&nbsp;</td></tr>
+          <tr><td style="padding:24px 32px 28px;color:{EMAIL_TEXT};">
+            <h1 style="margin:0 0 18px;font-size:25px;line-height:1.3;color:{EMAIL_TEXT};">A HABLAR update</h1>
             <p style="margin:0;font-size:16px;line-height:1.7;">{html.escape(LAUNCH_UPDATE_COPY)}</p>
-            <p style="margin:26px 0 0;font-size:15px;line-height:1.6;font-weight:bold;color:#35594c;">{html.escape(SIGN_OFF)}</p>
+            <p style="margin:26px 0 0;font-size:15px;line-height:1.6;font-weight:bold;color:{EMAIL_GREEN};">{html.escape(SIGN_OFF)}</p>
           </td></tr>
         </table>
       </td></tr>
@@ -166,7 +204,6 @@ def launch_update_message(recipient: str) -> EmailMessage:
   </body>
 </html>
 """,
-        subtype="html",
     )
     return message
 
@@ -199,29 +236,38 @@ def admin_notification_message(
         f"A new HABLAR waitlist signup was saved.\n\n"
         f"Submission time (UTC): {timestamp}\n{contact_text}"
     )
-    message.add_alternative(
+    _add_branded_html(
+        message,
         f"""\
 <!doctype html>
 <html lang="en">
   <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
-  <body style="margin:0;background:#f7f3ed;color:#28352f;font-family:Arial,Helvetica,sans-serif;padding:24px 14px;">
-    <main style="max-width:560px;margin:0 auto;background:#fff;border-radius:18px;padding:28px;">
-      <p style="color:#35594c;font-size:13px;font-weight:bold;letter-spacing:2px;">HABLAR</p>
-      <h1 style="font-size:23px;line-height:1.3;">New waitlist signup</h1>
-      <p style="line-height:1.6;">A new landing-page signup was saved.</p>
-      <p><strong>Submission time (UTC):</strong> {html.escape(timestamp)}</p>
-      <ul style="line-height:1.8;">{contact_html}</ul>
-    </main>
+  <body style="margin:0;padding:0;background:{EMAIL_PAGE_BG};color:{EMAIL_TEXT};font-family:Arial,Helvetica,sans-serif;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="{EMAIL_PAGE_BG}" style="background:{EMAIL_PAGE_BG};padding:24px 14px;">
+      <tr><td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:{EMAIL_SURFACE};border:1px solid {EMAIL_BORDER};border-radius:18px;overflow:hidden;">
+          <tr><td align="center" bgcolor="{EMAIL_SURFACE_SOFT}" style="padding:22px 24px;background:{EMAIL_SURFACE_SOFT};border-bottom:4px solid {EMAIL_GREEN};">
+            <img src="cid:{EMAIL_LOGO_CID}" width="104" alt="HABLAR" style="display:block;width:104px;max-width:100%;height:auto;border:0;">
+          </td></tr>
+          <tr><td height="4" bgcolor="{EMAIL_BLUE}" style="height:4px;background:{EMAIL_BLUE};font-size:0;line-height:4px;">&nbsp;</td></tr>
+          <tr><td style="padding:24px 28px 28px;color:{EMAIL_TEXT};">
+            <h1 style="margin:0 0 12px;font-size:23px;line-height:1.3;color:{EMAIL_TEXT};">New waitlist signup</h1>
+            <p style="margin:0 0 18px;line-height:1.6;">A new landing-page signup was saved.</p>
+            <p style="margin:0 0 18px;padding:14px 16px;background:{EMAIL_PAGE_BG};border-left:4px solid {EMAIL_BLUE};line-height:1.6;"><strong>Submission time (UTC):</strong><br>{html.escape(timestamp)}</p>
+            <ul style="margin:0;padding:16px 16px 16px 36px;background:{EMAIL_SURFACE_SOFT};border-left:4px solid {EMAIL_GREEN};line-height:1.8;">{contact_html}</ul>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
   </body>
 </html>
 """,
-        subtype="html",
     )
     return message
 
 
 def _send_smtp(settings: EmailSettings, message: EmailMessage) -> None:
-    message["From"] = settings.sender
+    message["From"] = formataddr(("HABLAR", settings.sender))
     context = ssl.create_default_context()
     if settings.port == 465:
         with smtplib.SMTP_SSL(

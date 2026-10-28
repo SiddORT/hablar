@@ -7,14 +7,15 @@ services:
         condition: service_healthy
     ports: []
     
-  website:
-    build:
-      context: .
-      dockerfile: docker/website.Dockerfile
-      target: runtime
-    ports:
-      - "127.0.0.1:18080:8080"
-    volumes: []
+website:
+  build:
+    context: .
+    dockerfile: docker/website.Dockerfile
+    target: runtime
+  ports:
+    - "127.0.0.1:18080:8080"
+  volumes:
+    - ./docker/nginx.smoke.conf.template:/etc/nginx/templates/default.conf.template:ro
     
   smoke-db:
     image: postgres:17-alpine

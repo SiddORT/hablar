@@ -1,9 +1,16 @@
-# Disposable CI database ONLY. Never use this override on a deployed stack.
 services:
   api:
+    environment:
+      DATABASE_URL: postgresql://smoke:smoke-only-not-production@smoke-db:5432/smoke?sslmode=disable
     depends_on:
       smoke-db:
         condition: service_healthy
+    ports: []
+
+  website:
+    ports:
+      - "127.0.0.1:18080:8080"
+
   smoke-db:
     image: postgres:17-alpine
     environment:
@@ -17,4 +24,5 @@ services:
       interval: 2s
       timeout: 3s
       retries: 30
-    networks: [backend]
+    networks:
+      - backend

@@ -68,3 +68,7 @@ Thumbs.db
 
 # Deployment scripts
 /deploy-script/
+
+# Local deployment assets and package store
+/deploy/
+ /deployscripts/

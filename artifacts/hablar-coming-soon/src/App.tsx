@@ -20,6 +20,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 const INSTAGRAM_PROFILE_URL = 'https://www.instagram.com/hablar.wetalk/';
 
+type SignupFeedback =
+  | { kind: 'success' | 'error'; message: string }
+  | null;
+
 function usePageMotion() {
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -78,7 +82,7 @@ function Footer() {
 }
 
 function Signup() {
-  const [status, setStatus] = useState('');
+  const [feedback, setFeedback] = useState<SignupFeedback>(null);
   const [phone, setPhone] = useState('');
   const [phoneCountry, setPhoneCountry] = useState('in');
   const signup = useCreateWaitlistSignup();
@@ -92,15 +96,15 @@ function Signup() {
     const consent = data.get('consent') === 'on';
     const termsAccepted = data.get('termsAccepted') === 'on';
     if (!email && !phoneNumber) {
-      setStatus('Add an email address or phone number.');
+      setFeedback({ kind: 'error', message: 'Add an email address or phone number.' });
       return;
     }
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setStatus('Please check the email address format.');
+      setFeedback({ kind: 'error', message: 'Please check the email address format.' });
       return;
     }
     if (phoneNumber && !/^[\d\s().+-]+$/.test(phoneNumber)) {
-      setStatus('Use numbers and phone formatting only.');
+      setFeedback({ kind: 'error', message: 'Use numbers and phone formatting only.' });
       return;
     }
     const phoneDigits = phoneNumber.replace(/\D/g, '');
@@ -110,18 +114,21 @@ function Signup() {
         : `+${country?.dialCode || '91'}${phoneDigits}`
       : '';
     if (normalizedPhone && !/^\+[1-9]\d{7,14}$/.test(normalizedPhone)) {
-      setStatus('Add a country code, for example +91 98765 43210.');
+      setFeedback({
+        kind: 'error',
+        message: 'Add a country code, for example +91 98765 43210.',
+      });
       return;
     }
     if (!consent) {
-      setStatus('Please consent to the one-time launch update.');
+      setFeedback({ kind: 'error', message: 'Please consent to the one-time launch update.' });
       return;
     }
     if (!termsAccepted) {
-      setStatus('Please agree to the Terms & Conditions.');
+      setFeedback({ kind: 'error', message: 'Please agree to the Terms & Conditions.' });
       return;
     }
-    setStatus('');
+    setFeedback(null);
     signup.mutate(
       {
         data: {
@@ -133,13 +140,16 @@ function Signup() {
       },
       {
         onSuccess: (response) => {
-          setStatus(response.message);
+          setFeedback({ kind: 'success', message: response.message });
           form.reset();
           setPhone('');
           setPhoneCountry('in');
         },
         onError: (error) => {
-          setStatus(error.message || 'The sign-up could not be saved. Please try again.');
+          setFeedback({
+            kind: 'error',
+            message: error.message || 'The sign-up could not be saved. Please try again.',
+          });
         },
       },
     );
@@ -182,7 +192,18 @@ function Signup() {
             <ArrowUpRight size={17} aria-hidden="true" />
           </button>
           <p className="prototype-note">Contact fields are encrypted in the database. This privacy notice and the terms are drafts for review.</p>
-          <p className="form-status" role="status" aria-live="polite">{status}</p>
+          {feedback?.kind === 'success' && (
+            <div className="form-status form-status--success" role="status" aria-live="polite" aria-atomic="true">
+              <span className="form-status-icon" aria-hidden="true"><Check size={17} /></span>
+              <span className="form-status-copy">
+                <strong>{feedback.message.split('\n\n', 2)[0]}</strong>
+                <span>{feedback.message.split('\n\n', 2)[1]}</span>
+              </span>
+            </div>
+          )}
+          {feedback?.kind === 'error' && (
+            <p className="form-status form-status--error" role="alert">{feedback.message}</p>
+          )}
         </form>
       </div>
     </section>

@@ -54,6 +54,13 @@ class FakePool:
 
 
 class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
+    ACKNOWLEDGMENT = (
+        "Thanks for signing up — we’ve recorded your contact for one HABLAR "
+        "launch update.\n\n"
+        "If you shared an email address, a confirmation may be sent when "
+        "email delivery is available."
+    )
+
     def setUp(self):
         self.env = patch.dict(
             os.environ,
@@ -116,7 +123,7 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("Email address: person@example.com", admin_text)
         self.assertNotIn("consent", admin_text.lower())
         self.assertIn("RETURNING id, created_at", pool.connection.query)
-        self.assertIn("one launch update", response.message)
+        self.assertEqual(response.message, self.ACKNOWLEDGMENT)
 
     async def test_phone_only_signup_sends_admin_notice_without_confirmation(self):
         with patch.object(fastapi_app, "send_email", new_callable=AsyncMock) as send:
@@ -138,6 +145,9 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(send.await_count, 2)
         self.assertEqual(new_response.message, duplicate_response.message)
+        self.assertEqual(new_response.message, self.ACKNOWLEDGMENT)
+        self.assertNotIn("sent successfully", new_response.message.lower())
+        self.assertNotIn("every", new_response.message.lower())
 
     async def test_smtp_failures_do_not_fail_signup_or_log_contact_details(self):
         contact = "private.person@example.com"
@@ -151,7 +161,7 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
                 response, _ = await self.submit(email=contact)
 
         self.assertEqual(send.await_count, 2)
-        self.assertIn("recorded", response.message)
+        self.assertEqual(response.message, self.ACKNOWLEDGMENT)
         self.assertNotIn(contact, response.message)
         self.assertNotIn(contact, "\n".join(logs.output))
 
@@ -202,7 +212,7 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
                 response, _ = await self.submit(email="person@example.com")
 
         send.assert_not_awaited()
-        self.assertIn("recorded", response.message)
+        self.assertEqual(response.message, self.ACKNOWLEDGMENT)
         self.assertNotIn("person@example.com", "\n".join(logs.output))
 
 

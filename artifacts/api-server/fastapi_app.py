@@ -544,8 +544,9 @@ async def create_waitlist_signup(
     # claim that an email was delivered, which may be unavailable or fail.
     return WaitlistSignupResponse(
         message=(
-            "Thanks. Your contact has been recorded for one launch update. "
-            "For new email signups, a confirmation is sent only when email "
-            "delivery is available."
+            "Thanks for signing up — we’ve recorded your contact for one HABLAR "
+            "launch update.\n\n"
+            "If you shared an email address, a confirmation may be sent when "
+            "email delivery is available."
         )
     )

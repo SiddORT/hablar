@@ -492,7 +492,42 @@ a { color: inherit; }
 .consent input { accent-color: #16a783; margin-top: 2px; }
 .form-submit { width: 100%; }
 .prototype-note { margin: 13px 0 0 !important; font-size: 11px !important; text-align: center; color: #88827e !important; }
-.form-status { min-height: 20px; margin: 10px 0 0 !important; font-size: 12px !important; color: #167d66 !important; text-align: center; }
+.form-status {
+  margin: 12px 0 0;
+  border-radius: 14px;
+  font-size: 15px;
+  line-height: 1.55;
+}
+.form-status--success {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px 15px;
+  border: 1px solid color-mix(in srgb, var(--theme-secondary) 24%, transparent);
+  background: var(--theme-secondary-soft);
+  color: var(--theme-secondary);
+  text-align: left;
+}
+.form-status-icon {
+  display: grid;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--theme-surface);
+}
+.form-status-copy { display: grid; gap: 5px; min-width: 0; }
+.form-status-copy strong { font-size: 15px; font-weight: 700; }
+.form-status-copy span { font-size: 14px; }
+.form-status--error {
+  padding: 12px 14px;
+  border: 1px solid #f0c4bc;
+  background: #fff2ef;
+  color: #a1261b !important;
+  font-size: 14px;
+  text-align: left;
+}
 .footer { background: #fff8ef; padding: 42px 0 30px; }
 .footer-inner { width: min(1240px, calc(100% - 64px)); margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 25px; }
 .footer-brand { max-width: 280px; }
@@ -801,7 +836,8 @@ html[data-theme="yellow-orange"] {
 [data-theme] .consent { color: var(--theme-muted); }
 [data-theme] .consent input { accent-color: var(--theme-secondary); }
 [data-theme] .prototype-note { color: var(--theme-muted) !important; }
-[data-theme] .form-status { color: var(--theme-secondary) !important; }
+[data-theme] .form-status--success { color: var(--theme-secondary) !important; }
+[data-theme] .form-status--error { color: #a1261b !important; }
 [data-theme] .footer-note,
 [data-theme] .boundary,
 [data-theme] .legal-toc { border-color: var(--theme-border); }

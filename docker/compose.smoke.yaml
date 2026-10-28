@@ -1,12 +1,12 @@
 services:
-  api:
-    environment:
-      DATABASE_URL: postgresql://smoke:smoke-only-not-production@smoke-db:5432/smoke?sslmode=disable
-    depends_on:
-      smoke-db:
-        condition: service_healthy
-    ports: []
-    
+api:
+  environment:
+    DATABASE_URL: postgresql://smoke:smoke-only-not-production@smoke-db:5432/smoke?sslmode=disable
+  depends_on:
+    smoke-db:
+      condition: service_healthy
+  ports: []
+
 website:
   build:
     context: .
@@ -16,19 +16,19 @@ website:
     - "127.0.0.1:18080:8080"
   volumes:
     - ./docker/nginx.smoke.conf.template:/etc/nginx/templates/default.conf.template:ro
-    
-  smoke-db:
-    image: postgres:17-alpine
-    environment:
-      POSTGRES_USER: smoke
-      POSTGRES_PASSWORD: smoke-only-not-production
-      POSTGRES_DB: smoke
-    tmpfs:
-      - /var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U smoke -d smoke"]
-      interval: 2s
-      timeout: 3s
-      retries: 30
-    networks:
-      - backend
+
+smoke-db:
+  image: postgres:17-alpine
+  environment:
+    POSTGRES_USER: smoke
+    POSTGRES_PASSWORD: smoke-only-not-production
+    POSTGRES_DB: smoke
+  tmpfs:
+    - /var/lib/postgresql/data
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -U smoke -d smoke"]
+    interval: 2s
+    timeout: 3s
+    retries: 30
+  networks:
+    - backend

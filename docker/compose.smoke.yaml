@@ -6,11 +6,12 @@ services:
       smoke-db:
         condition: service_healthy
     ports: []
-
+    
   website:
     ports:
       - "127.0.0.1:18080:8080"
-
+    volumes: []
+    
   smoke-db:
     image: postgres:17-alpine
     environment:

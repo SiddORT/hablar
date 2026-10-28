@@ -13,14 +13,45 @@ import fastapi_app
 from email_delivery import LAUNCH_UPDATE_COPY, LAUNCH_UPDATE_SUBJECT, SIGN_OFF
 
 
-class FakeLaunchConnection:
-    def __init__(self, recipients):
-        self.recipients = recipients
-        self.dispatch = None
-        self.eligible_count = len(recipients)
+def signup(signup_id, *, email=None, phone=None, consent_version=None):
+    return {
+        "id": signup_id,
+        "email_ciphertext": (
+            fastapi_app._encrypt_contact(email, "email") if email else None
+        ),
+        "phone_ciphertext": (
+            fastapi_app._encrypt_contact(phone, "phone") if phone else None
+        ),
+        "consent_at": datetime(2026, 10, 28, tzinfo=timezone.utc),
+        "consent_version": consent_version or fastapi_app.CONSENT_VERSION,
+    }
 
-    async def fetchval(self, query, *_args):
-        return self.eligible_count
+
+class FakeLaunchConnection:
+    def __init__(self, signups):
+        self.signups = signups
+        self.dispatch = None
+
+    def _eligible_signups(self, query, args):
+        for predicate in (
+            "email_ciphertext IS NOT NULL",
+            "consent_at IS NOT NULL",
+            "consent_version = $1",
+        ):
+            if predicate not in query:
+                raise AssertionError(f"Missing launch eligibility predicate: {predicate}")
+        if not args or args[0] != fastapi_app.CONSENT_VERSION:
+            raise AssertionError("Launch eligibility must use the current consent version.")
+        return [
+            row
+            for row in self.signups
+            if row["email_ciphertext"] is not None
+            and row["consent_at"] is not None
+            and row["consent_version"] == args[0]
+        ]
+
+    async def fetchval(self, query, *args):
+        return len(self._eligible_signups(query, args))
 
     async def fetchrow(self, query, *_args):
         if "SELECT started_at" in query:
@@ -38,8 +69,8 @@ class FakeLaunchConnection:
             return {"campaign_id": fastapi_app.LAUNCH_UPDATE_CAMPAIGN_ID}
         raise AssertionError(f"Unexpected fetchrow query: {query}")
 
-    async def fetch(self, query, *_args):
-        return self.recipients
+    async def fetch(self, query, *args):
+        return self._eligible_signups(query, args)
 
     async def execute(self, query, _campaign_id, attempted, delivered, failed):
         if "completed_at = NOW()" in query:
@@ -107,10 +138,7 @@ class LaunchUpdateTests(unittest.IsolatedAsyncioTestCase):
         contact = "private.person@example.com"
         pool = FakeLaunchPool(
             [
-                {
-                    "id": "signup-id",
-                    "email_ciphertext": fastapi_app._encrypt_contact(contact, "email"),
-                }
+                signup("signup-id", email=contact)
             ]
         )
         with self.assertRaises(fastapi_app.HTTPException) as error:
@@ -127,10 +155,7 @@ class LaunchUpdateTests(unittest.IsolatedAsyncioTestCase):
         contact = "private.person@example.com"
         pool = FakeLaunchPool(
             [
-                {
-                    "id": "signup-id",
-                    "email_ciphertext": fastapi_app._encrypt_contact(contact, "email"),
-                }
+                signup("signup-id", email=contact)
             ]
         )
         request = self.request(pool)
@@ -168,14 +193,51 @@ class LaunchUpdateTests(unittest.IsolatedAsyncioTestCase):
         })
         self.assertNotIn(contact, str(result))
 
+    async def test_send_only_current_consented_email_signups_reach_smtp(self):
+        eligible_email = "eligible.person@example.com"
+        phone_only = "+15551234567"
+        stale_consent_email = "old.consent@example.com"
+        pool = FakeLaunchPool(
+            [
+                signup("eligible", email=eligible_email),
+                signup("phone-only", phone=phone_only),
+                signup(
+                    "stale-consent",
+                    email=stale_consent_email,
+                    consent_version="waitlist-launch-email-v1",
+                ),
+            ]
+        )
+
+        with patch.object(fastapi_app, "send_email", new_callable=AsyncMock) as send:
+            result = await fastapi_app.send_launch_update(
+                self.request(pool),
+                fastapi_app.LaunchUpdateApproval(
+                    approval=fastapi_app.LAUNCH_UPDATE_APPROVAL
+                ),
+            )
+
+        send.assert_awaited_once()
+        self.assertEqual(send.await_args.args[1]["To"], eligible_email)
+        self.assertEqual(
+            result,
+            {
+                "state": "completed",
+                "attempted": 1,
+                "accepted_by_smtp": 1,
+                "failed": 0,
+                "uncertain": 0,
+            },
+        )
+        self.assertNotIn(eligible_email, str(result))
+        self.assertNotIn(phone_only, str(result))
+        self.assertNotIn(stale_consent_email, str(result))
+
     async def test_delivery_failure_is_counted_without_contact_details(self):
         contact = "private.person@example.com"
         pool = FakeLaunchPool(
             [
-                {
-                    "id": "signup-id",
-                    "email_ciphertext": fastapi_app._encrypt_contact(contact, "email"),
-                }
+                signup("signup-id", email=contact)
             ]
         )
         with patch.object(

@@ -137,7 +137,10 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(confirmation["Subject"], CONFIRMATION_SUBJECT)
         self.assertEqual(admin["To"], "admin@example.com")
         admin_text = admin.get_body(preferencelist=("plain",)).get_content()
-        self.assertIn("Submission time (UTC): 2026-10-28T12:34:56+00:00", admin_text)
+        self.assertIn(
+            "Submission time (Asia/Kolkata): 28 Oct 2026, 06:04 PM IST",
+            admin_text,
+        )
         self.assertIn("Email address: person@example.com", admin_text)
         self.assertNotIn("consent", admin_text.lower())
         self.assertIn("RETURNING id, created_at", pool.connection.query)
@@ -201,7 +204,7 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
             submitted_at=self.submitted_at,
         )
         admin_text = admin.get_body(preferencelist=("plain",)).get_content()
-        self.assertIn("Submission time (UTC)", admin_text)
+        self.assertIn("Submission time (Asia/Kolkata)", admin_text)
         self.assertIn("person@example.com", admin_text)
         self.assertIn("+14155550123", admin_text)
         launch_update = launch_update_message("person@example.com")

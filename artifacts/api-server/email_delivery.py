@@ -12,6 +12,7 @@ from email.message import EmailMessage
 from email.utils import formataddr, parseaddr
 from functools import lru_cache
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 
 CONFIRMATION_SUBJECT = "You’re on the list — HABLAR is coming soon"
@@ -42,6 +43,7 @@ EMAIL_LOGO_CID = "hablar-email-logo"
 EMAIL_LOGO_PATH = (
     Path(__file__).resolve().parent / "assets" / "hablar-email-logo.png"
 )
+KOLKATA_TIMEZONE = ZoneInfo("Asia/Kolkata")
 
 
 @lru_cache(maxsize=1)
@@ -217,7 +219,9 @@ def admin_notification_message(
 ) -> EmailMessage:
     if submitted_at.tzinfo is None:
         submitted_at = submitted_at.replace(tzinfo=timezone.utc)
-    timestamp = submitted_at.astimezone(timezone.utc).isoformat(timespec="seconds")
+    timestamp = submitted_at.astimezone(KOLKATA_TIMEZONE).strftime(
+        "%d %b %Y, %I:%M %p IST"
+    )
     contacts = []
     if email:
         contacts.append(("Email address", email))
@@ -234,7 +238,7 @@ def admin_notification_message(
     message["To"] = recipient
     message.set_content(
         f"A new HABLAR waitlist signup was saved.\n\n"
-        f"Submission time (UTC): {timestamp}\n{contact_text}"
+        f"Submission time (Asia/Kolkata): {timestamp}\n{contact_text}"
     )
     _add_branded_html(
         message,
@@ -253,7 +257,7 @@ def admin_notification_message(
           <tr><td style="padding:24px 28px 28px;color:{EMAIL_TEXT};">
             <h1 style="margin:0 0 12px;font-size:23px;line-height:1.3;color:{EMAIL_TEXT};">New waitlist signup</h1>
             <p style="margin:0 0 18px;line-height:1.6;">A new landing-page signup was saved.</p>
-            <p style="margin:0 0 18px;padding:14px 16px;background:{EMAIL_PAGE_BG};border-left:4px solid {EMAIL_BLUE};line-height:1.6;"><strong>Submission time (UTC):</strong><br>{html.escape(timestamp)}</p>
+            <p style="margin:0 0 18px;padding:14px 16px;background:{EMAIL_PAGE_BG};border-left:4px solid {EMAIL_BLUE};line-height:1.6;"><strong>Submission time (Asia/Kolkata):</strong><br>{html.escape(timestamp)}</p>
             <ul style="margin:0;padding:16px 16px 16px 36px;background:{EMAIL_SURFACE_SOFT};border-left:4px solid {EMAIL_GREEN};line-height:1.8;">{contact_html}</ul>
           </td></tr>
         </table>

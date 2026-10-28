@@ -6,6 +6,9 @@ runtime_env="$(mktemp)"
 export API_ENV_FILE="$runtime_env"
 export HTTP_PORT="${HTTP_PORT:-18080}"
 export BIND_ADDRESS=127.0.0.1
+export POSTGRES_DB=hablar_smoke
+export POSTGRES_USER=hablar_smoke
+export POSTGRES_PASSWORD=smoke_test_password
 compose=(docker compose --project-name hablar-smoke -f compose.yaml -f docker/compose.smoke.yaml)
 cleanup() {
   status=$?

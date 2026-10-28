@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import os
 import sys
 import unittest
@@ -260,29 +261,61 @@ class LaunchUpdateTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn(contact, "\n".join(logs.output))
         self.assertEqual(pool.connection.dispatch["failed_count"], 1)
 
-    async def test_preview_reports_uncertain_attempts_after_interruption(self):
-        pool = FakeLaunchPool([])
-        pool.connection.dispatch = {
-            "started_at": datetime(2026, 10, 28, tzinfo=timezone.utc),
-            "completed_at": None,
-            "attempted_count": 2,
-            "accepted_count": 1,
-            "failed_count": 0,
-        }
-        preview = await fastapi_app.preview_launch_update(self.request(pool))
-
-        self.assertEqual(preview["state"], "interrupted")
-        self.assertEqual(
-            preview["delivery_summary"],
-            {
-                "attempted": 2,
-                "accepted_by_smtp": 1,
-                "failed": 0,
-                "uncertain": 1,
-                "started_at": datetime(2026, 10, 28, tzinfo=timezone.utc),
-                "completed_at": None,
-            },
+    async def test_interrupted_partial_send_is_uncertain_and_cannot_be_retried(self):
+        contacts = [
+            "first.person@example.com",
+            "second.person@example.com",
+            "third.person@example.com",
+        ]
+        pool = FakeLaunchPool(
+            [
+                {
+                    "id": f"signup-{index}",
+                    "email_ciphertext": fastapi_app._encrypt_contact(contact, "email"),
+                }
+                for index, contact in enumerate(contacts)
+            ]
         )
+        request = self.request(pool)
+        approval = fastapi_app.LaunchUpdateApproval(
+            approval=fastapi_app.LAUNCH_UPDATE_APPROVAL
+        )
+        with patch.object(
+            fastapi_app,
+            "send_email",
+            new_callable=AsyncMock,
+            side_effect=[None, asyncio.CancelledError()],
+        ) as send:
+            with self.assertRaises(asyncio.CancelledError):
+                await fastapi_app.send_launch_update(request, approval)
+
+            preview = await fastapi_app.preview_launch_update(request)
+            self.assertEqual(preview["state"], "interrupted")
+            self.assertEqual(
+                preview["delivery_summary"],
+                {
+                    "attempted": 2,
+                    "accepted_by_smtp": 1,
+                    "failed": 0,
+                    "uncertain": 1,
+                    "started_at": datetime(2026, 10, 28, tzinfo=timezone.utc),
+                    "completed_at": None,
+                },
+            )
+            self.assertNotIn(contacts[0], str(preview["delivery_summary"]))
+            self.assertNotIn(contacts[1], str(preview["delivery_summary"]))
+            self.assertNotIn(contacts[2], str(preview["delivery_summary"]))
+            self.assertEqual(send.await_count, 2)
+            self.assertEqual(
+                [call.args[1]["To"] for call in send.await_args_list],
+                contacts[:2],
+            )
+
+            with self.assertRaises(fastapi_app.HTTPException) as duplicate:
+                await fastapi_app.send_launch_update(request, approval)
+
+        self.assertEqual(duplicate.exception.status_code, 409)
+        self.assertEqual(send.await_count, 2)
 
     async def test_empty_eligible_list_does_not_claim_campaign(self):
         pool = FakeLaunchPool([])

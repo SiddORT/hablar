@@ -5,7 +5,7 @@ import { CountryPicker, phoneCountries } from '@/components/country-picker';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { ArrowDown, ArrowUpRight, Check, Instagram, ShieldCheck } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, Check, ShieldCheck } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
@@ -18,45 +18,7 @@ import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
 const queryClient = new QueryClient();
 gsap.registerPlugin(ScrollTrigger);
 
-const INSTAGRAM_PROFILE_URL: string | undefined = undefined;
-
-function InstagramProfileLink() {
-  const icon = <Instagram size={20} aria-hidden="true" />;
-  const label = (
-    <>
-      <span className="social-label-full">Explore HABLAR on Instagram</span>
-      <span className="social-label-compact" aria-hidden="true">Instagram</span>
-    </>
-  );
-
-  if (INSTAGRAM_PROFILE_URL) {
-    return (
-      <a
-        className="social-link"
-        href={INSTAGRAM_PROFILE_URL}
-        target="_blank"
-        rel="noreferrer"
-        aria-label="Explore HABLAR on Instagram (opens in a new tab)"
-        data-testid="link-instagram"
-      >
-        {icon}
-        {label}
-      </a>
-    );
-  }
-
-  return (
-    <span
-      className="social-link is-unavailable"
-      role="note"
-      data-testid="status-instagram"
-    >
-      {icon}
-      <span className="social-label-full">Instagram not available yet</span>
-      <span className="social-label-compact" aria-hidden="true">Instagram unavailable</span>
-    </span>
-  );
-}
+const INSTAGRAM_PROFILE_URL = 'https://www.instagram.com/hablar.wetalk/';
 
 function usePageMotion() {
   useEffect(() => {
@@ -93,7 +55,6 @@ function Header() {
         <a className="nav-plain" href="#how-it-works">How it feels</a>
         <a className="nav-plain" href="#our-promise">Our promise</a>
         <ThemeSelector />
-        <InstagramProfileLink />
         <a className="nav-cta" href="#launch-note">Keep me posted</a>
       </nav>
     </header>
@@ -112,7 +73,6 @@ function Footer() {
           <a href={`${import.meta.env.BASE_URL}#how-it-works`}>How it feels</a>
           <Link href="/privacy">Privacy Notice</Link>
           <Link href="/terms">Terms &amp; Conditions</Link>
-          <InstagramProfileLink />
         </nav>
       </div>
       <p className="footer-note">HABLAR is a listening space, not therapy, diagnosis, professional mental-health care, or emergency support. If you may be in immediate danger, contact local emergency services or a trusted person nearby.</p>
@@ -389,6 +349,7 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 function Router() {
   const [location] = useLocation();
   const [showLaunchCta, setShowLaunchCta] = useState(true);
+  const [showInstagramCta, setShowInstagramCta] = useState(true);
   const isLegalPage = location === '/privacy' || location === '/terms';
   usePageSeo(location);
   useEffect(() => {
@@ -401,30 +362,37 @@ function Router() {
         cancelAnimationFrame(frame);
         frame = requestAnimationFrame(() => {
           const cta = document.querySelector<HTMLElement>('.launch-sticky-cta');
-          if (!cta || document.activeElement === cta) return;
-          const ctaRect = cta.getBoundingClientRect();
+          const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
+          if (!cta || !instagramCta) return;
+          if (document.activeElement === cta || document.activeElement === instagramCta) return;
+          const dockRect = document.querySelector<HTMLElement>('.launch-sticky-dock')?.getBoundingClientRect();
+          if (!dockRect) return;
           const legalText = document.querySelectorAll<HTMLElement>(
             '#legal-main h1, #legal-main h2, #legal-main p, #legal-main li, #legal-main a',
           );
           const overlapsText = Array.from(legalText).some((element) => {
             const rect = element.getBoundingClientRect();
-            return rect.left < ctaRect.right
-              && rect.right > ctaRect.left
-              && rect.top < ctaRect.bottom
-              && rect.bottom > ctaRect.top;
+            return rect.left < dockRect.right
+              && rect.right > dockRect.left
+              && rect.top < dockRect.bottom
+              && rect.bottom > dockRect.top;
           });
           setShowLaunchCta(!overlapsText);
+          setShowInstagramCta(!overlapsText);
         });
       };
 
       updateVisibility();
       const cta = document.querySelector<HTMLElement>('.launch-sticky-cta');
+      const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
       cta?.addEventListener('blur', updateVisibility);
+      instagramCta?.addEventListener('blur', updateVisibility);
       scrollport.addEventListener('scroll', updateVisibility, { passive: true });
       window.addEventListener('resize', updateVisibility);
       return () => {
         cancelAnimationFrame(frame);
         cta?.removeEventListener('blur', updateVisibility);
+        instagramCta?.removeEventListener('blur', updateVisibility);
         scrollport.removeEventListener('scroll', updateVisibility);
         window.removeEventListener('resize', updateVisibility);
       };
@@ -432,15 +400,48 @@ function Router() {
 
     if (location !== '/' || !signupSection || !scrollport) {
       setShowLaunchCta(true);
+      setShowInstagramCta(true);
       return;
     }
 
+    let frame = 0;
+    const updateInstagramVisibility = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
+        if (!instagramCta || document.activeElement === instagramCta) return;
+        const ctaRect = instagramCta.getBoundingClientRect();
+        const signupContent = document.querySelectorAll<HTMLElement>(
+          '#launch-note h2, #launch-note p, #launch-note label, #launch-note input, #launch-note button',
+        );
+        const overlapsContent = Array.from(signupContent).some((element) => {
+          if (element.tagName === 'P' && !element.textContent?.trim()) return false;
+          const rect = element.getBoundingClientRect();
+          return rect.left < ctaRect.right
+            && rect.right > ctaRect.left
+            && rect.top < ctaRect.bottom
+            && rect.bottom > ctaRect.top;
+        });
+        setShowInstagramCta(!overlapsContent);
+      });
+    };
     const observer = new IntersectionObserver(
-      ([entry]) => setShowLaunchCta(!entry.isIntersecting),
+      ([entry]) => {
+        setShowLaunchCta(!entry.isIntersecting);
+        updateInstagramVisibility();
+      },
       { root: scrollport, threshold: 0.01 },
     );
     observer.observe(signupSection);
-    return () => observer.disconnect();
+    scrollport.addEventListener('scroll', updateInstagramVisibility, { passive: true });
+    window.addEventListener('resize', updateInstagramVisibility);
+    updateInstagramVisibility();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+      scrollport.removeEventListener('scroll', updateInstagramVisibility);
+      window.removeEventListener('resize', updateInstagramVisibility);
+    };
   }, [location]);
   return (
     <RoutedErrorBoundary>
@@ -454,9 +455,39 @@ function Router() {
           </Switch>
         </div>
         <div
-          className={`launch-sticky-dock${showLaunchCta ? '' : ' is-obscured'}${isLegalPage ? ' is-legal-page' : ''}`}
-          aria-hidden={!showLaunchCta}
+          className={`launch-sticky-dock${showLaunchCta ? '' : ' is-launch-hidden'}${showInstagramCta ? '' : ' is-follow-obscured'}${isLegalPage ? ' is-legal-page' : ''}`}
         >
+          <a
+            className="instagram-sticky-cta"
+            href={INSTAGRAM_PROFILE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Follow us on Instagram (opens in a new tab)"
+            tabIndex={showInstagramCta ? 0 : -1}
+            data-testid="link-instagram"
+          >
+            <svg
+              className="instagram-gradient-icon"
+              width="21"
+              height="21"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="instagram-icon-gradient" x1="3" y1="21" x2="21" y2="3" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#FEDA75" />
+                  <stop offset=".32" stopColor="#FA7E1E" />
+                  <stop offset=".62" stopColor="#D62976" />
+                  <stop offset="1" stopColor="#4F5BD5" />
+                </linearGradient>
+              </defs>
+              <rect x="2.5" y="2.5" width="19" height="19" rx="5.2" stroke="url(#instagram-icon-gradient)" strokeWidth="2" />
+              <circle cx="12" cy="12" r="4.1" stroke="url(#instagram-icon-gradient)" strokeWidth="2" />
+              <circle cx="17.7" cy="6.4" r="1.15" fill="url(#instagram-icon-gradient)" />
+            </svg>
+            <span>Follow us on Instagram</span>
+          </a>
           <a
             className="launch-sticky-cta"
             href={`${import.meta.env.BASE_URL}#launch-note`}

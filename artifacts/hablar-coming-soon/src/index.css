@@ -96,25 +96,6 @@ a { color: inherit; }
 .nav-links { display: flex; gap: 34px; align-items: center; font-size: 14px; font-weight: 700; }
 .nav-links a { text-decoration: none; transition: color .2s ease; }
 .nav-links a:hover { color: #e52e78; }
-.social-link {
-  display: inline-flex;
-  flex: 0 1 auto;
-  min-width: 0;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 12px;
-  border-radius: 999px;
-  color: inherit;
-  text-decoration: none;
-  transition: color .2s ease, background-color .2s ease;
-}
-.social-link[href]:hover { color: #e52e78; background: rgba(231, 51, 125, .08); }
-.social-link:focus-visible { outline: 3px solid #075c54; outline-offset: 3px; }
-.social-link.is-unavailable { cursor: default; }
-.social-label-full { white-space: nowrap; }
-.social-label-compact { display: none; }
 .nav-cta, .button-primary {
   background: #e7337d;
   color: white !important;
@@ -134,11 +115,44 @@ a { color: inherit; }
   right: max(20px, calc(env(safe-area-inset-right, 0px) + 16px));
   bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 16px));
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
   justify-content: flex-end;
+  gap: 10px;
   pointer-events: none;
 }
-.launch-sticky-dock.is-obscured { visibility: hidden; }
+.launch-sticky-dock.is-launch-hidden .launch-sticky-cta { display: none; }
+.launch-sticky-dock.is-follow-obscured .instagram-sticky-cta { visibility: hidden; }
+.instagram-sticky-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 10px 16px;
+  border: 1px solid rgba(183, 91, 112, .2);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, .97);
+  box-shadow: 0 5px 16px rgba(120, 56, 79, .13);
+  color: #514346;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
+  pointer-events: auto;
+}
+.instagram-gradient-icon {
+  flex: 0 0 21px;
+  filter: drop-shadow(0 1px 3px rgba(214, 41, 118, .28));
+}
+.instagram-sticky-cta:hover {
+  transform: translateY(-2px);
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(120, 56, 79, .19);
+}
+.instagram-sticky-cta:focus-visible { outline: 3px solid #075c54; outline-offset: 4px; }
 .launch-sticky-cta {
   display: inline-flex;
   align-items: center;
@@ -437,6 +451,7 @@ a { color: inherit; }
 .js-motion .reveal.is-visible { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .instagram-sticky-cta:hover, .launch-sticky-cta:hover { transform: none; }
 }
 @media (max-width: 850px) {
   .hero { min-height: 540px; }
@@ -450,6 +465,10 @@ a { color: inherit; }
 @media (max-width: 680px) {
   .launch-sticky-dock.is-legal-page {
     top: calc(env(safe-area-inset-top, 0px) + 130px);
+    bottom: auto;
+  }
+  .launch-sticky-dock.is-launch-hidden:not(.is-legal-page) {
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
     bottom: auto;
   }
   .launch-sticky-dock {
@@ -469,10 +488,6 @@ a { color: inherit; }
   .nav-links { gap: 14px; font-size: 12px; }
   .nav-links .nav-plain { display: none; }
   .nav-links { flex-wrap: wrap; }
-  .nav-links .social-link { max-width: 150px; gap: 6px; padding: 0 8px; font-size: 11px; line-height: 1.2; }
-  .nav-links .social-link > svg { flex: 0 0 18px; width: 18px; height: 18px; }
-  .nav-links .social-label-full { display: none; }
-  .nav-links .social-label-compact { display: inline; }
   .nav-cta { padding: 10px 14px; }
   .hero { margin: 0; min-height: 0; }
   .hero-inner { width: calc(100% - 40px); min-height: 0; grid-template-columns: 1fr; padding: 34px 0 24px; gap: 0; }
@@ -634,7 +649,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .button-quiet,
 [data-theme] .theme-select { color: var(--theme-text); background: var(--theme-surface); border-color: var(--theme-border); }
 [data-theme] .button-quiet { background: color-mix(in srgb, var(--theme-surface) 88%, transparent); }
-[data-theme] .launch-sticky-dock { background: var(--theme-page); border-color: var(--theme-border); }
 [data-theme] .launch-sticky-cta { border-color: var(--theme-surface); }
 [data-theme] .hero { background: var(--theme-surface-warm); }
 [data-theme] .hero::before { background: var(--theme-hero-glow); }

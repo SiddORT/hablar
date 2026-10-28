@@ -56,9 +56,7 @@ class FakePool:
 class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
     ACKNOWLEDGMENT = (
         "Thanks for signing up — we’ve recorded your contact for one HABLAR "
-        "launch update.\n\n"
-        "If you shared an email address, a confirmation may be sent when "
-        "email delivery is available."
+        "launch update."
     )
 
     def setUp(self):

@@ -5,6 +5,7 @@ import hmac
 import logging
 import os
 import re
+import secrets
 from contextlib import asynccontextmanager
 from functools import lru_cache
 from typing import Annotated
@@ -14,7 +15,7 @@ import asyncpg
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, StrictBool, field_validator, model_validator
@@ -27,6 +28,10 @@ from email_delivery import (
     configuration_warnings,
     confirmation_message,
     email_configuration,
+    LAUNCH_UPDATE_COPY,
+    LAUNCH_UPDATE_SUBJECT,
+    launch_update_message,
+    SIGN_OFF,
     send_email,
 )
 
@@ -37,6 +42,8 @@ TERMS_VERSION = "draft-2026-10-27"
 ENCRYPTION_KEY_VERSION = 1
 PHONE_PATTERN = re.compile(r"^\+[1-9][0-9]{7,14}$")
 MAX_BODY_BYTES = 4096
+LAUNCH_UPDATE_CAMPAIGN_ID = "hablar-launch-update-v1"
+LAUNCH_UPDATE_APPROVAL = "SEND ONE HABLAR LAUNCH UPDATE"
 logger = logging.getLogger("hablar.waitlist")
 
 
@@ -67,6 +74,13 @@ def _encrypt_contact(value: str, field_name: str) -> bytes:
     nonce = os.urandom(12)
     aad = f"hablar-waitlist-v1:{field_name}".encode("utf-8")
     return nonce + AESGCM(encryption_key).encrypt(nonce, value.encode("utf-8"), aad)
+
+
+def _decrypt_contact(value: bytes, field_name: str) -> str:
+    encryption_key, _ = _protection_keys()
+    nonce = value[:12]
+    aad = f"hablar-waitlist-v1:{field_name}".encode("utf-8")
+    return AESGCM(encryption_key).decrypt(nonce, value[12:], aad).decode("utf-8")
 
 
 def _contact_lookup_hash(value: str, field_name: str) -> bytes:
@@ -148,6 +162,47 @@ class HealthResponse(BaseModel):
     status: str
 
 
+class LaunchUpdateApproval(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    approval: str = Field(max_length=80)
+
+
+def _require_launch_operator(request: Request) -> None:
+    expected_token = os.environ.get("LAUNCH_UPDATE_ADMIN_TOKEN", "")
+    if len(expected_token.encode("utf-8")) < 32:
+        raise HTTPException(
+            status_code=503,
+            detail="Launch update operator access is not configured.",
+        )
+    supplied = request.headers.get("authorization", "")
+    scheme, _, token = supplied.partition(" ")
+    if (
+        scheme.lower() != "bearer"
+        or not secrets.compare_digest(
+            token.encode("utf-8"), expected_token.encode("utf-8")
+        )
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Launch update operator authorization is required.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+async def _launch_dispatch_status(request: Request):
+    async with request.app.state.db_pool.acquire() as connection:
+        return await connection.fetchrow(
+            """
+            SELECT started_at, completed_at, attempted_count,
+                   accepted_count, failed_count
+            FROM waitlist_launch_email_dispatches
+            WHERE campaign_id = $1
+            """,
+            LAUNCH_UPDATE_CAMPAIGN_ID,
+        )
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _protection_keys()
@@ -210,6 +265,183 @@ async def validation_error_handler(
 @app.get("/api/healthz", response_model=HealthResponse)
 async def health_check() -> HealthResponse:
     return HealthResponse(status="ok")
+
+
+@app.get("/api/admin/launch-update")
+async def preview_launch_update(request: Request) -> dict[str, object]:
+    _require_launch_operator(request)
+    dispatch = await _launch_dispatch_status(request)
+    async with request.app.state.db_pool.acquire() as connection:
+        eligible_count = await connection.fetchval(
+            """
+            SELECT COUNT(*)
+            FROM waitlist_signups
+            WHERE email_ciphertext IS NOT NULL
+              AND consent_at IS NOT NULL
+              AND consent_version = $1
+            """,
+            CONSENT_VERSION,
+        )
+
+    response: dict[str, object] = {
+        "subject": LAUNCH_UPDATE_SUBJECT,
+        "body": f"{LAUNCH_UPDATE_COPY}\n\n{SIGN_OFF}",
+        "eligible_count": eligible_count,
+        "approval_phrase": LAUNCH_UPDATE_APPROVAL,
+        "state": "available" if dispatch is None else (
+            "completed" if dispatch["completed_at"] is not None else "interrupted"
+        ),
+    }
+    if dispatch is not None:
+        response["delivery_summary"] = {
+            "attempted": dispatch["attempted_count"],
+            "accepted_by_smtp": dispatch["accepted_count"],
+            "failed": dispatch["failed_count"],
+            "uncertain": max(
+                0,
+                dispatch["attempted_count"]
+                - dispatch["accepted_count"]
+                - dispatch["failed_count"],
+            ),
+            "started_at": dispatch["started_at"],
+            "completed_at": dispatch["completed_at"],
+        }
+    return response
+
+
+@app.post("/api/admin/launch-update/send")
+async def send_launch_update(
+    request: Request,
+    payload: LaunchUpdateApproval,
+) -> dict[str, int | str]:
+    _require_launch_operator(request)
+    if not secrets.compare_digest(payload.approval, LAUNCH_UPDATE_APPROVAL):
+        raise HTTPException(
+            status_code=400,
+            detail="Review the message and submit the exact approval phrase.",
+        )
+
+    mail_config, missing_settings = email_configuration()
+    if missing_settings or mail_config is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Launch email delivery is not configured.",
+        )
+
+    async with request.app.state.db_pool.acquire() as connection:
+        eligible_count = await connection.fetchval(
+            """
+            SELECT COUNT(*)
+            FROM waitlist_signups
+            WHERE email_ciphertext IS NOT NULL
+              AND consent_at IS NOT NULL
+              AND consent_version = $1
+            """,
+            CONSENT_VERSION,
+        )
+        if not eligible_count:
+            raise HTTPException(
+                status_code=409,
+                detail="There are no eligible email signups to receive this update.",
+            )
+
+        claimed = await connection.fetchrow(
+            """
+            INSERT INTO waitlist_launch_email_dispatches (campaign_id)
+            VALUES ($1)
+            ON CONFLICT DO NOTHING
+            RETURNING campaign_id
+            """,
+            LAUNCH_UPDATE_CAMPAIGN_ID,
+        )
+        if claimed is None:
+            raise HTTPException(
+                status_code=409,
+                detail="The one-time launch update has already been claimed.",
+            )
+
+        recipients = await connection.fetch(
+            """
+            SELECT id, email_ciphertext
+            FROM waitlist_signups
+            WHERE email_ciphertext IS NOT NULL
+              AND consent_at IS NOT NULL
+              AND consent_version = $1
+            ORDER BY created_at, id
+            """,
+            CONSENT_VERSION,
+        )
+
+    accepted = 0
+    failed = 0
+    attempted = 0
+    for recipient in recipients:
+        attempted += 1
+        async with request.app.state.db_pool.acquire() as connection:
+            await connection.execute(
+                """
+                UPDATE waitlist_launch_email_dispatches
+                SET attempted_count = $2,
+                    accepted_count = $3,
+                    failed_count = $4
+                WHERE campaign_id = $1
+                """,
+                LAUNCH_UPDATE_CAMPAIGN_ID,
+                attempted,
+                accepted,
+                failed,
+            )
+        try:
+            email = _decrypt_contact(bytes(recipient["email_ciphertext"]), "email")
+            await send_email(mail_config, launch_update_message(email))
+            accepted += 1
+        except Exception:
+            # SMTP exceptions can contain a recipient address or message data.
+            failed += 1
+            logger.warning("A launch update email could not be delivered.")
+        async with request.app.state.db_pool.acquire() as connection:
+            await connection.execute(
+                """
+                UPDATE waitlist_launch_email_dispatches
+                SET attempted_count = $2,
+                    accepted_count = $3,
+                    failed_count = $4
+                WHERE campaign_id = $1
+                """,
+                LAUNCH_UPDATE_CAMPAIGN_ID,
+                attempted,
+                accepted,
+                failed,
+            )
+
+    async with request.app.state.db_pool.acquire() as connection:
+        await connection.execute(
+            """
+            UPDATE waitlist_launch_email_dispatches
+            SET completed_at = NOW(),
+                attempted_count = $2,
+                accepted_count = $3,
+                failed_count = $4
+            WHERE campaign_id = $1
+            """,
+            LAUNCH_UPDATE_CAMPAIGN_ID,
+            attempted,
+            accepted,
+            failed,
+        )
+    logger.info(
+        "One-time launch update finished: attempted=%d accepted=%d failed=%d",
+        attempted,
+        accepted,
+        failed,
+    )
+    return {
+        "state": "completed",
+        "attempted": attempted,
+        "accepted_by_smtp": accepted,
+        "failed": failed,
+        "uncertain": 0,
+    }
 
 
 @app.get("/", response_model=HealthResponse, include_in_schema=False)

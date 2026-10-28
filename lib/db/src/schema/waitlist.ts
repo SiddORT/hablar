@@ -1,6 +1,7 @@
 import {
   customType,
   index,
+  integer,
   pgTable,
   smallint,
   timestamp,
@@ -44,4 +45,18 @@ export const waitlistSignupsTable = pgTable(
       .where(sql`${table.phoneLookupHash} is not null`),
     index("waitlist_created_at_idx").on(table.createdAt),
   ],
+);
+
+export const waitlistLaunchEmailDispatchesTable = pgTable(
+  "waitlist_launch_email_dispatches",
+  {
+    campaignId: varchar("campaign_id", { length: 80 }).primaryKey(),
+    startedAt: timestamp("started_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    attemptedCount: integer("attempted_count").notNull().default(0),
+    acceptedCount: integer("accepted_count").notNull().default(0),
+    failedCount: integer("failed_count").notNull().default(0),
+  },
 );

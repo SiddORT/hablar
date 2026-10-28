@@ -19,6 +19,13 @@ CONFIRMATION_COPY = (
     "update when HABLAR is ready. We’re building a space for honest "
     "conversations and thoughtful listening. More soon."
 )
+LAUNCH_UPDATE_SUBJECT = "A HABLAR update"
+LAUNCH_UPDATE_COPY = (
+    "Here is the one launch update you requested. HABLAR is preparing a space "
+    "for honest conversations and thoughtful listening. Thank you for being "
+    "on the list. This message does not set a launch date or sign you up for "
+    "ongoing marketing or SMS."
+)
 SIGN_OFF = "HABLAR — Come as you are. Speak as you feel."
 _EMAIL_PATTERN = re.compile(r"^[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+$")
 
@@ -118,6 +125,41 @@ def confirmation_message(recipient: str) -> EmailMessage:
             <p style="margin:26px 0 0;font-size:15px;line-height:1.6;font-weight:bold;color:#35594c;">{html.escape(SIGN_OFF)}</p>
           </td></tr>
           <tr><td style="padding:18px 32px 28px;color:#66716b;font-size:12px;line-height:1.6;">You received this message because an email address was used to sign up for HABLAR updates.</td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>
+""",
+        subtype="html",
+    )
+    return message
+
+
+def launch_update_message(recipient: str) -> EmailMessage:
+    message = EmailMessage()
+    message["Subject"] = LAUNCH_UPDATE_SUBJECT
+    message["To"] = recipient
+    message.set_content(f"{LAUNCH_UPDATE_COPY}\n\n{SIGN_OFF}")
+    message.add_alternative(
+        f"""\
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{html.escape(LAUNCH_UPDATE_SUBJECT)}</title>
+  </head>
+  <body style="margin:0;background:#f7f3ed;color:#28352f;font-family:Arial,Helvetica,sans-serif;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7f3ed;padding:32px 14px;">
+      <tr><td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#fff;border-radius:18px;overflow:hidden;">
+          <tr><td style="padding:30px 32px 12px;background:#e9f0e8;color:#35594c;font-size:13px;font-weight:bold;letter-spacing:2px;">HABLAR</td></tr>
+          <tr><td style="padding:24px 32px 28px;">
+            <h1 style="margin:0 0 18px;font-size:25px;line-height:1.3;color:#28352f;">A HABLAR update</h1>
+            <p style="margin:0;font-size:16px;line-height:1.7;">{html.escape(LAUNCH_UPDATE_COPY)}</p>
+            <p style="margin:26px 0 0;font-size:15px;line-height:1.6;font-weight:bold;color:#35594c;">{html.escape(SIGN_OFF)}</p>
+          </td></tr>
         </table>
       </td></tr>
     </table>

@@ -264,10 +264,12 @@ function Home() {
 
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">
         <div className="emotion-circle">
-          <div className="emotion-center scroll-reveal">
-            <span className="section-kicker">Every feeling belongs</span>
-            <h2 id="feelings-heading">Different feelings. Same welcome.</h2>
-            <p>There is room here for tears, for joy, and for not being sure yet. HABLAR meets you with care, just as you are.</p>
+          <div className="emotion-center">
+            <div className="emotion-center-copy scroll-reveal">
+              <span className="section-kicker">Every feeling belongs</span>
+              <h2 id="feelings-heading">Different feelings. Same welcome.</h2>
+              <p>There is room here for tears, for joy, and for not being sure yet. HABLAR meets you with care, just as you are.</p>
+            </div>
           </div>
           <ul className="emotion-ring" role="list" aria-label="Six feelings welcomed at HABLAR">
             {emotions.map((emotion, index) => (

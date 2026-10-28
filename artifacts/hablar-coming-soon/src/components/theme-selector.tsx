@@ -1,11 +1,10 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
-export const themes = ['original', 'darker', 'blue-green', 'soft-lavender'] as const;
+export const themes = ['original', 'blue-green', 'soft-lavender'] as const;
 export type Theme = (typeof themes)[number];
 
 const themeLabels: Record<Theme, string> = {
   original: 'Original',
-  darker: 'Darker',
   'blue-green': 'Blue-green',
   'soft-lavender': 'Soft lavender',
 };

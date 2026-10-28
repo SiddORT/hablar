@@ -1,12 +1,13 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
-export const themes = ['original', 'blue-green', 'soft-lavender'] as const;
+export const themes = ['original', 'blue-green', 'soft-lavender', 'yellow-orange'] as const;
 export type Theme = (typeof themes)[number];
 
 const themeLabels: Record<Theme, string> = {
   original: 'Original',
   'blue-green': 'Blue-green',
   'soft-lavender': 'Soft lavender',
+  'yellow-orange': 'Yellow-orange',
 };
 
 const STORAGE_KEY = 'hablar-theme';

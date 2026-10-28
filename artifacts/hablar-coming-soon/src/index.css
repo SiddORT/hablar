@@ -575,6 +575,24 @@ html[data-theme="soft-lavender"] {
   --theme-hero-glow: linear-gradient(135deg, #e8dcf7 0%, #f3d8e8 52%, #e8e2f5 100%);
 }
 
+html[data-theme="yellow-orange"] {
+  --theme-page: #fff9ed;
+  --theme-text: #49351f;
+  --theme-muted: #70614f;
+  --theme-surface: #fffefa;
+  --theme-surface-soft: #fff1cf;
+  --theme-surface-warm: #fff2d8;
+  --theme-footer: #f5e5c7;
+  --theme-border: #e7d3a8;
+  --theme-accent: #a94806;
+  --theme-accent-button: #a84300;
+  --theme-accent-soft: #ffe3a8;
+  --theme-secondary: #855500;
+  --theme-secondary-soft: #f8e9bf;
+  --theme-focus: #754100;
+  --theme-hero-glow: linear-gradient(135deg, #ffe58a 0%, #ffc45c 48%, #ff965f 100%);
+}
+
 [data-theme] body,
 [data-theme] .app-scrollport { background: var(--theme-page); color: var(--theme-text); }
 [data-theme] .site-shell,

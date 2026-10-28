@@ -1,3 +1,4 @@
+
 name: hablar
 
 services:
@@ -22,8 +23,8 @@ services:
       - backend
 
   api:
-      image: ${API_IMAGE:-ghcr.io/siddort/hablar-api:main}
-      platform: linux/amd64
+    image: ${API_IMAGE:-ghcr.io/siddort/hablar-api:main}
+    platform: linux/amd64
     environment:
       DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
       SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in .env}
@@ -44,9 +45,9 @@ services:
     networks:
       - backend
 
-    website:
-      image: ${WEBSITE_IMAGE:-ghcr.io/siddort/hablar-website:main}
-      platform: linux/amd64
+  website:
+    image: ${WEBSITE_IMAGE:-ghcr.io/siddort/hablar-website:main}
+    platform: linux/amd64
     environment:
       API_UPSTREAM: http://api:8080
       NGINX_ENVSUBST_FILTER: ^API_UPSTREAM$
@@ -76,4 +77,3 @@ networks:
 
 volumes:
   postgres_data:
-  

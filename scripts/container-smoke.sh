@@ -9,7 +9,7 @@ export BIND_ADDRESS=127.0.0.1
 export POSTGRES_DB=hablar_smoke
 export POSTGRES_USER=hablar_smoke
 export POSTGRES_PASSWORD=smoke_test_password
-export 'DATABASE_URL=postgresql://smoke:smoke-only-not-production@smoke-db:5432/smoke?sslmode=disable'
+export DATABASE_URL='postgresql://smoke:smoke-only-not-production@smoke-db:5432/smoke?sslmode=disable'
 export SESSION_SECRET="smoke_test_session_secret_only_for_CI_0123456789"
 compose=(docker compose --project-name hablar-smoke -f compose.yaml -f docker/compose.smoke.yaml)
 cleanup() {

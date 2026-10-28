@@ -35,10 +35,6 @@ function usePageMotion() {
           scrollTrigger: { trigger: element, scroller: scroller ?? undefined, start: 'top 88%', once: true },
         });
       });
-      gsap.fromTo('.emotion-card', { y: 16 }, {
-        y: 0, duration: .7, ease: 'power2.out',
-        scrollTrigger: { trigger: '.emotion-circle', scroller: scroller ?? undefined, start: 'top 80%', once: true },
-      });
     });
     return () => context.revert();
   }, []);

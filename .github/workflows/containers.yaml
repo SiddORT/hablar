@@ -1,4 +1,5 @@
-name: Validate and publish containers
+name: Validate, publish, and deploy
+
 on:
   pull_request:
   push:
@@ -19,39 +20,49 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v4
         with:
           version: 10.26.1
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: pnpm
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
       - run: pnpm --filter @workspace/hablar-coming-soon run test:seo
+
       - uses: docker/setup-buildx-action@v3
+
       - name: Build and smoke check both production images
         run: bash scripts/container-smoke.sh
 
   publish:
     needs: validate
-    # PRs (including forks) never get package-write access or registry login.
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
       contents: read
       packages: write
+
     strategy:
       matrix:
         service: [website, api]
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: docker/setup-buildx-action@v3
-      - name: Lowercase registry repository
+
+      - name: Set image name
         id: image
         shell: bash
-        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}-${{ matrix.service }}" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "name=ghcr.io/${GITHUB_REPOSITORY,,}-${{ matrix.service }}" >> "$GITHUB_OUTPUT"
+
       - uses: docker/metadata-action@v5
         id: metadata
         with:
@@ -61,11 +72,13 @@ jobs:
             type=sha,format=long
             type=raw,value=main,enable=${{ github.ref == 'refs/heads/main' }}
             type=ref,event=tag
+
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: docker/build-push-action@v6
         with:
           context: .
@@ -78,3 +91,40 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+  deploy:
+    needs: [validate, publish]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Configure SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Configure trusted VPS host key
+        env:
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy published images
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          test -n "$VPS_HOST"
+          test -n "$VPS_USER"
+          ssh \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$VPS_USER@$VPS_HOST" \
+            "cd /var/www/habler.co.in && ./deployscripts/deploy.sh '$COMMIT_SHA'"

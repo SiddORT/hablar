@@ -124,6 +124,7 @@ jobs:
           test -n "$VPS_HOST"
           test -n "$VPS_USER"
           ssh \
+            -p 3141 \
             -o BatchMode=yes \
             -o StrictHostKeyChecking=yes \
             "$VPS_USER@$VPS_HOST" \

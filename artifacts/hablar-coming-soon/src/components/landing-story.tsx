@@ -1,6 +1,6 @@
 import { useRef, useState, type PointerEvent } from 'react';
 import { Link } from 'wouter';
-import { ShieldCheck, Phone, LockKeyhole } from 'lucide-react';
+import { Ear, MessageCircleHeart, ShieldCheck, Phone, LockKeyhole, type LucideIcon } from 'lucide-react';
 import './landing-story.css';
 import './landing-about-refresh.css';
 import './purpose-mission-flip.css';
@@ -85,9 +85,10 @@ type VisionMissionCardProps = {
   label: string;
   title: string;
   detail: string;
+  icon: LucideIcon;
 };
 
-function VisionMissionCard({ id, label, title, detail }: VisionMissionCardProps) {
+function VisionMissionCard({ id, label, title, detail, icon: Icon }: VisionMissionCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const cardRef = useRef<HTMLElement>(null);
   const frontButtonRef = useRef<HTMLButtonElement>(null);
@@ -126,6 +127,9 @@ function VisionMissionCard({ id, label, title, detail }: VisionMissionCardProps)
     >
       <div className="pm-flip-inner">
         <div className="pm-flip-face pm-flip-front" aria-hidden={isFlipped}>
+          <span className="pm-front-artwork" aria-hidden="true">
+            <Icon className="pm-front-icon" strokeWidth={1.6} />
+          </span>
           <span className="pm-front-label">{label}</span>
           <h3 id={`${id}-title`}>{title}</h3>
           <button
@@ -170,12 +174,14 @@ export function PurposeMission() {
           label="Our vision"
           title="To give people a safe space to talk and be heard."
           detail="Simple, and deeply meaningful to us."
+          icon={MessageCircleHeart}
         />
         <VisionMissionCard
           id="mission-card"
           label="Our mission"
           title="A space where everyone feels heard, valued, and free to express themselves."
           detail="We believe talking can help ease loneliness and foster meaningful human conversations in an increasingly AI-driven world."
+          icon={Ear}
         />
       </div>
     </section>

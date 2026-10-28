@@ -48,8 +48,37 @@
   background: linear-gradient(135deg, rgb(244 215 223 / 76%), rgb(255 247 233 / 70%));
 }
 
+.pm-front-artwork {
+  position: absolute;
+  top: 34px;
+  left: 32px;
+  display: grid;
+  width: 104px;
+  height: 104px;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 78%);
+  border-radius: 32px;
+  color: #805f68;
+  background: rgb(255 255 255 / 52%);
+  box-shadow: 0 12px 30px rgb(103 70 61 / 8%);
+  transform: rotate(-5deg);
+}
+
+.pm-front-icon {
+  width: 58px;
+  height: 58px;
+}
+
 .pm-flip-card:nth-child(2) .pm-flip-front {
   background: linear-gradient(135deg, rgb(230 248 240 / 82%), rgb(198 240 229 / 68%));
+}
+
+.pm-flip-card:nth-child(2) .pm-front-artwork {
+  right: 32px;
+  left: auto;
+  color: #52786c;
+  border-radius: 50%;
+  transform: rotate(5deg);
 }
 
 .pm-flip-back {
@@ -120,6 +149,9 @@
   .ls-pm { grid-template-columns: 1fr; gap: 16px; }
   .pm-flip-card { min-height: 390px; border-radius: 26px; }
   .pm-flip-face { padding: 25px; }
+  .pm-front-artwork { top: 26px; left: 25px; width: 84px; height: 84px; border-radius: 27px; }
+  .pm-front-icon { width: 48px; height: 48px; }
+  .pm-flip-card:nth-child(2) .pm-front-artwork { right: 25px; left: auto; }
   .pm-flip-face h3 { font-size: clamp(26px, 8vw, 34px); }
 }
 

@@ -6,7 +6,6 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY tsconfig*.json ./
 COPY lib/ lib/
 COPY artifacts/hablar-coming-soon/ artifacts/hablar-coming-soon/
-COPY attached_assets/ attached_assets/
 RUN pnpm install --frozen-lockfile
 # The production site is hosted at /. PORT is required while loading Vite config.
 ARG SITE_ORIGIN

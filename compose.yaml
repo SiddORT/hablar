@@ -22,11 +22,8 @@ services:
       - backend
 
   api:
-    image: ${API_IMAGE:-hablar-api:local}
-    platform: linux/amd64
-    build:
-      context: .
-      dockerfile: docker/api.Dockerfile
+      image: ${API_IMAGE:-ghcr.io/siddort/hablar-api:main}
+      platform: linux/amd64
     environment:
       DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
       SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in .env}
@@ -47,14 +44,9 @@ services:
     networks:
       - backend
 
-  website:
-    image: ${WEBSITE_IMAGE:-hablar-website:local}
-    platform: linux/amd64
-    build:
-      context: .
-      dockerfile: docker/website.Dockerfile
-      args:
-        SITE_ORIGIN: ${SITE_ORIGIN:-}
+    website:
+      image: ${WEBSITE_IMAGE:-ghcr.io/siddort/hablar-website:main}
+      platform: linux/amd64
     environment:
       API_UPSTREAM: http://api:8080
       NGINX_ENVSUBST_FILTER: ^API_UPSTREAM$

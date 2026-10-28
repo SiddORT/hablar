@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
 import os
 import re
 from contextlib import asynccontextmanager
@@ -21,13 +22,22 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
+from email_delivery import (
+    admin_notification_message,
+    configuration_warnings,
+    confirmation_message,
+    email_configuration,
+    send_email,
+)
 
-CONSENT_VERSION = "waitlist-launch-v1"
-PRIVACY_NOTICE_VERSION = "draft-2026-10-27"
+
+CONSENT_VERSION = "waitlist-launch-email-v2"
+PRIVACY_NOTICE_VERSION = "draft-2026-10-28"
 TERMS_VERSION = "draft-2026-10-27"
 ENCRYPTION_KEY_VERSION = 1
 PHONE_PATTERN = re.compile(r"^\+[1-9][0-9]{7,14}$")
 MAX_BODY_BYTES = 4096
+logger = logging.getLogger("hablar.waitlist")
 
 
 @lru_cache(maxsize=1)
@@ -145,6 +155,9 @@ async def lifespan(app: FastAPI):
     if not database_url:
         raise RuntimeError("DATABASE_URL is required for the HABLAR API.")
 
+    for warning in configuration_warnings():
+        logger.warning("%s", warning)
+
     app.state.db_pool = await asyncpg.create_pool(
         **_database_connection_args(database_url),
         min_size=1,
@@ -234,10 +247,10 @@ async def create_waitlist_signup(
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         ON CONFLICT DO NOTHING
-        RETURNING id
+        RETURNING id, created_at
     """
     async with request.app.state.db_pool.acquire() as connection:
-        await connection.fetchval(
+        inserted_signup = await connection.fetchrow(
             query,
             email_ciphertext,
             email_lookup_hash,
@@ -249,7 +262,58 @@ async def create_waitlist_signup(
             TERMS_VERSION,
         )
 
-    # Same response for new and existing contacts to avoid account enumeration.
+    if inserted_signup:
+        mail_config, missing_settings = email_configuration()
+        if missing_settings:
+            logger.warning(
+                "Waitlist email delivery skipped because required settings are "
+                "missing or invalid: %s",
+                ", ".join(missing_settings),
+            )
+        elif mail_config:
+            if email:
+                try:
+                    await send_email(
+                        mail_config,
+                        confirmation_message(email),
+                    )
+                except Exception:
+                    # Do not log SMTP exceptions; they can include message headers.
+                    logger.warning("Waitlist confirmation email could not be sent.")
+            if mail_config.admin_recipient:
+                try:
+                    await send_email(
+                        mail_config,
+                        admin_notification_message(
+                            mail_config.admin_recipient,
+                            email=email,
+                            phone=phone,
+                            submitted_at=inserted_signup["created_at"],
+                        ),
+                    )
+                except Exception:
+                    # SMTP exceptions may contain recipient or message data.
+                    logger.warning(
+                        "Waitlist administrator notification could not be sent."
+                    )
+            else:
+                if mail_config.admin_recipient_invalid:
+                    logger.warning(
+                        "Waitlist administrator notification skipped because "
+                        "ADMIN_NOTIFICATION_EMAIL is invalid."
+                    )
+                else:
+                    logger.warning(
+                        "Waitlist administrator notification skipped because "
+                        "ADMIN_NOTIFICATION_EMAIL is not configured."
+                    )
+
+    # Keep the response identical for new and existing contacts. It makes no
+    # claim that an email was delivered, which may be unavailable or fail.
     return WaitlistSignupResponse(
-        message="Thanks. Your contact has been recorded for one launch update."
+        message=(
+            "Thanks. Your contact has been recorded for one launch update. "
+            "For new email signups, a confirmation is sent only when email "
+            "delivery is available."
+        )
     )

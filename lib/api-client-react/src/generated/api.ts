@@ -140,7 +140,7 @@ export const getCreateWaitlistSignupUrl = () => {
 }
 
 /**
- * Stores consented contact details encrypted in PostgreSQL.
+ * Stores consented contact details encrypted in PostgreSQL. After a genuinely new record is saved, best-effort email sends a signup confirmation when an email was provided and an administrator notification when configured. Delivery failures do not discard the signup; duplicates do not send additional messages.
  * @summary Join the HABLAR launch waitlist
  */
 export const createWaitlistSignup = async (waitlistSignupInput: WaitlistSignupInput, options?: Parameters<typeof customFetch>[1]): Promise<WaitlistSignupResponse> => {

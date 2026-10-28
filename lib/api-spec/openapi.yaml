@@ -31,7 +31,7 @@ paths:
       operationId: createWaitlistSignup
       tags: [waitlist]
       summary: Join the HABLAR launch waitlist
-      description: Stores consented contact details encrypted in PostgreSQL.
+      description: Stores consented contact details encrypted in PostgreSQL. After a genuinely new record is saved, best-effort email sends a signup confirmation when an email was provided and an administrator notification when configured. Delivery failures do not discard the signup; duplicates do not send additional messages.
       requestBody:
         required: true
         content:
@@ -74,7 +74,7 @@ components:
           maxLength: 32
         consent:
           type: boolean
-          description: Explicit consent to process the supplied contact for one launch update
+          description: Explicit consent for an email signup confirmation when an email is provided, one launch update, and a signup notification to the HABLAR administrator
         termsAccepted:
           type: boolean
           description: Acceptance of the linked Terms and Conditions

@@ -18,7 +18,7 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
- * Stores consented contact details encrypted in PostgreSQL.
+ * Stores consented contact details encrypted in PostgreSQL. After a genuinely new record is saved, best-effort email sends a signup confirmation when an email was provided and an administrator notification when configured. Delivery failures do not discard the signup; duplicates do not send additional messages.
  * @summary Join the HABLAR launch waitlist
  */
 export const createWaitlistSignupBodyEmailMax = 254;
@@ -30,7 +30,7 @@ export const createWaitlistSignupBodyPhoneMax = 32;
 export const CreateWaitlistSignupBody = zod.object({
   "email": zod.string().email().max(createWaitlistSignupBodyEmailMax).nullish(),
   "phone": zod.string().max(createWaitlistSignupBodyPhoneMax).nullish().describe('International number with a country code; spaces, parentheses, and hyphens are removed before validation'),
-  "consent": zod.boolean().describe('Explicit consent to process the supplied contact for one launch update'),
+  "consent": zod.boolean().describe('Explicit consent for an email signup confirmation when an email is provided, one launch update, and a signup notification to the HABLAR administrator'),
   "termsAccepted": zod.boolean().describe('Acceptance of the linked Terms and Conditions')
 })
 

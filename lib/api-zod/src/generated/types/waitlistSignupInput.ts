@@ -18,7 +18,7 @@ export interface WaitlistSignupInput {
      * @nullable
      */
   phone?: string | null;
-  /** Explicit consent to process the supplied contact for one launch update */
+  /** Explicit consent for an email signup confirmation when an email is provided, one launch update, and a signup notification to the HABLAR administrator */
   consent: boolean;
   /** Acceptance of the linked Terms and Conditions */
   termsAccepted: boolean;

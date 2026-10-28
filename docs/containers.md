@@ -43,6 +43,8 @@ configuration includes credentials.
 | --- | --- | --- |
 | `DATABASE_URL` | API env file | PostgreSQL URL; TLS required by default. `sslmode=disable` is only appropriate for a trusted local/test database. |
 | `SESSION_SECRET` | API env file | Stable contact-encryption source secret, at least 32 bytes. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL` | API env file | Required for email delivery. Port 465 uses implicit TLS; other ports require STARTTLS. Put credentials in the host's secret manager/Replit Secrets, not source control. |
+| `ADMIN_NOTIFICATION_EMAIL` | API env file | HABLAR administrator recipient for one notification per newly saved signup. |
 | `API_ENV_FILE` | Compose `.env` / shell | External API settings file; defaults to `.env.api`. |
 | `HTTP_PORT` | Compose `.env` / shell | Host website port, default `8080`. |
 | `BIND_ADDRESS` | Compose `.env` / shell | Defaults to `127.0.0.1`. Set deliberately if exposing to a host proxy/network. |
@@ -86,6 +88,10 @@ attach untrusted containers to its network with this trust setting.
 Both application containers run as non-root users, with dropped capabilities
 and read-only roots in Compose. Only temporary runtime files are writable.
 There is no persistent app volume; contact data stays in the external database.
+If SMTP settings are missing or invalid, API startup logs the setting names
+that need attention and signups remain saveable; email delivery is skipped.
+The owner must confirm the configured SMTP provider's identity before naming it
+in the Privacy Notice.
 
 ## Build, operate, and check
 

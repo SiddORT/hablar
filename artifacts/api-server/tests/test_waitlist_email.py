@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import os
 import sys
 import smtplib
@@ -32,11 +33,63 @@ class FakeConnection:
         self.inserted_signup = inserted_signup
         self.query = None
         self.args = None
+        self.email_logs = {}
+        self.next_email_log_id = 1
+
+    def transaction(self):
+        return FakeTransaction()
 
     async def fetchrow(self, query, *args):
         self.query = query
         self.args = args
         return self.inserted_signup
+
+    async def fetchval(self, query, *args):
+        self.assert_email_log_query(query, "INSERT INTO waitlist_email_logs")
+        signup_id, email_type, status, reason_code = args
+        log_id = f"email-log-{self.next_email_log_id}"
+        self.next_email_log_id += 1
+        self.email_logs[log_id] = {
+            "signup_id": signup_id,
+            "email_type": email_type,
+            "status": status,
+            "reason_code": reason_code,
+            "attempted_at": status == "pending",
+            "completed_at": status == "skipped",
+        }
+        return log_id
+
+    async def execute(self, query, *args):
+        self.assert_email_log_query(query, "UPDATE waitlist_email_logs")
+        log_id, status, reason_code = args
+        self.email_logs[log_id].update(
+            status=status,
+            reason_code=reason_code,
+            attempted_at=(
+                True
+                if status == "pending"
+                else self.email_logs[log_id]["attempted_at"]
+            ),
+            completed_at=(
+                True
+                if status
+                in {"accepted_by_smtp", "failed", "uncertain", "skipped"}
+                else self.email_logs[log_id]["completed_at"]
+            ),
+        )
+        return "UPDATE 1"
+
+    def assert_email_log_query(self, query, expected):
+        if expected not in query:
+            raise AssertionError(f"Expected query to contain {expected!r}")
+
+
+class FakeTransaction:
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *_exc):
+        return None
 
 
 class FakeAcquire:
@@ -144,11 +197,20 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("Email address: person@example.com", admin_text)
         self.assertNotIn("consent", admin_text.lower())
         self.assertIn("RETURNING id, created_at", pool.connection.query)
+        logs = list(pool.connection.email_logs.values())
+        self.assertEqual(
+            {record["email_type"] for record in logs},
+            {"signup_confirmation", "admin_signup_notice"},
+        )
+        self.assertTrue(
+            all(record["status"] == "accepted_by_smtp" for record in logs)
+        )
+        self.assertNotIn("person@example.com", repr(logs))
         self.assertEqual(response.message, self.ACKNOWLEDGMENT)
 
     async def test_phone_only_signup_sends_admin_notice_without_confirmation(self):
         with patch.object(fastapi_app, "send_email", new_callable=AsyncMock) as send:
-            await self.submit(phone="+14155550123")
+            _, pool = await self.submit(phone="+14155550123")
 
         send.assert_awaited_once()
         admin = send.await_args.args[1]
@@ -156,11 +218,20 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         admin_text = admin.get_body(preferencelist=("plain",)).get_content()
         self.assertIn("Phone number: +14155550123", admin_text)
         self.assertNotIn("Email address:", admin_text)
+        logs = {
+            record["email_type"]: record
+            for record in pool.connection.email_logs.values()
+        }
+        self.assertEqual(logs["signup_confirmation"]["status"], "skipped")
+        self.assertEqual(
+            logs["signup_confirmation"]["reason_code"], "no_email_address"
+        )
+        self.assertEqual(logs["admin_signup_notice"]["status"], "accepted_by_smtp")
 
     async def test_duplicate_signup_sends_no_messages_and_same_acknowledgment(self):
         with patch.object(fastapi_app, "send_email", new_callable=AsyncMock) as send:
-            new_response, _ = await self.submit(email="person@example.com")
-            duplicate_response, _ = await self.submit(
+            new_response, new_pool = await self.submit(email="person@example.com")
+            duplicate_response, duplicate_pool = await self.submit(
                 email="person@example.com", inserted=False
             )
 
@@ -169,6 +240,8 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(new_response.message, self.ACKNOWLEDGMENT)
         self.assertNotIn("sent successfully", new_response.message.lower())
         self.assertNotIn("every", new_response.message.lower())
+        self.assertEqual(len(new_pool.connection.email_logs), 2)
+        self.assertEqual(len(duplicate_pool.connection.email_logs), 0)
 
     async def test_smtp_failures_do_not_fail_signup_or_log_contact_details(self):
         contact = "private.person@example.com"
@@ -179,12 +252,54 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
             side_effect=RuntimeError(f"SMTP failed for {contact}"),
         ) as send:
             with self.assertLogs("hablar.waitlist", level="WARNING") as logs:
-                response, _ = await self.submit(email=contact)
+                response, pool = await self.submit(email=contact)
 
         self.assertEqual(send.await_count, 2)
         self.assertEqual(response.message, self.ACKNOWLEDGMENT)
         self.assertNotIn(contact, response.message)
         self.assertNotIn(contact, "\n".join(logs.output))
+        self.assertTrue(
+            all(
+                record["status"] == "uncertain"
+                for record in pool.connection.email_logs.values()
+            )
+        )
+        self.assertNotIn(contact, repr(pool.connection.email_logs))
+
+    async def test_smtp_rejection_is_recorded_as_failed(self):
+        with patch.object(
+            fastapi_app,
+            "send_email",
+            new_callable=AsyncMock,
+            side_effect=smtplib.SMTPRecipientsRefused({}),
+        ):
+            _, pool = await self.submit(email="person@example.com")
+
+        self.assertTrue(
+            all(
+                record["status"] == "failed"
+                and record["reason_code"] == "smtp_rejected"
+                for record in pool.connection.email_logs.values()
+            )
+        )
+
+    async def test_cancelled_attempt_is_uncertain_and_later_email_stays_queued(self):
+        with patch.object(
+            fastapi_app,
+            "send_email",
+            new_callable=AsyncMock,
+            side_effect=asyncio.CancelledError(),
+        ):
+            with self.assertRaises(asyncio.CancelledError):
+                await self.submit(email="person@example.com")
+
+        pool = fastapi_app.app.state.db_pool
+        logs = {
+            record["email_type"]: record
+            for record in pool.connection.email_logs.values()
+        }
+        self.assertEqual(logs["signup_confirmation"]["status"], "uncertain")
+        self.assertEqual(logs["admin_signup_notice"]["status"], "queued")
 
     async def test_email_templates_have_html_and_readable_text(self):
         confirmation = confirmation_message("person@example.com")

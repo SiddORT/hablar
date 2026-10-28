@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import hmac
 import logging
 import os
 import re
 import secrets
+import smtplib
 from contextlib import asynccontextmanager
 from functools import lru_cache
 from typing import Annotated
@@ -45,6 +47,106 @@ MAX_BODY_BYTES = 4096
 LAUNCH_UPDATE_CAMPAIGN_ID = "hablar-launch-update-v1"
 LAUNCH_UPDATE_APPROVAL = "SEND ONE HABLAR LAUNCH UPDATE"
 logger = logging.getLogger("hablar.waitlist")
+
+
+async def _insert_waitlist_email_log(
+    connection,
+    signup_id: str,
+    email_type: str,
+    status: str,
+    reason_code: str | None,
+):
+    return await connection.fetchval(
+        """
+        INSERT INTO waitlist_email_logs (
+            signup_id, email_type, status, reason_code,
+            attempted_at, completed_at
+        )
+        VALUES (
+            $1, $2, $3, $4,
+            CASE WHEN $3 = 'pending' THEN NOW() ELSE NULL END,
+            CASE WHEN $3 = 'skipped' THEN NOW() ELSE NULL END
+        )
+        RETURNING id
+        """,
+        signup_id,
+        email_type,
+        status,
+        reason_code,
+    )
+
+
+async def _set_waitlist_email_log_status(
+    pool,
+    log_id,
+    status: str,
+    reason_code: str | None = None,
+) -> bool:
+    try:
+        async with pool.acquire() as connection:
+            await connection.execute(
+                """
+                UPDATE waitlist_email_logs
+                SET status = $2,
+                    reason_code = $3,
+                    attempted_at = CASE
+                        WHEN $2 = 'pending' THEN NOW()
+                        ELSE attempted_at
+                    END,
+                    completed_at = CASE
+                        WHEN $2 IN (
+                            'accepted_by_smtp', 'failed', 'uncertain', 'skipped'
+                        ) THEN NOW()
+                        ELSE completed_at
+                    END,
+                    updated_at = NOW()
+                WHERE id = $1
+                """,
+                log_id,
+                status,
+                reason_code,
+            )
+    except Exception:
+        logger.error("Waitlist email delivery status could not be saved.")
+        return False
+    return True
+
+
+async def _send_waitlist_email_with_log(
+    pool,
+    log_id,
+    mail_config,
+    message,
+    log_label: str,
+) -> None:
+    if not await _set_waitlist_email_log_status(pool, log_id, "pending"):
+        logger.error(
+            "Waitlist email was not attempted because its status could not be saved."
+        )
+        return
+
+    try:
+        await send_email(mail_config, message)
+    except asyncio.CancelledError:
+        await _set_waitlist_email_log_status(
+            pool, log_id, "uncertain", "send_cancelled"
+        )
+        raise
+    except (smtplib.SMTPRecipientsRefused, smtplib.SMTPResponseException):
+        await _set_waitlist_email_log_status(
+            pool, log_id, "failed", "smtp_rejected"
+        )
+        logger.warning("%s was rejected by SMTP.", log_label)
+    except Exception:
+        # Avoid recording exception text because SMTP errors can include addresses.
+        await _set_waitlist_email_log_status(
+            pool, log_id, "uncertain", "delivery_outcome_unknown"
+        )
+        logger.warning("%s delivery outcome is uncertain.", log_label)
+    else:
+        await _set_waitlist_email_log_status(
+            pool, log_id, "accepted_by_smtp"
+        )
 
 
 @lru_cache(maxsize=1)
@@ -465,6 +567,8 @@ async def create_waitlist_signup(
     email_lookup_hash = _contact_lookup_hash(email, "email") if email else None
     phone_ciphertext = _encrypt_contact(phone, "phone") if phone else None
     phone_lookup_hash = _contact_lookup_hash(phone, "phone") if phone else None
+    mail_config, missing_settings = email_configuration()
+    smtp_ready = mail_config is not None and not missing_settings
 
     query = """
         INSERT INTO waitlist_signups (
@@ -481,53 +585,90 @@ async def create_waitlist_signup(
         ON CONFLICT DO NOTHING
         RETURNING id, created_at
     """
+    confirmation_log_id = None
+    admin_log_id = None
     async with request.app.state.db_pool.acquire() as connection:
-        inserted_signup = await connection.fetchrow(
-            query,
-            email_ciphertext,
-            email_lookup_hash,
-            phone_ciphertext,
-            phone_lookup_hash,
-            ENCRYPTION_KEY_VERSION,
-            CONSENT_VERSION,
-            PRIVACY_NOTICE_VERSION,
-            TERMS_VERSION,
-        )
+        async with connection.transaction():
+            inserted_signup = await connection.fetchrow(
+                query,
+                email_ciphertext,
+                email_lookup_hash,
+                phone_ciphertext,
+                phone_lookup_hash,
+                ENCRYPTION_KEY_VERSION,
+                CONSENT_VERSION,
+                PRIVACY_NOTICE_VERSION,
+                TERMS_VERSION,
+            )
+            if inserted_signup:
+                if missing_settings:
+                    logger.warning(
+                        "Waitlist email delivery skipped because required settings are "
+                        "missing or invalid: %s",
+                        ", ".join(missing_settings),
+                    )
+
+                if email and smtp_ready:
+                    confirmation_status = "queued"
+                    confirmation_reason = None
+                elif not email:
+                    confirmation_status = "skipped"
+                    confirmation_reason = "no_email_address"
+                else:
+                    confirmation_status = "skipped"
+                    confirmation_reason = "smtp_configuration_unavailable"
+
+                if smtp_ready and mail_config.admin_recipient:
+                    admin_status = "queued"
+                    admin_reason = None
+                elif not smtp_ready:
+                    admin_status = "skipped"
+                    admin_reason = "smtp_configuration_unavailable"
+                elif mail_config.admin_recipient_invalid:
+                    admin_status = "skipped"
+                    admin_reason = "admin_address_invalid"
+                else:
+                    admin_status = "skipped"
+                    admin_reason = "admin_recipient_not_configured"
+
+                confirmation_log_id = await _insert_waitlist_email_log(
+                    connection,
+                    inserted_signup["id"],
+                    "signup_confirmation",
+                    confirmation_status,
+                    confirmation_reason,
+                )
+                admin_log_id = await _insert_waitlist_email_log(
+                    connection,
+                    inserted_signup["id"],
+                    "admin_signup_notice",
+                    admin_status,
+                    admin_reason,
+                )
 
     if inserted_signup:
-        mail_config, missing_settings = email_configuration()
-        if missing_settings:
-            logger.warning(
-                "Waitlist email delivery skipped because required settings are "
-                "missing or invalid: %s",
-                ", ".join(missing_settings),
-            )
-        elif mail_config:
+        if smtp_ready and mail_config:
             if email:
-                try:
-                    await send_email(
-                        mail_config,
-                        confirmation_message(email),
-                    )
-                except Exception:
-                    # Do not log SMTP exceptions; they can include message headers.
-                    logger.warning("Waitlist confirmation email could not be sent.")
+                await _send_waitlist_email_with_log(
+                    request.app.state.db_pool,
+                    confirmation_log_id,
+                    mail_config,
+                    confirmation_message(email),
+                    "Waitlist confirmation email",
+                )
             if mail_config.admin_recipient:
-                try:
-                    await send_email(
-                        mail_config,
-                        admin_notification_message(
-                            mail_config.admin_recipient,
-                            email=email,
-                            phone=phone,
-                            submitted_at=inserted_signup["created_at"],
-                        ),
-                    )
-                except Exception:
-                    # SMTP exceptions may contain recipient or message data.
-                    logger.warning(
-                        "Waitlist administrator notification could not be sent."
-                    )
+                await _send_waitlist_email_with_log(
+                    request.app.state.db_pool,
+                    admin_log_id,
+                    mail_config,
+                    admin_notification_message(
+                        mail_config.admin_recipient,
+                        email=email,
+                        phone=phone,
+                        submitted_at=inserted_signup["created_at"],
+                    ),
+                    "Waitlist administrator notification",
+                )
             else:
                 if mail_config.admin_recipient_invalid:
                     logger.warning(

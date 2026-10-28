@@ -272,6 +272,8 @@ class LaunchUpdateTests(unittest.IsolatedAsyncioTestCase):
                 {
                     "id": f"signup-{index}",
                     "email_ciphertext": fastapi_app._encrypt_contact(contact, "email"),
+                    "consent_at": datetime(2026, 10, 28, tzinfo=timezone.utc),
+                    "consent_version": fastapi_app.CONSENT_VERSION,
                 }
                 for index, contact in enumerate(contacts)
             ]

@@ -17,6 +17,11 @@ class IsolatedWaitlistStore:
 
     def __init__(self):
         self.records: list[dict[str, object]] = []
+        self.email_logs: dict[str, dict[str, object]] = {}
+        self.next_email_log_id = 1
+
+    def transaction(self):
+        return IsolatedTransaction()
 
     async def fetchrow(self, query: str, *values: object):
         assert "ON CONFLICT DO NOTHING" in query
@@ -39,6 +44,33 @@ class IsolatedWaitlistStore:
             "id": f"isolated-test-{len(self.records)}",
             "created_at": datetime.now(timezone.utc),
         }
+
+    async def fetchval(self, query: str, *values: object):
+        assert "INSERT INTO waitlist_email_logs" in query
+        signup_id, email_type, status, reason_code = values
+        log_id = f"isolated-email-log-{self.next_email_log_id}"
+        self.next_email_log_id += 1
+        self.email_logs[log_id] = {
+            "signup_id": signup_id,
+            "email_type": email_type,
+            "status": status,
+            "reason_code": reason_code,
+        }
+        return log_id
+
+    async def execute(self, query: str, *values: object):
+        assert "UPDATE waitlist_email_logs" in query
+        log_id, status, reason_code = values
+        self.email_logs[log_id].update(status=status, reason_code=reason_code)
+        return "UPDATE 1"
+
+
+class IsolatedTransaction:
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *_exc):
+        return None
 
 
 class IsolatedAcquire:
@@ -127,6 +159,7 @@ class WaitlistHttpIntegrationTests(unittest.IsolatedAsyncioTestCase):
     def restore_isolated_state(self):
         # All test contacts live in this in-memory store and are discarded here.
         self.store.records.clear()
+        self.store.email_logs.clear()
         if self.previous_pool is None:
             fastapi_app.app.state._state.pop("db_pool", None)
         else:
@@ -152,6 +185,14 @@ class WaitlistHttpIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(status, 201)
         self.assertIn("recorded", response["message"])
         self.assertEqual(len(self.store.records), 1)
+        self.assertEqual(len(self.store.email_logs), 2)
+        self.assertTrue(
+            all(
+                record["status"] == "skipped"
+                for record in self.store.email_logs.values()
+            )
+        )
+        self.assertNotIn("person@example.com", repr(self.store.email_logs))
 
         record = self.store.records[0]
         encrypted = record["email_ciphertext"]
@@ -188,6 +229,13 @@ class WaitlistHttpIntegrationTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(decrypted, b"+14155550123")
         self.assertIsNone(record["email_ciphertext"])
+        confirmation_log = next(
+            entry
+            for entry in self.store.email_logs.values()
+            if entry["email_type"] == "signup_confirmation"
+        )
+        self.assertEqual(confirmation_log["status"], "skipped")
+        self.assertEqual(confirmation_log["reason_code"], "no_email_address")
 
     async def test_invalid_email_and_phone_are_rejected_without_persistence(self):
         invalid_email_status, _ = await self.post_signup(email="not-an-email")
@@ -216,6 +264,7 @@ class WaitlistHttpIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((first_status, duplicate_status), (201, 201))
         self.assertEqual(first_response, duplicate_response)
         self.assertEqual(len(self.store.records), 1)
+        self.assertEqual(len(self.store.email_logs), 2)
 
     async def test_duplicate_phone_returns_same_acknowledgment_without_new_record(self):
         first_status, first_response = await self.post_signup(
@@ -229,6 +278,7 @@ class WaitlistHttpIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((first_status, duplicate_status), (201, 201))
         self.assertEqual(first_response, duplicate_response)
         self.assertEqual(len(self.store.records), 1)
+        self.assertEqual(len(self.store.email_logs), 2)
 
 
 if __name__ == "__main__":

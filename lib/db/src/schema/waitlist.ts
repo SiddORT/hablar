@@ -1,4 +1,5 @@
 import {
+  check,
   customType,
   index,
   integer,
@@ -44,6 +45,45 @@ export const waitlistSignupsTable = pgTable(
       .on(table.phoneLookupHash)
       .where(sql`${table.phoneLookupHash} is not null`),
     index("waitlist_created_at_idx").on(table.createdAt),
+  ],
+);
+
+export const waitlistEmailLogsTable = pgTable(
+  "waitlist_email_logs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    signupId: uuid("signup_id")
+      .notNull()
+      .references(() => waitlistSignupsTable.id, { onDelete: "cascade" }),
+    emailType: varchar("email_type", { length: 40 }).notNull(),
+    status: varchar("status", { length: 24 }).notNull(),
+    reasonCode: varchar("reason_code", { length: 48 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    attemptedAt: timestamp("attempted_at", { withTimezone: true }),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (table) => [
+    index("waitlist_email_logs_signup_created_idx").on(
+      table.signupId,
+      table.createdAt,
+    ),
+    index("waitlist_email_logs_status_created_idx").on(
+      table.status,
+      table.createdAt,
+    ),
+    check(
+      "waitlist_email_logs_type_check",
+      sql`${table.emailType} in ('signup_confirmation', 'admin_signup_notice')`,
+    ),
+    check(
+      "waitlist_email_logs_status_check",
+      sql`${table.status} in ('queued', 'pending', 'accepted_by_smtp', 'failed', 'uncertain', 'skipped')`,
+    ),
   ],
 );
 

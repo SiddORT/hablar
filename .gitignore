@@ -72,3 +72,4 @@ Thumbs.db
 # Local deployment assets and package store
 /deploy/
  /deployscripts/
+ .pnpm-store/

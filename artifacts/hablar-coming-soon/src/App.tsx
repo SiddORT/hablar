@@ -5,7 +5,7 @@ import { CountryPicker, phoneCountries } from '@/components/country-picker';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { ArrowDown, ArrowUpRight, Check, ShieldCheck } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpRight, Check, ShieldCheck } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
@@ -236,7 +236,7 @@ function Home() {
     { label: 'Feeling loved', position: '100% 100%', copy: 'Share the warmth when your heart feels full.' },
   ];
   return (
-    <main className="site-shell">
+    <main className="site-shell" tabIndex={-1}>
       <Header />
       <section className="hero">
         <div className="hero-inner">
@@ -245,12 +245,15 @@ function Home() {
               <span className="launch-status">Coming soon</span>
             </div>
             <h1 className="hero-reveal">Your safe space <span>to express</span></h1>
-            <p className="hero-lede hero-reveal">Some days you need advice. Some days you just need someone to hear you. HABLAR is making space for the second one.</p>
-            <div className="hero-actions hero-reveal">
-              <a className="button-primary" href="#launch-note">Save me a seat <ArrowDown size={16} aria-hidden="true" /></a>
-              <a className="button-quiet" href="#how-it-works">Get to know us</a>
+            <p className="hero-lede hero-reveal">Because every story deserves a space, every person deserves to be heard, and sometimes, one heartfelt conversation can make a difference.</p>
+            <div className="hero-future-plan hero-reveal" aria-labelledby="hero-future-plan-heading">
+              <h2 id="hero-future-plan-heading">Planned for a future listening service</h2>
+              <ul>
+                <li>Your identity would remain anonymous to the person you connect with.</li>
+                <li>Your first interaction would take place on HABLAR.</li>
+              </ul>
+              <p>These are plans, not features offered by this coming-soon site. Any planned anonymity would be from the person you connect with, not from HABLAR itself.</p>
             </div>
-            <p className="hero-footnote hero-reveal">No fixing. No labels. Just a human being, listening.</p>
           </div>
           <div className="hero-art hero-reveal">
             <ul className="hero-topic-list" aria-label="Topics you may want to talk about">
@@ -381,8 +384,18 @@ function Router() {
   const [showLaunchCta, setShowLaunchCta] = useState(true);
   const [showInstagramCta, setShowInstagramCta] = useState(true);
   const [showHeroDock, setShowHeroDock] = useState(true);
+  const [showReturnToTop, setShowReturnToTop] = useState(false);
   const isLegalPage = location === '/privacy' || location === '/terms';
   usePageSeo(location);
+  useEffect(() => {
+    const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
+    if (!scrollport) return;
+
+    const updateVisibility = () => setShowReturnToTop(scrollport.scrollTop > 240);
+    updateVisibility();
+    scrollport.addEventListener('scroll', updateVisibility, { passive: true });
+    return () => scrollport.removeEventListener('scroll', updateVisibility);
+  }, [location]);
   useEffect(() => {
     const signupSection = document.getElementById('launch-note');
     const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
@@ -547,6 +560,22 @@ function Router() {
             <ArrowUpRight size={17} aria-hidden="true" />
           </a>
         </div>
+        <button
+          className="return-top-button"
+          type="button"
+          aria-label="Return to top"
+          title="Return to top"
+          hidden={!showReturnToTop}
+          onClick={() => {
+            const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
+            if (!scrollport) return;
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            scrollport.scrollTo({ top: 0, behavior: reducedMotion ? 'instant' : 'smooth' });
+            document.querySelector<HTMLElement>('.site-shell, #legal-main')?.focus({ preventScroll: true });
+          }}
+        >
+          <ArrowUp size={19} aria-hidden="true" />
+        </button>
       </>
     </RoutedErrorBoundary>
   );

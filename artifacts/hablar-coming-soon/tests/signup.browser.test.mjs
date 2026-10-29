@@ -76,14 +76,80 @@ async function enableRequiredConsents(page, { consent = true, termsAccepted = tr
 }
 
 async function statusText(page, expected) {
-  const status = page.getByRole('status');
+  const status = page.locator('.form-status');
   await status.waitFor({ state: 'visible' });
   await page.waitForFunction(
-    ({ expectedText }) => document.querySelector('[role="status"]')?.textContent?.includes(expectedText),
+    ({ expectedText }) => document.querySelector('.form-status')?.textContent?.includes(expectedText),
     { expectedText: expected },
   );
   return (await status.textContent()).trim();
 }
+
+test('hero story and future-service plans use the approved, scoped wording', async (t) => {
+  const page = await browser.newPage({ viewport: { width: 360, height: 800 } });
+  t.after(() => page.close());
+  await page.goto(appUrl, { waitUntil: 'networkidle' });
+
+  const hero = page.locator('.hero');
+  assert.equal(
+    (await hero.locator('.hero-lede').textContent()).trim(),
+    'Because every story deserves a space, every person deserves to be heard, and sometimes, one heartfelt conversation can make a difference.',
+  );
+  const heroText = await hero.innerText();
+  for (const removedCopy of [
+    'Save me a seat',
+    'Get to know us',
+    'No fixing. No labels. Just a human being, listening.',
+  ]) {
+    assert.equal(heroText.includes(removedCopy), false, `hero should not include "${removedCopy}"`);
+  }
+  assert.equal(await hero.locator('.hero-future-plan li').nth(0).textContent(), 'Your identity would remain anonymous to the person you connect with.');
+  assert.equal(await hero.locator('.hero-future-plan li').nth(1).textContent(), 'Your first interaction would take place on HABLAR.');
+  assert.match(await hero.locator('.hero-future-plan').innerText(), /plans, not features offered by this coming-soon site/i);
+  assert.match(await hero.locator('.hero-future-plan').innerText(), /not from HABLAR itself/i);
+
+  await page.locator('#hablar-theme').selectOption('soft-lavender');
+  await page.waitForFunction(() => document.documentElement.dataset.theme === 'soft-lavender');
+  const planBounds = await hero.locator('.hero-future-plan').boundingBox();
+  assert.ok(planBounds);
+  assert.ok(planBounds.x >= 0 && planBounds.x + planBounds.width <= 360, 'future-service copy should fit a narrow viewport');
+  assert.ok(await hero.locator('.hero-future-plan').evaluate((element) => getComputedStyle(element).backgroundColor !== ''));
+});
+
+test('return-to-top is hidden until scrolling and works by keyboard on landing and legal pages', async (t) => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  t.after(() => page.close());
+
+  for (const route of ['/', '/privacy', '/terms']) {
+    await page.goto(`${appUrl}${route}`, { waitUntil: 'networkidle' });
+    const scrollport = page.locator('.app-scrollport');
+    const button = page.getByRole('button', { name: 'Return to top' });
+    await button.waitFor({ state: 'hidden' });
+    await scrollport.evaluate((element) => {
+      element.scrollTo({ top: Math.max(500, element.scrollHeight - element.clientHeight), behavior: 'instant' });
+    });
+    await button.waitFor({ state: 'visible' });
+
+    const bounds = await page.evaluate(() => {
+      const buttonRect = document.querySelector('.return-top-button').getBoundingClientRect();
+      const dockRect = document.querySelector('.launch-sticky-dock').getBoundingClientRect();
+      return {
+        button: { left: buttonRect.left, right: buttonRect.right, top: buttonRect.top, bottom: buttonRect.bottom },
+        dock: { left: dockRect.left, right: dockRect.right, top: dockRect.top, bottom: dockRect.bottom },
+      };
+    });
+    const overlaps = bounds.button.left < bounds.dock.right
+      && bounds.button.right > bounds.dock.left
+      && bounds.button.top < bounds.dock.bottom
+      && bounds.button.bottom > bounds.dock.top;
+    assert.equal(overlaps, false, 'return-to-top should not overlap the sticky actions');
+
+    await button.focus();
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(() => document.querySelector('.app-scrollport').scrollTop < 2);
+    assert.equal(await page.evaluate(() => document.activeElement.matches('.site-shell, #legal-main')), true);
+  }
+});
 
 test('browser form validates contact details and both consent checkboxes', async (t) => {
   const { page, form, requests } = await openSignup();

@@ -995,13 +995,17 @@ html[data-theme="yellow-orange"] {
   --hr-line: var(--theme-border);
   background: var(--theme-page);
 }
-[data-theme] .hr-services { background: var(--theme-surface); }
+[data-theme] .hr-services { background: var(--theme-surface); border-color: var(--theme-border); }
 [data-theme] .hr-intro h2,
 [data-theme] .hr-services h2,
 [data-theme] .hr-detail p,
+[data-theme] .hr-detail-index,
 [data-theme] .hr-body { color: var(--theme-text); }
 [data-theme] .hr-lede,
 [data-theme] .hr-signoff { color: var(--theme-muted); }
+[data-theme] .hr-service-image { background: var(--theme-surface-warm); border-color: var(--theme-border); }
+[data-theme] .hr-service-image figcaption { color: var(--theme-muted); }
+[data-theme] .hr-closing span { color: var(--theme-muted); }
 [data-theme] .hr-principles li { background: var(--theme-accent-soft); color: var(--theme-accent); }
 [data-theme] .hr-principles .hr-principle-last { background: var(--theme-secondary-soft); color: var(--theme-secondary); }
 [data-theme] .ls-title,

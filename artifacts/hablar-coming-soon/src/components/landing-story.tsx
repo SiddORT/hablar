@@ -39,19 +39,38 @@ export function AboutServices() {
             <li>No labels</li>
             <li>No assumptions</li>
             <li>No judgment</li>
-            <li className="hr-principle-last">Just real conversation</li>
+            <li className="hr-principle-last">Just real conversations</li>
           </ul>
-          <div className="hr-details">
-            <article className="hr-detail">
-              <span className="hr-detail-index" aria-hidden="true">01</span>
-              <p>We believe being heard can make a difference. Our hope is that a conversation at HABLAR, in that very moment, might bring a little clarity, comfort, or a fresh perspective—and a reminder that you matter, and so do your feelings and thoughts.</p>
-            </article>
-            <article className="hr-detail">
-              <span className="hr-detail-index" aria-hidden="true">02</span>
-              <p>We aim to make it a warm space where you can speak freely, cry if you need to, laugh if you want to, or simply sit in silence with someone there. A reminder that you are not alone.</p>
-            </article>
+          <div className="hr-service-layout">
+            <div className="hr-service-copy">
+              <div className="hr-details">
+                <article className="hr-detail">
+                  <span className="hr-detail-index" aria-hidden="true">01</span>
+                  <p>Being heard can matter. When HABLAR opens, we hope to offer a conversation where you can speak freely about what is on your mind and have someone listen.</p>
+                </article>
+                <article className="hr-detail">
+                  <span className="hr-detail-index" aria-hidden="true">02</span>
+                  <p>Putting thoughts into words may bring a little clarity, comfort, or a fresh perspective. Every conversation will be different, and we cannot promise a particular outcome.</p>
+                </article>
+                <article className="hr-detail">
+                  <span className="hr-detail-index" aria-hidden="true">03</span>
+                  <p>We hope to make room for all of it: tears, laughter, or silence—without needing to tidy up what you feel.</p>
+                </article>
+              </div>
+              <p className="hr-closing">HABLAR <span>— Come as you are. Speak as you feel.</span></p>
+            </div>
+            <figure className="hr-service-image">
+              <img
+                src={`${import.meta.env.BASE_URL}brand/hablar-room-to-talk.webp`}
+                alt="Two women talking together in a bright living room."
+                width="1000"
+                height="1500"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>Illustrative photo only. The people pictured are not HABLAR participants, and this is not a HABLAR service session.</figcaption>
+            </figure>
           </div>
-          <p className="hr-closing">HABLAR <span>— Come as you are. Speak as you feel.</span></p>
         </section>
       </div>
     </section>

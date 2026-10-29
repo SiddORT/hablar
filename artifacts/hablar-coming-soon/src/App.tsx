@@ -243,9 +243,8 @@ function Home() {
           <div className="hero-copy">
             <div className="hero-intro hero-reveal">
               <span className="launch-status">Coming soon</span>
-              <span className="eyebrow"><i aria-hidden="true" /> A listening space is on its way</span>
             </div>
-            <h1 className="hero-reveal">Your safe place <span>to express.</span></h1>
+            <h1 className="hero-reveal">Your safe space <span>to express.</span></h1>
             <p className="hero-lede hero-reveal">Some days you need advice. Some days you just need someone to hear you. HABLAR is making space for the second one.</p>
             <div className="hero-actions hero-reveal">
               <a className="button-primary" href="#launch-note">Save me a seat <ArrowDown size={16} aria-hidden="true" /></a>

@@ -276,7 +276,9 @@ function Home() {
             <div className="hero-details hero-reveal">
               <ul className="hero-commitments" aria-label="Future service intentions">
                 <li>Your identity would remain anonymous to the person you connect with.</li>
-                <li><span className="hero-commitment-highlight">your first interaction is on us</span></li>
+                <li className="hero-commitment-no-pointer">
+                  <span className="hero-commitment-highlight">Your First Interaction is on us.</span>
+                </li>
               </ul>
               <div className="hero-actions">
                 <a className="button-primary" href="#launch-note" data-testid="link-hero-preregister">

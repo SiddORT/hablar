@@ -309,11 +309,10 @@ function Home() {
             >
               <ellipse className="hero-orbit-line" cx="230" cy="215" rx="210" ry="190" />
             </svg>
-            <img
-              className="hero-connection-art"
-              src={`${import.meta.env.BASE_URL}brand/hablar-connection-silhouettes.png`}
-              alt=""
-              aria-hidden="true"
+            <BrandLogo
+              className="hero-center-logo"
+              src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`}
+              alt="HABLAR"
             />
             <ul className="hero-topic-list" aria-label="Topics you may want to talk about">
               {[

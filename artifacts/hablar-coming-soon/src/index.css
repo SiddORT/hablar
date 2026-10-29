@@ -98,7 +98,7 @@ a { color: inherit; }
   position: absolute;
   z-index: 1;
   top: 12%;
-  left: 73%;
+  left: 77%;
   transform: translate(-50%, -100%);
   color: var(--theme-text, #454545);
   font-family: 'DM Sans', sans-serif;
@@ -354,14 +354,12 @@ a { color: inherit; }
 }
 .hero-orbit-node { fill: var(--theme-secondary); opacity: .78; }
 .hero-orbit-node--accent { fill: var(--theme-accent); }
-.hero-connection-art {
+.hero-center-logo {
   position: absolute;
   z-index: 1;
   left: 50%;
   top: 50%;
-  width: min(115%, 560px);
-  height: auto;
-  object-fit: contain;
+  width: clamp(112px, 30%, 160px);
   transform: translate(-50%, -50%);
   pointer-events: none;
 }

@@ -319,13 +319,13 @@ a { color: inherit; }
 .hero h1 span { color: #e7337d; }
 .hero-lede { max-width: 500px; font-size: 19px; line-height: 1.65; color: #65605e; margin: 0 0 18px; }
 .hero-details { max-width: 540px; }
-.hero-commitment-highlight { color: #e7337d; font-weight: 700; }
+.hero .hero-details .hero-commitment-highlight { color: #e7337d; font-weight: 700; }
+.hero-first-interaction { margin: 0 0 14px; }
 .hero-actions { display: flex; gap: 13px; align-items: center; flex-wrap: wrap; margin-top: 0; }
 .hero-actions .button-primary, .hero-actions .hero-instagram-cta { min-height: 48px; white-space: nowrap; }
 .hero-disclaimer { display: grid; gap: 4px; max-width: 500px; margin-top: 12px; color: var(--theme-text); font-size: 12px; line-height: 1.5; }
 .hero-disclaimer p { margin: 0; }
 .hero-disclaimer p:first-child { opacity: .78; }
-.hero .hero-disclaimer .hero-commitment-highlight { color: #e7337d; font-size: inherit; font-weight: 700; }
 .button-primary { display: inline-flex; align-items: center; justify-content: center; gap: 9px; }
 .button-quiet { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid #e7d8cb; color: #454545; text-decoration: none; border-radius: 999px; padding: 12px 18px; font-weight: 700; background: rgba(255,255,255,.64); }
 .hero-art {
@@ -894,7 +894,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .site-shell .values-big span,
 [data-theme] .site-shell .ls-closing span,
 [data-theme] .site-shell .hr-intro h2 span,
-[data-theme] .site-shell .hr-services h2 em,
 [data-theme] .legal-content a,
 [data-theme] .legal-back { color: var(--theme-accent); }
 [data-theme] .site-shell a:not(.button-primary):not(.nav-cta):not(.launch-sticky-cta),
@@ -934,8 +933,7 @@ html[data-theme="yellow-orange"] {
 [data-theme] .ls-note,
 [data-theme] .ls-block,
 [data-theme] .hr-photo figcaption { background-color: var(--theme-surface); color: var(--theme-text); }
-[data-theme] .emotion-card,
-[data-theme] .hr-services { border-color: var(--theme-border); }
+[data-theme] .emotion-card { border-color: var(--theme-border); }
 [data-theme] .story-band,
 [data-theme] .ls-philo { background: var(--theme-surface-soft); }
 [data-theme] .emotion-circle::before {
@@ -993,19 +991,10 @@ html[data-theme="yellow-orange"] {
   --hr-line: var(--theme-border);
   background: var(--theme-page);
 }
-[data-theme] .hr-services { background: var(--theme-surface); border-color: var(--theme-border); }
 [data-theme] .hr-intro h2,
-[data-theme] .hr-services h2,
-[data-theme] .hr-detail p,
-[data-theme] .hr-detail-index,
 [data-theme] .hr-body { color: var(--theme-text); }
 [data-theme] .hr-lede,
 [data-theme] .hr-signoff { color: var(--theme-muted); }
-[data-theme] .hr-service-image { background: var(--theme-surface-warm); border-color: var(--theme-border); }
-[data-theme] .hr-service-image figcaption { color: var(--theme-muted); }
-[data-theme] .hr-closing span { color: var(--theme-muted); }
-[data-theme] .hr-principles li { background: var(--theme-accent-soft); color: var(--theme-accent); }
-[data-theme] .hr-principles .hr-principle-last { background: var(--theme-secondary-soft); color: var(--theme-secondary); }
 [data-theme] .ls-title,
 [data-theme] .ls-block h3,
 [data-theme] .ls-closing p,
@@ -1062,7 +1051,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .country-option { color: var(--theme-text); }
 [data-theme] .country-option[data-selected="true"] { background: var(--theme-secondary-soft); color: var(--theme-secondary); }
 [data-theme] .boundary-icon { background: var(--theme-accent-soft); color: var(--theme-accent); }
-[data-theme] .hr-status { background: var(--theme-surface-warm); border-color: var(--theme-border); color: var(--theme-text); }
 [data-theme] .hr-photo::before { background: var(--theme-accent-soft); }
 [data-theme] .hr-mascot-art { background-color: var(--theme-surface); }
 

@@ -31,57 +31,6 @@ export function AboutServices() {
   );
 }
 
-export function ServicesSection() {
-  return (
-    <section className="hablar-refresh hr-services-section">
-      <div className="hr-shell">
-        <section className="hr-services hr-reveal" id="services" aria-labelledby="services-heading">
-          <div className="hr-services-top">
-            <div>
-              <span className="hr-eyebrow">Our services</span>
-              <h2 id="services-heading">A space to talk freely,<br /><em>when we open.</em></h2>
-            </div>
-            <p className="hr-status"><span className="hr-status-dot" aria-hidden="true" />Planned and coming soon.</p>
-          </div>
-          <p className="hr-service-lede">When HABLAR opens, we hope to offer a space where you can talk freely as you navigate your thoughts or a difficult moment. Our intention is to listen with genuine support and remind you that someone is here to hear you.</p>
-          <ul className="hr-principles" aria-label="The spirit of future conversations">
-            <li>No labels</li>
-            <li>No assumptions</li>
-            <li>No judgment</li>
-            <li className="hr-principle-last">Just real conversations</li>
-          </ul>
-          <div className="hr-service-layout">
-            <div className="hr-service-copy">
-              <div className="hr-details">
-                <article className="hr-detail">
-                  <span className="hr-detail-index" aria-hidden="true">01</span>
-                  <p>We believe being heard can make a difference. A conversation with HABLAR may bring clarity, comfort, or a fresh perspective. We hope it reminds you that you matter—your feelings and thoughts matter, too.</p>
-                </article>
-                <article className="hr-detail">
-                  <span className="hr-detail-index" aria-hidden="true">02</span>
-                  <p>We hope to provide a warm, supportive space where you can speak freely, cry if you need to, laugh if you want to, or simply sit in silence knowing someone is there with you.</p>
-                </article>
-              </div>
-              <p className="hr-closing">HABLAR <span>— Come as you are. Speak as you feel.</span></p>
-            </div>
-            <figure className="hr-service-image">
-              <img
-                src={`${import.meta.env.BASE_URL}brand/hablar-room-to-talk.webp`}
-                alt="Two women talking together in a bright living room."
-                width="1000"
-                height="1500"
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption>Illustrative photo only. The people pictured are not HABLAR participants, and this is not a HABLAR service session.</figcaption>
-            </figure>
-          </div>
-        </section>
-      </div>
-    </section>
-  );
-}
-
 export function Philosophy() {
   return (
     <section className="ls-philo" id="philosophy" aria-labelledby="philosophy-heading">

@@ -12,7 +12,7 @@ import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter
 import NotFound from '@/pages/not-found';
 import LegalPage from '@/pages/legal';
 import { usePageSeo } from '@/lib/use-page-seo';
-import { AboutServices, ServicesSection, PurposeMission, ClosingLine } from '@/components/landing-story';
+import { AboutServices, PurposeMission, ClosingLine } from '@/components/landing-story';
 import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
 import { BrandLogo } from '@/components/brand-logo';
 
@@ -83,7 +83,6 @@ function Header() {
       </Link>
       <nav className="nav-links" aria-label="Main navigation">
         <a className="nav-plain" href="#about" data-testid="link-about">About HABLAR</a>
-        <a className="nav-plain" href="#services">Our services</a>
         <a className="nav-plain" href="#our-promise">Our mission</a>
         <ThemeSelector />
         <a className="nav-cta" href="#launch-note">Interested. Let's Talk</a>
@@ -105,7 +104,6 @@ function Footer() {
           <p>A little more room to be human. Come as you are.</p>
         </div>
         <nav className="footer-links" aria-label="Footer navigation">
-          <a href={`${import.meta.env.BASE_URL}#how-it-works`}>How it feels</a>
           <Link href="/privacy">Privacy Notice</Link>
           <Link href="/terms">Terms &amp; Conditions</Link>
         </nav>
@@ -274,6 +272,7 @@ function Home() {
             <h1 className="hero-reveal">Your safe space <span>to express</span></h1>
             <p className="hero-lede hero-reveal">Because every story deserves a space, every person deserves to be heard, and sometimes, one heartfelt conversation can make a difference.</p>
             <div className="hero-details hero-reveal">
+              <p className="hero-commitment-highlight hero-first-interaction">Your First Interaction is on us.</p>
               <div className="hero-actions">
                 <a className="button-primary" href="#launch-note" data-testid="link-hero-preregister">
                   Pre-register
@@ -293,7 +292,6 @@ function Home() {
               </div>
               <div className="hero-disclaimer" aria-label="Future service intentions">
                 <p>Your identity would remain anonymous to the person you connect with.</p>
-                <p className="hero-commitment-highlight">Your First Interaction is on us.</p>
               </div>
             </div>
           </div>
@@ -337,14 +335,6 @@ function Home() {
           </div>
         </div>
       </section>
-      <section className="story-band" id="how-it-works">
-        <div className="story-inner">
-          <p className="story-message scroll-reveal">
-            HABLAR is a safe space for you. A reminder that you're never truly alone.
-          </p>
-        </div>
-      </section>
-      <ServicesSection />
       <PurposeMission />
       <AboutServices />
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">

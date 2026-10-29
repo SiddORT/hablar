@@ -14,12 +14,11 @@
 }
 
 .hr-section { padding: clamp(48px, 6vw, 84px) 0 56px; }
-.hr-services-section { padding: 32px 0 clamp(48px, 6vw, 84px); }
 .hr-shell { width: min(1160px, calc(100% - 72px)); margin: 0 auto; display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; column-gap: clamp(38px, 7vw, 100px); }
 .hr-intro { padding: 12px 0 24px; }
 .hr-eyebrow { display: inline-flex; align-items: center; gap: 10px; color: var(--hr-rose-deep); text-transform: uppercase; letter-spacing: .16em; font-size: 11px; line-height: 1.4; font-weight: 800; }
 .hr-spark { width: 9px; height: 9px; display: inline-block; flex: 0 0 9px; border-radius: 50% 50% 50% 12%; transform: rotate(-35deg); background: #e8a95e; box-shadow: 0 0 0 5px rgba(232, 169, 94, .15); }
-.hr-intro h2, .hr-services h2 { font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: -.055em; }
+.hr-intro h2 { font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: -.055em; }
 .hr-intro h2 { font-size: clamp(39px, 5.2vw, 68px); line-height: 1.05; margin: 19px 0; max-width: 650px; }
 .hr-intro h2 span { color: var(--hr-rose); }
 .hr-lede { color: #595b54; font-size: clamp(19px, 2vw, 23px); line-height: 1.45; font-weight: 600; margin: 0 0 10px; }
@@ -30,32 +29,8 @@
 .hr-photo::before { content: ''; position: absolute; z-index: -1; inset: 30px 0 0; border-radius: 48% 48% 24px 24px; background: #edc4ab; }
 .hr-mascot-art { width: 100%; height: 100%; border-radius: 48% 48% 22px 22px; background-color: #fff; background-repeat: no-repeat; background-size: 300% 200%; background-position: 50% 100%; transition: transform .8s cubic-bezier(.2, .75, .25, 1); }
 .hr-photo:hover .hr-mascot-art { transform: scale(1.025); }
-.hr-services { grid-column: 1 / -1; margin-top: clamp(48px, 6vw, 84px); padding: clamp(28px, 4.5vw, 52px) clamp(24px, 5.5vw, 72px) 30px; border: 1px solid #f0dfd0; border-radius: 28px; background: rgba(255, 253, 248, .82); box-shadow: 0 24px 70px rgba(102, 74, 50, .055); }
-.hr-services-section .hr-services { margin-top: 0; }
-.hr-services-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; }
-.hr-services h2 { margin: 15px 0 0; font-size: clamp(34px, 4vw, 52px); line-height: 1.09; }
-.hr-services h2 em { color: var(--hr-rose); font-style: normal; }
-.hr-status { display: inline-flex; align-items: center; gap: 10px; flex: 0 0 auto; margin: 0 0 8px; padding: 11px 15px; border: 1px solid #e6c89e; border-radius: 999px; background: #fff4df; color: #815b2f; font-size: 12px; line-height: 1.3; font-weight: 700; letter-spacing: .02em; }
-.hr-status-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: #d5964f; box-shadow: 0 0 0 4px rgba(213, 150, 79, .13); }
-.hr-service-lede { max-width: 690px; margin: 20px 0 0; color: var(--hr-muted); font-size: 16px; line-height: 1.75; }
-.hr-principles { display: flex; flex-wrap: wrap; gap: 9px; margin: 0; padding: 25px 0 27px; border-bottom: 1px solid var(--hr-line); list-style: none; }
-.hr-principles li { padding: 9px 14px; border-radius: 999px; background: #fbede7; color: #a54f68; font-size: 13px; font-weight: 700; }
-.hr-principles .hr-principle-last { background: #f2e9d8; color: #786349; }
-.hr-service-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(240px, .75fr); align-items: center; gap: clamp(28px, 5vw, 64px); padding-top: 26px; }
-.hr-service-copy { min-width: 0; }
-.hr-details { display: grid; grid-template-columns: 1fr; gap: 17px; }
-.hr-detail { display: grid; grid-template-columns: 34px 1fr; align-items: start; gap: 15px; }
-.hr-detail-index { padding-top: 3px; color: #cf9a79; font: 600 12px/1 'Montserrat', sans-serif; letter-spacing: .08em; }
-.hr-detail p { margin: 0; color: var(--hr-muted); font-size: 14px; line-height: 1.8; }
-.hr-service-image { min-width: 0; margin: 0; padding: 10px; border: 1px solid var(--hr-line); border-radius: 22px; background: color-mix(in srgb, var(--hr-paper) 72%, #edc4ab); box-shadow: 0 16px 40px rgba(102, 74, 50, .09); }
-.hr-service-image img { display: block; width: 100%; aspect-ratio: 4 / 5; border-radius: 15px; object-fit: cover; object-position: center 54%; }
-.hr-service-image figcaption { padding: 10px 4px 2px; color: var(--hr-muted); font-size: 11px; line-height: 1.55; }
-.hr-closing { margin: 22px 0 0; padding-top: 21px; border-top: 1px dashed var(--hr-line); color: var(--hr-rose-deep); font: 700 13px/1.6 'Montserrat', sans-serif; letter-spacing: .02em; }
-.hr-closing span { color: #83776a; font-family: 'DM Sans', sans-serif; font-weight: 500; }
-
 @media (max-width: 760px) {
   .hr-section { padding: 42px 0 36px; }
-  .hr-services-section { padding: 24px 0 36px; }
   .hr-shell { width: min(calc(100% - 38px), 560px); grid-template-columns: 1fr; row-gap: 22px; }
   .hr-intro { padding: 0; }
   .hr-intro h2 { font-size: clamp(38px, 10vw, 56px); margin: 18px 0; }
@@ -63,18 +38,6 @@
   .hr-signoff { margin-top: 18px; }
   .hr-photo { width: calc(100% - 10px); aspect-ratio: 1.4; margin: 0 0 0 10px; padding: 13px 0 13px 12px; }
   .hr-photo::before { inset: 24px 0 0; }
-  .hr-services { margin-top: 30px; padding: 24px 18px 20px; border-radius: 22px; }
-  .hr-services-top { align-items: flex-start; flex-direction: column; gap: 19px; }
-  .hr-services h2 { font-size: clamp(34px, 9vw, 46px); }
-  .hr-status { margin: 0; }
-  .hr-service-lede { margin-top: 17px; font-size: 15px; }
-  .hr-principles { gap: 8px; padding: 18px 0; }
-  .hr-principles li { font-size: 12px; padding: 8px 11px; }
-  .hr-service-layout { grid-template-columns: 1fr; gap: 22px; padding-top: 22px; }
-  .hr-details { gap: 16px; }
-  .hr-detail { grid-template-columns: 28px 1fr; gap: 9px; }
-  .hr-service-image { width: min(100%, 420px); justify-self: center; }
-  .hr-closing { margin-top: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

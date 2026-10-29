@@ -321,6 +321,7 @@ a { color: inherit; }
 .hero-details { max-width: 540px; }
 .hero-commitments { display: grid; gap: 13px; max-width: 540px; margin: 20px 0 0; padding: 0; list-style: none; }
 .hero-commitments li { display: flex; align-items: flex-start; gap: 12px; color: var(--theme-text); font-size: 16px; line-height: 1.5; }
+.hero-commitment-highlight { color: #e7337d; }
 .hero-commitments li::before { content: ''; flex: 0 0 9px; width: 9px; height: 9px; margin-top: .48em; border-radius: 50%; background: var(--theme-secondary); box-shadow: 0 0 0 4px var(--theme-secondary-soft); }
 .hero-actions { display: flex; gap: 13px; align-items: center; flex-wrap: wrap; margin-top: 21px; }
 .hero-actions .button-primary, .hero-actions .hero-instagram-cta { min-height: 48px; white-space: nowrap; }

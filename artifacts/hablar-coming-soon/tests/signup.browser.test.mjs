@@ -128,7 +128,7 @@ async function statusText(page, expected) {
   return (await status.textContent()).trim();
 }
 
-test('hero story and future-service plans use the approved, scoped wording', async (t) => {
+test('hero story and interaction commitment use the requested wording and accent', async (t) => {
   const page = await browser.newPage({ viewport: { width: 360, height: 800 } });
   t.after(() => page.close());
   await page.goto(appUrl, { waitUntil: 'networkidle' });
@@ -146,17 +146,23 @@ test('hero story and future-service plans use the approved, scoped wording', asy
   ]) {
     assert.equal(heroText.includes(removedCopy), false, `hero should not include "${removedCopy}"`);
   }
-  assert.equal(await hero.locator('.hero-future-plan li').nth(0).textContent(), 'Your identity would remain anonymous to the person you connect with.');
-  assert.equal(await hero.locator('.hero-future-plan li').nth(1).textContent(), 'Your first interaction would take place on HABLAR.');
-  assert.match(await hero.locator('.hero-future-plan').innerText(), /plans, not features offered by this coming-soon site/i);
-  assert.match(await hero.locator('.hero-future-plan').innerText(), /not from HABLAR itself/i);
+  assert.equal(await hero.locator('.hero-commitments li').nth(0).textContent(), 'Your identity would remain anonymous to the person you connect with.');
+  const interactionCopy = hero.locator('.hero-commitment-highlight');
+  assert.equal(await interactionCopy.textContent(), 'your first interaction is on us');
+  assert.equal(
+    await interactionCopy.evaluate((element) => getComputedStyle(element).color),
+    'rgb(231, 51, 125)',
+    'the interaction commitment should use the site pink accent',
+  );
 
   await page.locator('#hablar-theme').selectOption('soft-lavender');
   await page.waitForFunction(() => document.documentElement.dataset.theme === 'soft-lavender');
-  const planBounds = await hero.locator('.hero-future-plan').boundingBox();
-  assert.ok(planBounds);
-  assert.ok(planBounds.x >= 0 && planBounds.x + planBounds.width <= 360, 'future-service copy should fit a narrow viewport');
-  assert.ok(await hero.locator('.hero-future-plan').evaluate((element) => getComputedStyle(element).backgroundColor !== ''));
+  const commitmentsBounds = await hero.locator('.hero-commitments').boundingBox();
+  assert.ok(commitmentsBounds);
+  assert.ok(
+    commitmentsBounds.x >= 0 && commitmentsBounds.x + commitmentsBounds.width <= 360,
+    'hero commitments should fit a narrow viewport',
+  );
 });
 
 test('return-to-top is hidden until scrolling and works by keyboard on landing and legal pages', async (t) => {

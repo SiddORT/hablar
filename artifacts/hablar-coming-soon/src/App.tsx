@@ -15,6 +15,7 @@ import { usePageSeo } from '@/lib/use-page-seo';
 import { AboutServices, PurposeMission, ClosingLine } from '@/components/landing-story';
 import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
 import { BrandLogo } from '@/components/brand-logo';
+import { ServicesSection } from '@/components/services-section';
 
 const queryClient = new QueryClient();
 gsap.registerPlugin(ScrollTrigger);
@@ -335,6 +336,7 @@ function Home() {
           </div>
         </div>
       </section>
+      <ServicesSection />
       <PurposeMission />
       <AboutServices />
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">
@@ -425,6 +427,7 @@ function Router() {
   const [showInstagramCta, setShowInstagramCta] = useState(true);
   const [showHeroDock, setShowHeroDock] = useState(true);
   const [showReturnToTop, setShowReturnToTop] = useState(false);
+  const [showServicesOverlayControls, setShowServicesOverlayControls] = useState(true);
   const isLegalPage = location === '/privacy' || location === '/terms';
   usePageSeo(location);
   useEffect(() => {
@@ -441,6 +444,7 @@ function Router() {
     const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
 
     if (isLegalPage && scrollport) {
+      setShowServicesOverlayControls(true);
       let frame = 0;
       const updateVisibility = () => {
         cancelAnimationFrame(frame);
@@ -485,6 +489,7 @@ function Router() {
     if (location !== '/' || !signupSection || !scrollport) {
       setShowLaunchCta(true);
       setShowInstagramCta(true);
+      setShowServicesOverlayControls(true);
       return;
     }
 
@@ -495,9 +500,20 @@ function Router() {
         const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
         const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
         if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
+        const dockRect = dock.getBoundingClientRect();
+        const servicesPanel = document.querySelector<HTMLElement>('.services-panel');
+        if (servicesPanel) {
+          const panelRect = servicesPanel.getBoundingClientRect();
+          const overlapsServices = panelRect.left < dockRect.right
+            && panelRect.right > dockRect.left
+            && panelRect.top < dockRect.bottom
+            && panelRect.bottom > dockRect.top;
+          setShowServicesOverlayControls(!overlapsServices);
+        } else {
+          setShowServicesOverlayControls(true);
+        }
         const topicList = document.querySelector<HTMLElement>('.hero-topic-list');
         if (topicList) {
-          const dockRect = dock.getBoundingClientRect();
           const topicsRect = topicList.getBoundingClientRect();
           const overlapsTopics = topicsRect.left < dockRect.right
             && topicsRect.right > dockRect.left
@@ -557,7 +573,7 @@ function Router() {
           </Switch>
         </div>
         <div
-          className={`launch-sticky-dock${showLaunchCta ? '' : ' is-launch-hidden'}${showInstagramCta ? '' : ' is-follow-obscured'}${showHeroDock || location !== '/' ? '' : ' is-hero-art-obscured'}${isLegalPage ? ' is-legal-page' : ''}`}
+          className={`launch-sticky-dock${showLaunchCta ? '' : ' is-launch-hidden'}${showInstagramCta ? '' : ' is-follow-obscured'}${showHeroDock || location !== '/' ? '' : ' is-hero-art-obscured'}${showServicesOverlayControls ? '' : ' is-services-visible'}${isLegalPage ? ' is-legal-page' : ''}`}
         >
           <a
             className="instagram-sticky-cta"
@@ -565,7 +581,7 @@ function Router() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow us on Instagram (opens in a new tab)"
-            tabIndex={showInstagramCta && (showHeroDock || location !== '/') ? 0 : -1}
+            tabIndex={showInstagramCta && showServicesOverlayControls && (showHeroDock || location !== '/') ? 0 : -1}
             data-testid="link-instagram"
           >
             <InstagramGradientIcon gradientId="instagram-icon-gradient-sticky" />
@@ -575,7 +591,7 @@ function Router() {
             className="launch-sticky-cta"
             href={`${import.meta.env.BASE_URL}#launch-note`}
             aria-label="Interested. Let's Talk"
-            tabIndex={showLaunchCta && (showHeroDock || location !== '/') ? 0 : -1}
+            tabIndex={showLaunchCta && showServicesOverlayControls && (showHeroDock || location !== '/') ? 0 : -1}
           >
             Interested. Let's Talk
             <ArrowUpRight size={17} aria-hidden="true" />
@@ -586,7 +602,7 @@ function Router() {
           type="button"
           aria-label="Return to top"
           title="Return to top"
-          hidden={!showReturnToTop}
+          hidden={!showReturnToTop || !showServicesOverlayControls}
           onClick={() => {
             const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
             if (!scrollport) return;

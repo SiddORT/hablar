@@ -1034,6 +1034,7 @@ html[data-theme="yellow-orange"] {
 [data-theme] .pm-flip-cue:hover,
 [data-theme] .pm-flip-cue:focus-visible { background: var(--theme-accent-button); color: #fff; }
 [data-theme] .theme-control { display: inline-flex; align-items: center; gap: 7px; color: var(--theme-text); font-size: 12px; font-weight: 700; white-space: nowrap; }
+[data-theme] .topbar .theme-control { display: none; }
 [data-theme] .theme-select {
   min-height: 40px;
   min-width: 126px;

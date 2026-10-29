@@ -252,17 +252,29 @@ function Home() {
             </div>
             <p className="hero-footnote hero-reveal">No fixing. No labels. Just a human being, listening.</p>
           </div>
-          <div className="hero-art hero-reveal" aria-label="HABLAR brand artwork">
-            <div className="floating-note one">A softer kind of space</div>
-            <div className="scribble" aria-hidden="true" />
-            <div className="logo-art">
-              <BrandLogo
-                className="brand-logo--art"
-                src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`}
-                alt="HABLAR, your safe space to express"
-              />
-            </div>
-            <div className="floating-note two">Come as you are</div>
+          <div className="hero-art hero-reveal">
+            <ul className="hero-topic-list" aria-label="Topics you may want to talk about">
+              {[
+                'relationships',
+                'heartbreak',
+                'friendship',
+                'family',
+                'marriage',
+                'work',
+                'sexuality',
+                'trauma',
+                'shame',
+                'financial-situation',
+                'guilt',
+                'grief',
+                'loss',
+              ].map((topic) => (
+                <li className="hero-topic-item" key={topic}>
+                  <span className="hero-topic-hash" aria-hidden="true">#</span>
+                  <span>{topic}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -382,6 +394,7 @@ function Router() {
   const [location] = useLocation();
   const [showLaunchCta, setShowLaunchCta] = useState(true);
   const [showInstagramCta, setShowInstagramCta] = useState(true);
+  const [showHeroDock, setShowHeroDock] = useState(true);
   const isLegalPage = location === '/privacy' || location === '/terms';
   usePageSeo(location);
   useEffect(() => {
@@ -441,7 +454,20 @@ function Router() {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
-        if (!instagramCta || document.activeElement === instagramCta) return;
+        const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
+        if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
+        const topicList = document.querySelector<HTMLElement>('.hero-topic-list');
+        if (topicList) {
+          const dockRect = dock.getBoundingClientRect();
+          const topicsRect = topicList.getBoundingClientRect();
+          const overlapsTopics = topicsRect.left < dockRect.right
+            && topicsRect.right > dockRect.left
+            && topicsRect.top < dockRect.bottom
+            && topicsRect.bottom > dockRect.top;
+          setShowHeroDock(!overlapsTopics);
+        } else {
+          setShowHeroDock(true);
+        }
         const ctaRect = instagramCta.getBoundingClientRect();
         const signupContent = document.querySelectorAll<HTMLElement>(
           '#launch-note h2, #launch-note p, #launch-note label, #launch-note input, #launch-note button',
@@ -467,12 +493,17 @@ function Router() {
     observer.observe(signupSection);
     scrollport.addEventListener('scroll', updateInstagramVisibility, { passive: true });
     window.addEventListener('resize', updateInstagramVisibility);
+    const dockLinks = document.querySelectorAll<HTMLElement>(
+      '.launch-sticky-cta, .instagram-sticky-cta',
+    );
+    dockLinks.forEach((link) => link.addEventListener('blur', updateInstagramVisibility));
     updateInstagramVisibility();
     return () => {
       observer.disconnect();
       cancelAnimationFrame(frame);
       scrollport.removeEventListener('scroll', updateInstagramVisibility);
       window.removeEventListener('resize', updateInstagramVisibility);
+      dockLinks.forEach((link) => link.removeEventListener('blur', updateInstagramVisibility));
     };
   }, [location]);
   return (
@@ -487,7 +518,7 @@ function Router() {
           </Switch>
         </div>
         <div
-          className={`launch-sticky-dock${showLaunchCta ? '' : ' is-launch-hidden'}${showInstagramCta ? '' : ' is-follow-obscured'}${isLegalPage ? ' is-legal-page' : ''}`}
+          className={`launch-sticky-dock${showLaunchCta ? '' : ' is-launch-hidden'}${showInstagramCta ? '' : ' is-follow-obscured'}${showHeroDock || location !== '/' ? '' : ' is-hero-art-obscured'}${isLegalPage ? ' is-legal-page' : ''}`}
         >
           <a
             className="instagram-sticky-cta"
@@ -495,7 +526,7 @@ function Router() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow us on Instagram (opens in a new tab)"
-            tabIndex={showInstagramCta ? 0 : -1}
+            tabIndex={showInstagramCta && (showHeroDock || location !== '/') ? 0 : -1}
             data-testid="link-instagram"
           >
             <svg
@@ -524,7 +555,7 @@ function Router() {
             className="launch-sticky-cta"
             href={`${import.meta.env.BASE_URL}#launch-note`}
             aria-label="Interested. Let's Talk"
-            tabIndex={showLaunchCta ? 0 : -1}
+            tabIndex={showLaunchCta && (showHeroDock || location !== '/') ? 0 : -1}
           >
             Interested. Let's Talk
             <ArrowUpRight size={17} aria-hidden="true" />

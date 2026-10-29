@@ -55,7 +55,7 @@ function Header() {
         <a className="nav-plain" href="#how-it-works">Our services</a>
         <a className="nav-plain" href="#our-promise">Our mission</a>
         <ThemeSelector />
-        <a className="nav-cta" href="#launch-note">Keep me posted</a>
+        <a className="nav-cta" href="#launch-note">Interested. Let's Talk</a>
       </nav>
     </header>
   );
@@ -339,7 +339,7 @@ function Home() {
             <div className="connection-actions">
               <p className="connection-launch-note">HABLAR is coming soon. Sign up for a launch update.</p>
               <a className="button-primary connection-cta" href="#launch-note">
-                Keep me posted <ArrowDown size={16} aria-hidden="true" />
+                Interested. Let's Talk <ArrowDown size={16} aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -510,10 +510,10 @@ function Router() {
           <a
             className="launch-sticky-cta"
             href={`${import.meta.env.BASE_URL}#launch-note`}
-            aria-label="Sign up for HABLAR launch updates"
+            aria-label="Interested. Let's Talk"
             tabIndex={showLaunchCta ? 0 : -1}
           >
-            Get launch updates
+            Interested. Let's Talk
             <ArrowUpRight size={17} aria-hidden="true" />
           </a>
         </div>

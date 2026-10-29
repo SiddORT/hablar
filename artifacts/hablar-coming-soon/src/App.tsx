@@ -21,6 +21,33 @@ gsap.registerPlugin(ScrollTrigger);
 
 const INSTAGRAM_PROFILE_URL = 'https://www.instagram.com/hablar.wetalk/';
 
+function InstagramGradientIcon({ gradientId }: { gradientId: string }) {
+  const gradientUrl = `url(#${gradientId})`;
+
+  return (
+    <svg
+      className="instagram-gradient-icon"
+      width="21"
+      height="21"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id={gradientId} x1="3" y1="21" x2="21" y2="3" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FEDA75" />
+          <stop offset=".32" stopColor="#FA7E1E" />
+          <stop offset=".62" stopColor="#D62976" />
+          <stop offset="1" stopColor="#4F5BD5" />
+        </linearGradient>
+      </defs>
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5.2" stroke={gradientUrl} strokeWidth="2" />
+      <circle cx="12" cy="12" r="4.1" stroke={gradientUrl} strokeWidth="2" />
+      <circle cx="17.7" cy="6.4" r="1.15" fill={gradientUrl} />
+    </svg>
+  );
+}
+
 type SignupFeedback =
   | { kind: 'success' | 'error'; message: string }
   | null;
@@ -257,15 +284,15 @@ function Home() {
                   <ArrowUpRight size={17} aria-hidden="true" />
                 </a>
                 <a
-                  className="button-quiet"
+                  className="hero-instagram-cta"
                   href={INSTAGRAM_PROFILE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Follow us on Instagram (opens in a new tab)"
                   data-testid="link-hero-instagram"
                 >
-                  Follow us on Instagram
-                  <ArrowUpRight size={17} aria-hidden="true" />
+                  <InstagramGradientIcon gradientId="instagram-icon-gradient-hero" />
+                  <span>Follow us on Instagram</span>
                 </a>
               </div>
             </div>
@@ -569,26 +596,7 @@ function Router() {
             tabIndex={showInstagramCta && (showHeroDock || location !== '/') ? 0 : -1}
             data-testid="link-instagram"
           >
-            <svg
-              className="instagram-gradient-icon"
-              width="21"
-              height="21"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
-            >
-              <defs>
-                <linearGradient id="instagram-icon-gradient" x1="3" y1="21" x2="21" y2="3" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#FEDA75" />
-                  <stop offset=".32" stopColor="#FA7E1E" />
-                  <stop offset=".62" stopColor="#D62976" />
-                  <stop offset="1" stopColor="#4F5BD5" />
-                </linearGradient>
-              </defs>
-              <rect x="2.5" y="2.5" width="19" height="19" rx="5.2" stroke="url(#instagram-icon-gradient)" strokeWidth="2" />
-              <circle cx="12" cy="12" r="4.1" stroke="url(#instagram-icon-gradient)" strokeWidth="2" />
-              <circle cx="17.7" cy="6.4" r="1.15" fill="url(#instagram-icon-gradient)" />
-            </svg>
+            <InstagramGradientIcon gradientId="instagram-icon-gradient-sticky" />
             <span>Follow us on Instagram</span>
           </a>
           <a

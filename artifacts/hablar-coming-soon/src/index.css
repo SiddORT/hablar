@@ -97,9 +97,9 @@ a { color: inherit; }
 .brand-logo__trademark {
   position: absolute;
   z-index: 1;
-  top: 62%;
-  right: 10%;
-  transform: translate(100%, -20%);
+  top: 12%;
+  left: 73%;
+  transform: translate(-50%, -100%);
   color: var(--theme-text, #454545);
   font-family: 'DM Sans', sans-serif;
   font-size: var(--brand-trademark-size, 12px);

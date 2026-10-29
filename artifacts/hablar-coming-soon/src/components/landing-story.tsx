@@ -26,6 +26,15 @@ export function AboutServices() {
           />
         </figure>
 
+      </div>
+    </section>
+  );
+}
+
+export function ServicesSection() {
+  return (
+    <section className="hablar-refresh hr-services-section">
+      <div className="hr-shell">
         <section className="hr-services hr-reveal" id="services" aria-labelledby="services-heading">
           <div className="hr-services-top">
             <div>
@@ -34,7 +43,7 @@ export function AboutServices() {
             </div>
             <p className="hr-status"><span className="hr-status-dot" aria-hidden="true" />Planned and coming soon.</p>
           </div>
-          <p className="hr-service-lede">We intend to offer a space where you can talk through your thoughts or a difficult moment, and be listened to.</p>
+          <p className="hr-service-lede">When HABLAR opens, we hope to offer a space where you can talk freely as you navigate your thoughts or a difficult moment. Our intention is to listen with genuine support and remind you that someone is here to hear you.</p>
           <ul className="hr-principles" aria-label="The spirit of future conversations">
             <li>No labels</li>
             <li>No assumptions</li>
@@ -46,15 +55,11 @@ export function AboutServices() {
               <div className="hr-details">
                 <article className="hr-detail">
                   <span className="hr-detail-index" aria-hidden="true">01</span>
-                  <p>Being heard can matter. When HABLAR opens, we hope to offer a conversation where you can speak freely about what is on your mind and have someone listen.</p>
+                  <p>We believe being heard can make a difference. A conversation with HABLAR may bring clarity, comfort, or a fresh perspective. We hope it reminds you that you matter—your feelings and thoughts matter, too.</p>
                 </article>
                 <article className="hr-detail">
                   <span className="hr-detail-index" aria-hidden="true">02</span>
-                  <p>Putting thoughts into words may bring a little clarity, comfort, or a fresh perspective. Every conversation will be different, and we cannot promise a particular outcome.</p>
-                </article>
-                <article className="hr-detail">
-                  <span className="hr-detail-index" aria-hidden="true">03</span>
-                  <p>We hope to make room for all of it: tears, laughter, or silence—without needing to tidy up what you feel.</p>
+                  <p>We hope to provide a warm, supportive space where you can speak freely, cry if you need to, laugh if you want to, or simply sit in silence knowing someone is there with you.</p>
                 </article>
               </div>
               <p className="hr-closing">HABLAR <span>— Come as you are. Speak as you feel.</span></p>

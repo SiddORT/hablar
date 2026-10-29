@@ -12,7 +12,7 @@ import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter
 import NotFound from '@/pages/not-found';
 import LegalPage from '@/pages/legal';
 import { usePageSeo } from '@/lib/use-page-seo';
-import { AboutServices, PurposeMission, ClosingLine } from '@/components/landing-story';
+import { AboutServices, ServicesSection, PurposeMission, ClosingLine } from '@/components/landing-story';
 import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
 import { BrandLogo } from '@/components/brand-logo';
 
@@ -83,7 +83,7 @@ function Header() {
       </Link>
       <nav className="nav-links" aria-label="Main navigation">
         <a className="nav-plain" href="#about" data-testid="link-about">About HABLAR</a>
-        <a className="nav-plain" href="#how-it-works">Our services</a>
+        <a className="nav-plain" href="#services">Our services</a>
         <a className="nav-plain" href="#our-promise">Our mission</a>
         <ThemeSelector />
         <a className="nav-cta" href="#launch-note">Interested. Let's Talk</a>
@@ -347,6 +347,7 @@ function Home() {
           </p>
         </div>
       </section>
+      <ServicesSection />
       <PurposeMission />
       <AboutServices />
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">

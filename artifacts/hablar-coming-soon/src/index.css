@@ -314,23 +314,15 @@ a { color: inherit; }
 }
 .hero h1 span { color: #e7337d; }
 .hero-lede { max-width: 500px; font-size: 19px; line-height: 1.65; color: #65605e; margin: 0 0 18px; }
-.hero-future-plan {
-  max-width: 530px;
-  padding: 17px 19px;
-  border: 1px solid #eadfd4;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, .74);
-  color: #454545;
-}
-.hero-future-plan h2 { margin: 0 0 10px; font: 700 13px/1.45 'Montserrat', sans-serif; letter-spacing: .01em; }
-.hero-future-plan ul { margin: 0; padding-left: 19px; }
-.hero-future-plan li { font-size: 14px; line-height: 1.55; }
-.hero-future-plan li + li { margin-top: 5px; }
-.hero-future-plan > p { margin: 10px 0 0; color: #716b68; font-size: 12px; line-height: 1.55; }
-.hero-actions { display: flex; gap: 13px; align-items: center; flex-wrap: wrap; }
+.hero-details { max-width: 540px; }
+.hero-commitments { display: grid; gap: 13px; max-width: 540px; margin: 20px 0 0; padding: 0; list-style: none; }
+.hero-commitments li { display: flex; align-items: flex-start; gap: 12px; color: var(--theme-text); font-size: 16px; line-height: 1.5; }
+.hero-commitments li::before { content: ''; flex: 0 0 9px; width: 9px; height: 9px; margin-top: .48em; border-radius: 50%; background: var(--theme-secondary); box-shadow: 0 0 0 4px var(--theme-secondary-soft); }
+.hero-actions { display: flex; gap: 13px; align-items: center; flex-wrap: wrap; margin-top: 21px; }
+.hero-actions .button-primary, .hero-actions .button-quiet { min-height: 48px; white-space: nowrap; }
 .button-primary { display: inline-flex; align-items: center; justify-content: center; gap: 9px; }
-.button-quiet { border: 1px solid #e7d8cb; color: #454545; text-decoration: none; border-radius: 999px; padding: 12px 18px; font-weight: 700; background: rgba(255,255,255,.64); }
-.hero-footnote { font-size: 12px; color: #79716e; margin: 18px 0 0; }
+.button-quiet { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid #e7d8cb; color: #454545; text-decoration: none; border-radius: 999px; padding: 12px 18px; font-weight: 700; background: rgba(255,255,255,.64); }
+.hero-future-note { max-width: 530px; margin: 14px 0 0; color: var(--theme-muted); font-size: 13px; line-height: 1.55; }
 .hero-art {
   min-height: 430px;
   display: grid;
@@ -713,8 +705,11 @@ a { color: inherit; }
   .hero::before { width: 470px; height: 470px; top: 12px; left: -210px; }
   .hero h1 { font-size: clamp(43px, 12vw, 60px); margin: 22px 0 18px; }
   .hero-lede { font-size: 16px; line-height: 1.6; }
-  .hero-future-plan { padding: 15px 16px; }
-  .hero-future-plan li { font-size: 13px; }
+  .hero-commitments { gap: 11px; margin-top: 18px; }
+  .hero-commitments li { font-size: 14px; }
+  .hero-actions { gap: 10px; margin-top: 18px; }
+  .hero-actions .button-primary, .hero-actions .button-quiet { min-height: 46px; }
+  .hero-future-note { font-size: 13px; }
   .hero-art { min-height: 330px; margin-top: 19px; }
   .hero-art { min-height: 0; padding: 10px 0 18px; }
   .hero-topic-list { gap: 10px 8px; }
@@ -882,8 +877,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .emotion-card p,
 [data-theme] .connection-copy p,
 [data-theme] .signup-panel p { color: var(--theme-muted); }
-[data-theme] .hero-future-plan { background: color-mix(in srgb, var(--theme-surface) 90%, transparent); border-color: var(--theme-border); color: var(--theme-text); }
-[data-theme] .hero-future-plan > p { color: var(--theme-muted); }
 [data-theme] .floating-note,
 [data-theme] .pill,
 [data-theme] .emotion-card,

@@ -246,13 +246,31 @@ function Home() {
             </div>
             <h1 className="hero-reveal">Your safe space <span>to express</span></h1>
             <p className="hero-lede hero-reveal">Because every story deserves a space, every person deserves to be heard, and sometimes, one heartfelt conversation can make a difference.</p>
-            <div className="hero-future-plan hero-reveal" aria-labelledby="hero-future-plan-heading">
-              <h2 id="hero-future-plan-heading">Planned for a future listening service</h2>
-              <ul>
+            <div className="hero-details hero-reveal">
+              <ul className="hero-commitments" aria-label="Future service intentions">
                 <li>Your identity would remain anonymous to the person you connect with.</li>
                 <li>Your first interaction would take place on HABLAR.</li>
               </ul>
-              <p>These are plans, not features offered by this coming-soon site. Any planned anonymity would be from the person you connect with, not from HABLAR itself.</p>
+              <div className="hero-actions">
+                <a className="button-primary" href="#launch-note" data-testid="link-hero-preregister">
+                  Pre-register
+                  <ArrowUpRight size={17} aria-hidden="true" />
+                </a>
+                <a
+                  className="button-quiet"
+                  href={INSTAGRAM_PROFILE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on Instagram (opens in a new tab)"
+                  data-testid="link-hero-instagram"
+                >
+                  Follow us on Instagram
+                  <ArrowUpRight size={17} aria-hidden="true" />
+                </a>
+              </div>
+              <p className="hero-future-note">
+                These are intended for HABLAR’s future service and are not available on this coming-soon site. Any planned anonymity would be from the person you connect with, not from HABLAR.
+              </p>
             </div>
           </div>
           <div className="hero-art hero-reveal">

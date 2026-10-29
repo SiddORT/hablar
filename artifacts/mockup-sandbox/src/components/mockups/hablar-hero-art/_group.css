@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap');
+
+.hablar-hero-preview {
+  --theme-page: #fffdf8;
+  --theme-text: #454545;
+  --theme-muted: #6f6966;
+  --theme-surface: #ffffff;
+  --theme-surface-soft: #f5fcf8;
+  --theme-surface-warm: #fff7e9;
+  --theme-border: #e7d8cb;
+  --theme-accent: #b22560;
+  --theme-accent-soft: #f4d7df;
+  --theme-secondary: #087a68;
+  --theme-secondary-soft: #e3f5ed;
+  --theme-focus: #075c54;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 24px;
+  background: var(--theme-surface-warm);
+  color: var(--theme-text);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.hero-art {
+  position: relative;
+  width: min(100%, 480px);
+  min-height: 470px;
+  display: grid;
+  place-items: center;
+  padding: 20px 10px;
+}
+.hero-tag-structure {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 50%;
+  width: min(100%, 480px);
+  height: 430px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: .72;
+}
+.hero-orbit-line {
+  fill: none;
+  stroke: var(--theme-border);
+  stroke-width: 1.3;
+  opacity: .82;
+}
+.hero-orbit-line--inner {
+  stroke: var(--theme-secondary);
+  stroke-dasharray: 3 8;
+  opacity: .42;
+}
+.hero-orbit-connector {
+  fill: none;
+  stroke: var(--theme-border);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  opacity: .8;
+}
+.hero-orbit-connector--inner {
+  stroke: var(--theme-secondary);
+  stroke-dasharray: 3 7;
+  opacity: .48;
+}
+.hero-orbit-node { fill: var(--theme-secondary); opacity: .78; }
+.hero-orbit-node--accent { fill: var(--theme-accent); }
+.hero-connection-art {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: min(70%, 310px);
+  height: auto;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.hero-topic-list {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 480px);
+  height: 430px;
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hero-topic-item {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 11px 11px;
+  border: 1px solid var(--theme-border);
+  border-radius: 999px;
+  background: var(--theme-surface);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--theme-text) 8%, transparent);
+  color: var(--theme-accent);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+.hero-topic-hash { font-weight: 800; }
+.hero-art--current .hero-topic-item:nth-child(1) { left: 18%; top: 12%; }
+.hero-art--current .hero-topic-item:nth-child(2) { left: 50%; top: 6%; }
+.hero-art--current .hero-topic-item:nth-child(3) { left: 82%; top: 13%; }
+.hero-art--current .hero-topic-item:nth-child(4) { left: 90%; top: 39%; }
+.hero-art--current .hero-topic-item:nth-child(5) { left: 34%; top: 30%; }
+.hero-art--current .hero-topic-item:nth-child(6) { left: 80%; top: 77%; }
+.hero-art--current .hero-topic-item:nth-child(7) { left: 66%; top: 30%; }
+.hero-art--current .hero-topic-item:nth-child(8) { left: 74%; top: 54%; }
+.hero-art--current .hero-topic-item:nth-child(9) { left: 50%; top: 70%; }
+.hero-art--current .hero-topic-item:nth-child(10) { left: 50%; top: 94%; }
+.hero-art--current .hero-topic-item:nth-child(11) { left: 10%; top: 48%; }
+.hero-art--current .hero-topic-item:nth-child(12) { left: 18%; top: 80%; }
+.hero-art--current .hero-topic-item:nth-child(13) { left: 28%; top: 54%; }
+.hero-art--around-image .hero-topic-item:nth-child(1) { left: 18%; top: 10%; }
+.hero-art--around-image .hero-topic-item:nth-child(2) { left: 50%; top: 6%; }
+.hero-art--around-image .hero-topic-item:nth-child(3) { left: 82%; top: 10%; }
+.hero-art--around-image .hero-topic-item:nth-child(4) { left: 10%; top: 31%; }
+.hero-art--around-image .hero-topic-item:nth-child(5) { left: 14%; top: 94%; }
+.hero-art--around-image .hero-topic-item:nth-child(6) { left: 88%; top: 31%; }
+.hero-art--around-image .hero-topic-item:nth-child(7) { left: 88%; top: 51%; }
+.hero-art--around-image .hero-topic-item:nth-child(8) { left: 88%; top: 71%; }
+.hero-art--around-image .hero-topic-item:nth-child(9) { left: 10%; top: 51%; }
+.hero-art--around-image .hero-topic-item:nth-child(10) { left: 46%; top: 94%; }
+.hero-art--around-image .hero-topic-item:nth-child(11) { left: 73%; top: 94%; }
+.hero-art--around-image .hero-topic-item:nth-child(12) { left: 10%; top: 71%; }
+.hero-art--around-image .hero-topic-item:nth-child(13) { left: 91%; top: 94%; }
+.hero-topic-item:nth-child(1),
+.hero-topic-item:nth-child(7),
+.hero-topic-item:nth-child(12) {
+  background: var(--theme-accent-soft);
+  border-color: transparent;
+}
+.hero-topic-item:nth-child(4),
+.hero-topic-item:nth-child(10) {
+  background: var(--theme-secondary-soft);
+  border-color: transparent;
+  color: var(--theme-secondary);
+}
+.hero-art--around-image .hero-topic-list { width: min(100%, 480px); }
+@media (max-width: 980px) {
+  .hero-art { min-height: 470px; }
+  .hero-connection-art { width: min(50%, 180px); }
+  .hero-topic-list { width: min(100%, 460px); }
+  .hero-topic-item { padding: 7px 6px; font-size: 10.5px; }
+  .hero-art--around-image .hero-topic-item:nth-child(1) { left: 20%; top: 8%; }
+  .hero-art--around-image .hero-topic-item:nth-child(2) { left: 52%; top: 6%; }
+  .hero-art--around-image .hero-topic-item:nth-child(3) { left: 84%; top: 8%; }
+  .hero-art--around-image .hero-topic-item:nth-child(4) { left: 12%; top: 31%; }
+  .hero-art--around-image .hero-topic-item:nth-child(5) { left: 12%; top: 93%; }
+  .hero-art--around-image .hero-topic-item:nth-child(6) { left: 84%; top: 31%; }
+  .hero-art--around-image .hero-topic-item:nth-child(7) { left: 84%; top: 51%; }
+  .hero-art--around-image .hero-topic-item:nth-child(8) { left: 84%; top: 71%; }
+  .hero-art--around-image .hero-topic-item:nth-child(9) { left: 12%; top: 51%; }
+  .hero-art--around-image .hero-topic-item:nth-child(10) { left: 45%; top: 93%; }
+  .hero-art--around-image .hero-topic-item:nth-child(11) { left: 77%; top: 93%; }
+  .hero-art--around-image .hero-topic-item:nth-child(12) { left: 12%; top: 71%; }
+  .hero-art--around-image .hero-topic-item:nth-child(13) { left: 91%; top: 93%; }
+}
+@media (max-width: 400px) {
+  .hero-art--around-image .hero-topic-item { padding: 6px 5px; font-size: 10px; }
+}

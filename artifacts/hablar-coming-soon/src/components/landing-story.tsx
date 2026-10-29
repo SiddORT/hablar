@@ -83,12 +83,11 @@ export function Philosophy() {
 type VisionMissionCardProps = {
   id: string;
   label: string;
-  title: string;
   detail: string;
   icon: LucideIcon;
 };
 
-function VisionMissionCard({ id, label, title, detail, icon: Icon }: VisionMissionCardProps) {
+function VisionMissionCard({ id, label, detail, icon: Icon }: VisionMissionCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const cardRef = useRef<HTMLElement>(null);
   const frontButtonRef = useRef<HTMLButtonElement>(null);
@@ -130,8 +129,7 @@ function VisionMissionCard({ id, label, title, detail, icon: Icon }: VisionMissi
           <span className="pm-front-artwork" aria-hidden="true">
             <Icon className="pm-front-icon" strokeWidth={1.6} />
           </span>
-          <span className="pm-front-label">{label}</span>
-          <h3 id={`${id}-title`}>{title}</h3>
+          <h3 id={`${id}-title`}>{label}</h3>
           <button
             ref={frontButtonRef}
             type="button"
@@ -166,21 +164,19 @@ function VisionMissionCard({ id, label, title, detail, icon: Icon }: VisionMissi
 
 export function PurposeMission() {
   return (
-    <section className="ls-wrap" id="purpose" aria-label="Our vision and mission">
-      <h2 className="sr-only">Our vision and mission</h2>
+    <section className="ls-wrap" id="purpose" aria-label="Our purpose and mission">
+      <h2 className="sr-only">Our purpose and mission</h2>
       <div className="ls-inner ls-pm">
         <VisionMissionCard
           id="vision-card"
-          label="Our vision"
-          title="To give people a safe space to talk and be heard."
-          detail="Simple, and deeply meaningful to us."
+          label="Our purpose"
+          detail="Our purpose is simple yet deeply meaningful: to give people a safe space to talk and be heard."
           icon={MessageCircleHeart}
         />
         <VisionMissionCard
           id="mission-card"
           label="Our mission"
-          title="A space where everyone feels heard, valued, and free to express themselves."
-          detail="We believe talking can help ease loneliness and foster meaningful human conversations in an increasingly AI-driven world."
+          detail="Our mission is to create a space where everyone feels heard, valued, and free to express themselves. Talking helps combat loneliness and fosters meaningful human conversations in increasingly AI-driven world."
           icon={Ear}
         />
       </div>

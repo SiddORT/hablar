@@ -90,7 +90,6 @@
   background: linear-gradient(135deg, rgb(198 240 229 / 82%), rgb(245 251 248 / 76%));
 }
 
-.pm-front-label,
 .pm-back-label {
   display: inline-flex;
   padding: 7px 11px;
@@ -149,10 +148,12 @@
   .ls-pm { grid-template-columns: 1fr; gap: 16px; }
   .pm-flip-card { min-height: 390px; border-radius: 26px; }
   .pm-flip-face { padding: 25px; }
+  .pm-flip-back { padding: 20px; }
   .pm-front-artwork { top: 26px; left: 25px; width: 84px; height: 84px; border-radius: 27px; }
   .pm-front-icon { width: 48px; height: 48px; }
   .pm-flip-card:nth-child(2) .pm-front-artwork { right: 25px; left: auto; }
   .pm-flip-face h3 { font-size: clamp(26px, 8vw, 34px); }
+  .pm-detail { margin: 14px 0 20px; font-size: clamp(15px, 4.7vw, 18px); line-height: 1.45; }
 }
 
 @media (prefers-reduced-motion: reduce) {

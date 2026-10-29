@@ -978,7 +978,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .pm-flip-card:nth-child(2) .pm-flip-back {
   background: linear-gradient(135deg, var(--theme-accent-soft), var(--theme-surface-soft));
 }
-[data-theme] .pm-front-label,
 [data-theme] .pm-back-label,
 [data-theme] .pm-flip-cue { background: var(--theme-surface); color: var(--theme-text); border-color: var(--theme-border); }
 [data-theme] .pm-flip-cue:hover,

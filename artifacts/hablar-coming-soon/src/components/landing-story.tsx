@@ -1,6 +1,6 @@
 import { useRef, useState, type PointerEvent } from 'react';
 import { Link } from 'wouter';
-import { Ear, MessageCircleHeart, ShieldCheck, Phone, LockKeyhole, type LucideIcon } from 'lucide-react';
+import { Ear, MessageCircleMore, ShieldCheck, Phone, LockKeyhole, type LucideIcon } from 'lucide-react';
 import './landing-story.css';
 import './landing-about-refresh.css';
 import './purpose-mission-flip.css';
@@ -55,13 +55,15 @@ type VisionMissionCardProps = {
   label: string;
   detail: string;
   icon: LucideIcon;
+  tone: 'rose' | 'mint';
 };
 
-function VisionMissionCard({ id, label, detail, icon: Icon }: VisionMissionCardProps) {
+function VisionMissionCard({ id, label, detail, icon: Icon, tone }: VisionMissionCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const cardRef = useRef<HTMLElement>(null);
   const frontButtonRef = useRef<HTMLButtonElement>(null);
   const backButtonRef = useRef<HTMLButtonElement>(null);
+  const title = label.replace(/^Our /, '');
 
   const showBack = () => {
     setIsFlipped(true);
@@ -84,7 +86,7 @@ function VisionMissionCard({ id, label, detail, icon: Icon }: VisionMissionCardP
   return (
     <article
       ref={cardRef}
-      className={`pm-flip-card${isFlipped ? ' is-flipped' : ''}`}
+      className={`pm-card pm-card--${tone}${isFlipped ? ' is-flipped' : ''}`}
       aria-label={label}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
@@ -94,16 +96,18 @@ function VisionMissionCard({ id, label, detail, icon: Icon }: VisionMissionCardP
         }
       }}
     >
-      <div className="pm-flip-inner">
-        <div className="pm-flip-face pm-flip-front" aria-hidden={isFlipped}>
-          <span className="pm-front-artwork" aria-hidden="true">
-            <Icon className="pm-front-icon" strokeWidth={1.6} />
+      <div className="pm-card-inner">
+        <div className="pm-face pm-front" aria-hidden={isFlipped}>
+          <span className="pm-artwork" aria-hidden="true">
+            <Icon className="pm-icon" strokeWidth={1.8} />
           </span>
-          <h3 id={`${id}-title`}>{label}</h3>
+          <span className="pm-spark pm-spark--one" aria-hidden="true" />
+          <span className="pm-spark pm-spark--two" aria-hidden="true" />
+          <h3 id={`${id}-title`}>Our <span>{title}</span></h3>
           <button
             ref={frontButtonRef}
             type="button"
-            className="pm-flip-cue"
+            className="pm-cue"
             tabIndex={isFlipped ? -1 : 0}
             aria-expanded={isFlipped}
             aria-controls={`${id}-detail`}
@@ -112,13 +116,14 @@ function VisionMissionCard({ id, label, detail, icon: Icon }: VisionMissionCardP
             Hover or tap to flip
           </button>
         </div>
-        <div className="pm-flip-face pm-flip-back" aria-hidden={!isFlipped}>
-          <span className="pm-back-label">{label}</span>
+        <div className="pm-face pm-back" aria-hidden={!isFlipped}>
+          <span className="pm-kicker">{label}</span>
+          <span className="pm-rule" aria-hidden="true" />
           <p className="pm-detail" id={`${id}-detail`}>{detail}</p>
           <button
             ref={backButtonRef}
             type="button"
-            className="pm-flip-cue"
+            className="pm-cue"
             tabIndex={isFlipped ? 0 : -1}
             aria-expanded={isFlipped}
             aria-controls={`${id}-detail`}
@@ -141,13 +146,15 @@ export function PurposeMission() {
           id="vision-card"
           label="Our purpose"
           detail="Our purpose is simple yet deeply meaningful: to give people a safe space to talk and be heard."
-          icon={MessageCircleHeart}
+          icon={MessageCircleMore}
+          tone="rose"
         />
         <VisionMissionCard
           id="mission-card"
           label="Our mission"
           detail="Our mission is to create a space where everyone feels heard, valued, and free to express themselves. Talking helps combat loneliness and fosters meaningful human conversations in increasingly AI-driven world."
           icon={Ear}
+          tone="mint"
         />
       </div>
     </section>

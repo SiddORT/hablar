@@ -427,7 +427,7 @@ function Router() {
   const [showInstagramCta, setShowInstagramCta] = useState(true);
   const [showHeroDock, setShowHeroDock] = useState(true);
   const [showReturnToTop, setShowReturnToTop] = useState(false);
-  const [showServicesOverlayControls, setShowServicesOverlayControls] = useState(true);
+  const [showContentOverlayControls, setShowContentOverlayControls] = useState(true);
   const isLegalPage = location === '/privacy' || location === '/terms';
   usePageSeo(location);
   useEffect(() => {
@@ -444,7 +444,7 @@ function Router() {
     const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
 
     if (isLegalPage && scrollport) {
-      setShowServicesOverlayControls(true);
+      setShowContentOverlayControls(true);
       let frame = 0;
       const updateVisibility = () => {
         cancelAnimationFrame(frame);
@@ -489,7 +489,7 @@ function Router() {
     if (location !== '/' || !signupSection || !scrollport) {
       setShowLaunchCta(true);
       setShowInstagramCta(true);
-      setShowServicesOverlayControls(true);
+      setShowContentOverlayControls(true);
       return;
     }
 
@@ -501,17 +501,15 @@ function Router() {
         const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
         if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
         const dockRect = dock.getBoundingClientRect();
-        const servicesPanel = document.querySelector<HTMLElement>('.services-panel');
-        if (servicesPanel) {
-          const panelRect = servicesPanel.getBoundingClientRect();
-          const overlapsServices = panelRect.left < dockRect.right
+        const contentPanels = document.querySelectorAll<HTMLElement>('.services-panel, .ls-pm');
+        const overlapsFeatureContent = Array.from(contentPanels).some((panel) => {
+          const panelRect = panel.getBoundingClientRect();
+          return panelRect.left < dockRect.right
             && panelRect.right > dockRect.left
             && panelRect.top < dockRect.bottom
             && panelRect.bottom > dockRect.top;
-          setShowServicesOverlayControls(!overlapsServices);
-        } else {
-          setShowServicesOverlayControls(true);
-        }
+        });
+        setShowContentOverlayControls(!overlapsFeatureContent);
         const topicList = document.querySelector<HTMLElement>('.hero-topic-list');
         if (topicList) {
           const topicsRect = topicList.getBoundingClientRect();
@@ -573,7 +571,7 @@ function Router() {
           </Switch>
         </div>
         <div
-          className={`launch-sticky-dock${showLaunchCta ? '' : ' is-launch-hidden'}${showInstagramCta ? '' : ' is-follow-obscured'}${showHeroDock || location !== '/' ? '' : ' is-hero-art-obscured'}${showServicesOverlayControls ? '' : ' is-services-visible'}${isLegalPage ? ' is-legal-page' : ''}`}
+          className={`launch-sticky-dock${showLaunchCta ? '' : ' is-launch-hidden'}${showInstagramCta ? '' : ' is-follow-obscured'}${showHeroDock || location !== '/' ? '' : ' is-hero-art-obscured'}${showContentOverlayControls ? '' : ' is-content-section-visible'}${isLegalPage ? ' is-legal-page' : ''}`}
         >
           <a
             className="instagram-sticky-cta"
@@ -581,7 +579,7 @@ function Router() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow us on Instagram (opens in a new tab)"
-            tabIndex={showInstagramCta && showServicesOverlayControls && (showHeroDock || location !== '/') ? 0 : -1}
+            tabIndex={showInstagramCta && showContentOverlayControls && (showHeroDock || location !== '/') ? 0 : -1}
             data-testid="link-instagram"
           >
             <InstagramGradientIcon gradientId="instagram-icon-gradient-sticky" />
@@ -591,7 +589,7 @@ function Router() {
             className="launch-sticky-cta"
             href={`${import.meta.env.BASE_URL}#launch-note`}
             aria-label="Interested. Let's Talk"
-            tabIndex={showLaunchCta && showServicesOverlayControls && (showHeroDock || location !== '/') ? 0 : -1}
+            tabIndex={showLaunchCta && showContentOverlayControls && (showHeroDock || location !== '/') ? 0 : -1}
           >
             Interested. Let's Talk
             <ArrowUpRight size={17} aria-hidden="true" />
@@ -602,7 +600,7 @@ function Router() {
           type="button"
           aria-label="Return to top"
           title="Return to top"
-          hidden={!showReturnToTop || !showServicesOverlayControls}
+          hidden={!showReturnToTop || !showContentOverlayControls}
           onClick={() => {
             const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
             if (!scrollport) return;

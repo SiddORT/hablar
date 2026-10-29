@@ -143,8 +143,8 @@ a { color: inherit; }
 .launch-sticky-dock.is-follow-obscured .instagram-sticky-cta { visibility: hidden; }
 .launch-sticky-dock.is-hero-art-obscured .instagram-sticky-cta,
 .launch-sticky-dock.is-hero-art-obscured .launch-sticky-cta { visibility: hidden; }
-.launch-sticky-dock.is-services-visible .instagram-sticky-cta,
-.launch-sticky-dock.is-services-visible .launch-sticky-cta { visibility: hidden; }
+.launch-sticky-dock.is-content-section-visible .instagram-sticky-cta,
+.launch-sticky-dock.is-content-section-visible .launch-sticky-cta { visibility: hidden; }
 .instagram-sticky-cta,
 .hero-instagram-cta {
   position: relative;

@@ -4,5 +4,7 @@ export const modules: ModuleMap = {
   "./components/mockups/hablar-about/Current.tsx": () => import("../components/mockups/hablar-about/Current.tsx"),
   "./components/mockups/hablar-about/Refreshed.tsx": () => import("../components/mockups/hablar-about/Refreshed.tsx"),
   "./components/mockups/hablar-hero-art/AroundArtwork.tsx": () => import("../components/mockups/hablar-hero-art/AroundArtwork.tsx"),
-  "./components/mockups/hablar-hero-art/Current.tsx": () => import("../components/mockups/hablar-hero-art/Current.tsx")
+  "./components/mockups/hablar-hero-art/Current.tsx": () => import("../components/mockups/hablar-hero-art/Current.tsx"),
+  "./components/mockups/hablar-purpose-mission/Current.tsx": () => import("../components/mockups/hablar-purpose-mission/Current.tsx"),
+  "./components/mockups/hablar-purpose-mission/Reference.tsx": () => import("../components/mockups/hablar-purpose-mission/Reference.tsx")
 };

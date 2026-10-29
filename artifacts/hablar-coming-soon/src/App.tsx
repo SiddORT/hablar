@@ -308,18 +308,6 @@ function Home() {
               focusable="false"
             >
               <ellipse className="hero-orbit-line" cx="230" cy="215" rx="210" ry="190" />
-              <circle className="hero-orbit-node" cx="145" cy="39" r="4" />
-              <circle className="hero-orbit-node hero-orbit-node--accent" cx="315" cy="39" r="4" />
-              <circle className="hero-orbit-node" cx="421" cy="91" r="4" />
-              <circle className="hero-orbit-node hero-orbit-node--accent" cx="438" cy="178" r="4" />
-              <circle className="hero-orbit-node" cx="438" cy="252" r="4" />
-              <circle className="hero-orbit-node hero-orbit-node--accent" cx="421" cy="339" r="4" />
-              <circle className="hero-orbit-node" cx="315" cy="391" r="4" />
-              <circle className="hero-orbit-node hero-orbit-node--accent" cx="145" cy="391" r="4" />
-              <circle className="hero-orbit-node" cx="39" cy="339" r="4" />
-              <circle className="hero-orbit-node hero-orbit-node--accent" cx="22" cy="252" r="4" />
-              <circle className="hero-orbit-node" cx="22" cy="178" r="4" />
-              <circle className="hero-orbit-node hero-orbit-node--accent" cx="39" cy="91" r="4" />
             </svg>
             <img
               className="hero-connection-art"

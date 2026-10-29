@@ -359,7 +359,7 @@ a { color: inherit; }
   z-index: 1;
   left: 50%;
   top: 50%;
-  width: min(70%, 310px);
+  width: min(115%, 560px);
   height: auto;
   object-fit: contain;
   transform: translate(-50%, -50%);
@@ -431,7 +431,7 @@ a { color: inherit; }
     transform: translate(-50%, -50%);
     opacity: .48;
   }
-  .hero-connection-art { width: min(50%, 180px); }
+  .hero-connection-art { width: min(100%, 360px); }
   .hero-topic-list {
     width: min(100%, 460px);
   }

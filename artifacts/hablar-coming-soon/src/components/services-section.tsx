@@ -1,15 +1,15 @@
 import {
-  Heart,
-  HandHeart,
+  Ear,
   Lightbulb,
   MessagesSquare,
   Ban,
+  Tag,
   UsersRound,
 } from 'lucide-react';
 import './services-section.css';
 
 const principles = [
-  { label: 'No labels', icon: Heart },
+  { label: 'No labels', icon: Tag },
   { label: 'No assumptions', icon: UsersRound },
   { label: 'No judgment', icon: Ban },
   { label: 'Just real conversations', icon: MessagesSquare },
@@ -24,7 +24,6 @@ export function ServicesSection() {
             HABLAR is being built as a space for you.
             <br />
             {' '}<span>A reminder that you’re never truly alone.</span>
-            <Heart className="services-title-heart" size={22} strokeWidth={1.5} aria-hidden="true" />
           </h2>
           <p className="services-intro">
             When HABLAR opens, we hope to offer a place to talk freely through your thoughts or a difficult moment. We aim to listen with genuine support—without labels, assumptions, or judgment—and remind you that someone is here to hear you.
@@ -54,7 +53,7 @@ export function ServicesSection() {
           </article>
           <article className="service-card service-card--mint" data-testid="service-card-02">
             <span className="service-icon service-icon--mint" aria-hidden="true">
-              <HandHeart size={25} strokeWidth={1.6} />
+              <Ear size={25} strokeWidth={1.6} />
             </span>
             <div className="service-card-copy">
               <span className="service-number">02</span>
@@ -70,7 +69,6 @@ export function ServicesSection() {
             <path className="services-wave-fill" d="M0 28C155 68 271 8 425 30s220 38 370 5 259-29 405 5v30H0V28Z" />
             <path className="services-wave-line" d="M0 28C155 68 271 8 425 30s220 38 370 5 259-29 405 5" />
           </svg>
-          <Heart size={34} strokeWidth={1.3} />
         </div>
       </div>
     </section>

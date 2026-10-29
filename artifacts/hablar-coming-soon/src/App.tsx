@@ -281,23 +281,9 @@ function Home() {
 
       <section className="story-band" id="how-it-works">
         <div className="story-inner">
-          <div className="story-photo scroll-reveal">
-            <img
-              src={`${import.meta.env.BASE_URL}brand/hablar-indian-conversation.webp`}
-              alt="A woman in green listening to a woman in yellow seated opposite her"
-              width={1400}
-              height={933}
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          <div className="story-copy scroll-reveal">
-            <span className="section-kicker">A little breathing room</span>
-            <h2>Come as you are.<br />Speak as you feel.</h2>
-            <p>You do not need the perfect words or a polished version of your story. Bring the messy middle, the tiny win, the thing you have been carrying around.</p>
-            <p><strong>Someone is here to listen without labels, assumptions, or judgment.</strong> Not to hurry you toward an answer. Just to make sure you do not feel alone in the moment.</p>
-            <div className="pill-row"><span className="pill">Your pace</span><span className="pill">Your words</span><span className="pill">No judgment</span></div>
-          </div>
+          <p className="story-message scroll-reveal">
+            HABLAR is a safe space for you. A reminder that you're never truly alone.
+          </p>
         </div>
       </section>
 

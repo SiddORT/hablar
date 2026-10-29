@@ -14,6 +14,7 @@ import LegalPage from '@/pages/legal';
 import { usePageSeo } from '@/lib/use-page-seo';
 import { AboutServices, PurposeMission, ClosingLine } from '@/components/landing-story';
 import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
+import { BrandLogo } from '@/components/brand-logo';
 
 const queryClient = new QueryClient();
 gsap.registerPlugin(ScrollTrigger);
@@ -48,7 +49,10 @@ function Header() {
   return (
     <header className="topbar">
       <Link href="/" className="brand-mini" aria-label="HABLAR home">
-        <img src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`} alt="HABLAR — Your safe space to express" />
+        <BrandLogo
+          src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`}
+          alt="HABLAR — Your safe space to express"
+        />
       </Link>
       <nav className="nav-links" aria-label="Main navigation">
         <a className="nav-plain" href="#about" data-testid="link-about">About HABLAR</a>
@@ -66,7 +70,11 @@ function Footer() {
     <footer className="footer">
       <div className="footer-inner">
         <div className="footer-brand">
-          <img src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`} alt="HABLAR" />
+          <BrandLogo
+            className="brand-logo--footer"
+            src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`}
+            alt="HABLAR"
+          />
           <p>A little more room to be human. Come as you are.</p>
         </div>
         <nav className="footer-links" aria-label="Footer navigation">
@@ -248,7 +256,13 @@ function Home() {
           <div className="hero-art hero-reveal" aria-label="HABLAR brand artwork">
             <div className="floating-note one">A softer kind of space</div>
             <div className="scribble" aria-hidden="true" />
-            <div className="logo-art"><img src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`} alt="HABLAR, your safe space to express" /></div>
+            <div className="logo-art">
+              <BrandLogo
+                className="brand-logo--art"
+                src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`}
+                alt="HABLAR, your safe space to express"
+              />
+            </div>
             <div className="floating-note two">Come as you are</div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from 'react';
 import { Link } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
 import { ThemeSelector } from '@/components/theme-selector';
+import { BrandLogo } from '@/components/brand-logo';
 
 type LegalSection = { id: string; title: string; body: ReactNode };
 
@@ -157,7 +158,10 @@ export default function LegalPage({ page, footer }: { page: 'privacy' | 'terms';
       <a className="legal-skip" href="#legal-main">Skip to legal content</a>
       <header className="legal-top">
         <Link href="/" className="brand-mini" aria-label="HABLAR home">
-          <img src={`${import.meta.env.BASE_URL}brand/hablar-logo-reference.jpeg`} alt="HABLAR" />
+          <BrandLogo
+            src={`${import.meta.env.BASE_URL}brand/hablar-logo-reference.jpeg`}
+            alt="HABLAR"
+          />
         </Link>
         <nav aria-label="Legal pages">
           <Link href="/privacy" aria-current={page === 'privacy' ? 'page' : undefined}>Privacy Notice</Link>

@@ -98,7 +98,7 @@ a { color: inherit; }
   position: absolute;
   z-index: 1;
   top: 12%;
-  left: 77%;
+  left: 82%;
   transform: translate(-50%, -100%);
   color: var(--theme-text, #454545);
   font-family: 'DM Sans', sans-serif;
@@ -319,14 +319,13 @@ a { color: inherit; }
 .hero h1 span { color: #e7337d; }
 .hero-lede { max-width: 500px; font-size: 19px; line-height: 1.65; color: #65605e; margin: 0 0 18px; }
 .hero-details { max-width: 540px; }
-.hero-commitments { display: grid; gap: 13px; max-width: 540px; margin: 20px 0 0; padding: 0; list-style: none; }
-.hero-commitments li { display: flex; align-items: flex-start; gap: 12px; color: var(--theme-text); font-size: 16px; line-height: 1.5; }
 .hero-commitment-highlight { color: #e7337d; font-weight: 700; }
-.hero-commitments li.hero-commitment-no-pointer { padding-left: 21px; }
-.hero-commitments li.hero-commitment-no-pointer::before { display: none; }
-.hero-commitments li::before { content: ''; flex: 0 0 9px; width: 9px; height: 9px; margin-top: .48em; border-radius: 50%; background: var(--theme-secondary); box-shadow: 0 0 0 4px var(--theme-secondary-soft); }
-.hero-actions { display: flex; gap: 13px; align-items: center; flex-wrap: wrap; margin-top: 21px; }
+.hero-actions { display: flex; gap: 13px; align-items: center; flex-wrap: wrap; margin-top: 0; }
 .hero-actions .button-primary, .hero-actions .hero-instagram-cta { min-height: 48px; white-space: nowrap; }
+.hero-disclaimer { display: grid; gap: 4px; max-width: 500px; margin-top: 12px; color: var(--theme-text); font-size: 12px; line-height: 1.5; }
+.hero-disclaimer p { margin: 0; }
+.hero-disclaimer p:first-child { opacity: .78; }
+.hero .hero-disclaimer .hero-commitment-highlight { color: #e7337d; font-size: inherit; font-weight: 700; }
 .button-primary { display: inline-flex; align-items: center; justify-content: center; gap: 9px; }
 .button-quiet { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid #e7d8cb; color: #454545; text-decoration: none; border-radius: 999px; padding: 12px 18px; font-weight: 700; background: rgba(255,255,255,.64); }
 .hero-art {
@@ -761,8 +760,6 @@ a { color: inherit; }
   .hero::before { width: 470px; height: 470px; top: 12px; left: -210px; }
   .hero h1 { font-size: clamp(43px, 12vw, 60px); margin: 22px 0 18px; }
   .hero-lede { font-size: 16px; line-height: 1.6; }
-  .hero-commitments { gap: 11px; margin-top: 18px; }
-  .hero-commitments li { font-size: 14px; }
   .hero-actions { gap: 10px; margin-top: 18px; }
   .hero-actions .button-primary, .hero-actions .hero-instagram-cta { min-height: 48px; }
   .hero-art { min-height: 0; margin-top: 19px; padding: 10px 0 18px; }

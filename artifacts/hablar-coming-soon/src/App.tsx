@@ -274,12 +274,6 @@ function Home() {
             <h1 className="hero-reveal">Your safe space <span>to express</span></h1>
             <p className="hero-lede hero-reveal">Because every story deserves a space, every person deserves to be heard, and sometimes, one heartfelt conversation can make a difference.</p>
             <div className="hero-details hero-reveal">
-              <ul className="hero-commitments" aria-label="Future service intentions">
-                <li>Your identity would remain anonymous to the person you connect with.</li>
-                <li className="hero-commitment-no-pointer">
-                  <span className="hero-commitment-highlight">Your First Interaction is on us.</span>
-                </li>
-              </ul>
               <div className="hero-actions">
                 <a className="button-primary" href="#launch-note" data-testid="link-hero-preregister">
                   Pre-register
@@ -296,6 +290,10 @@ function Home() {
                   <InstagramGradientIcon gradientId="instagram-icon-gradient-hero" />
                   <span>Follow us on Instagram</span>
                 </a>
+              </div>
+              <div className="hero-disclaimer" aria-label="Future service intentions">
+                <p>Your identity would remain anonymous to the person you connect with.</p>
+                <p className="hero-commitment-highlight">Your First Interaction is on us.</p>
               </div>
             </div>
           </div>

@@ -11,22 +11,19 @@ export function AboutServices() {
       <div className="hr-shell">
         <header className="hr-intro hr-reveal">
           <span className="hr-eyebrow"><span className="hr-spark" aria-hidden="true" /> About HABLAR</span>
-          <h2 id="about-heading">More connected than ever.<br /><span>Still, so many feel unheard.</span></h2>
-          <p className="hr-lede">Sometimes, all you need is to be heard.</p>
-          <p className="hr-body">HABLAR is being built as a space where you can speak out and express yourself freely. Because a first step toward feeling better can be knowing you are not alone in the journey.</p>
-          <div className="hr-signoff" aria-hidden="true"><span /> A little room to be heard</div>
+          <h2 id="about-heading">You deserve to feel heard.<br /><span>Even when words are hard to find.</span></h2>
+          <p className="hr-lede">Feeling unheard can make a hard moment feel even heavier.</p>
+          <p className="hr-body">HABLAR is being built with the hope of offering a place to speak freely, share what is on your mind, and feel less alone. We are not open yet, but we look forward to creating room for real human conversation.</p>
+          <div className="hr-signoff" aria-hidden="true"><span /> A planned space to speak freely and feel less alone</div>
         </header>
 
         <figure className="hr-photo hr-reveal">
-          <img
-            src={`${import.meta.env.BASE_URL}brand/hablar-indian-phone.webp`}
-            alt="A man holding a phone to his ear and a coffee mug, with a woman seated nearby"
-            width={1400}
-            height={933}
-            loading="lazy"
-            decoding="async"
+          <div
+            className="hr-mascot-art"
+            role="img"
+            aria-label="Smiling HABLAR mascot illustration"
+            style={{ backgroundImage: `url("${import.meta.env.BASE_URL}brand/hablar-mascot-grid.png")` }}
           />
-          <figcaption><span className="hr-photo-mark" aria-hidden="true">H</span><span>A moment to listen.<br /><strong>A little room to be yourself.</strong></span></figcaption>
         </figure>
 
         <section className="hr-services hr-reveal" id="services" aria-labelledby="services-heading">

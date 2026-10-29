@@ -70,6 +70,49 @@ async function openSignup(response = {
   return { page, form, requests };
 }
 
+test('About section uses the planned narrative and smiling mascot at desktop and mobile widths', async (t) => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  t.after(() => page.close());
+  await page.goto(appUrl, { waitUntil: 'networkidle' });
+
+  const about = page.locator('#about');
+  await assert.doesNotReject(() => about.getByRole('heading', {
+    name: 'You deserve to feel heard. Even when words are hard to find.',
+  }).waitFor());
+  await assert.doesNotReject(() => about.getByRole('img', {
+    name: 'Smiling HABLAR mascot illustration',
+  }).waitFor());
+  assert.doesNotMatch(await about.innerText(), /More connected than ever|Still, so many feel unheard|A little room to be heard/i);
+  assert.equal(await about.locator('img').count(), 0);
+  assert.match(await about.locator('.hr-mascot-art').evaluate((element) => getComputedStyle(element).backgroundImage), /hablar-mascot-grid\.png/);
+
+  const themes = ['original', 'blue-green', 'soft-lavender', 'yellow-orange'];
+  for (const theme of themes) {
+    await page.locator('#hablar-theme').selectOption(theme);
+    const sectionColor = await about.evaluate((element) => getComputedStyle(element).color);
+    const headingColor = await about.locator('#about-heading').evaluate((element) => getComputedStyle(element).color);
+    assert.notEqual(sectionColor, 'rgba(0, 0, 0, 0)');
+    assert.notEqual(headingColor, 'rgba(0, 0, 0, 0)');
+  }
+
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    const { sectionWidth, contentRight, viewportWidth, mascotWidth } = await about.evaluate((element) => {
+      const section = element.getBoundingClientRect();
+      const mascot = element.querySelector('.hr-mascot-art').getBoundingClientRect();
+      return {
+        sectionWidth: section.width,
+        contentRight: Math.max(section.right, mascot.right),
+        viewportWidth: document.documentElement.clientWidth,
+        mascotWidth: mascot.width,
+      };
+    });
+    assert.ok(sectionWidth > 0);
+    assert.ok(mascotWidth > 0);
+    assert.ok(contentRight <= viewportWidth, `About section overflows at ${width}px`);
+  }
+});
+
 async function enableRequiredConsents(page, { consent = true, termsAccepted = true } = {}) {
   if (consent) await page.locator('input[name="consent"]').check();
   if (termsAccepted) await page.locator('input[name="termsAccepted"]').check();

@@ -956,8 +956,7 @@ html[data-theme="yellow-orange"] {
 [data-theme] .hr-detail p,
 [data-theme] .hr-body { color: var(--theme-text); }
 [data-theme] .hr-lede,
-[data-theme] .hr-signoff,
-[data-theme] .hr-photo figcaption { color: var(--theme-muted); }
+[data-theme] .hr-signoff { color: var(--theme-muted); }
 [data-theme] .hr-principles li { background: var(--theme-accent-soft); color: var(--theme-accent); }
 [data-theme] .hr-principles .hr-principle-last { background: var(--theme-secondary-soft); color: var(--theme-secondary); }
 [data-theme] .ls-title,
@@ -1017,7 +1016,7 @@ html[data-theme="yellow-orange"] {
 [data-theme] .boundary-icon { background: var(--theme-accent-soft); color: var(--theme-accent); }
 [data-theme] .hr-status { background: var(--theme-surface-warm); border-color: var(--theme-border); color: var(--theme-text); }
 [data-theme] .hr-photo::before { background: var(--theme-accent-soft); }
-[data-theme] .hr-photo-mark { background: var(--theme-secondary-soft); color: var(--theme-secondary); }
+[data-theme] .hr-mascot-art { background-color: var(--theme-surface); }
 
 @media (max-width: 680px) {
   [data-theme] .topbar { height: auto; min-height: 96px; padding: 10px 0; flex-wrap: wrap; gap: 6px 12px; }

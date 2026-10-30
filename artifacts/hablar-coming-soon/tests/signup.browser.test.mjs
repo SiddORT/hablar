@@ -102,19 +102,18 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
     'Just real conversations',
   ]);
   const listeningSequence = await listening.locator(
-    '.listening-moment__heading, .listening-moment__message-card, .listening-moment__capsules, .listening-moment__coming-soon, .listening-moment__signoff',
+    '.listening-moment__heading, .listening-moment__message-card, .listening-moment__capsules, .listening-moment__signoff',
   ).evaluateAll((elements) => elements.map((element) => {
     if (element.classList.contains('listening-moment__heading')) return 'heading';
     if (element.classList.contains('listening-moment__message-card')) return 'message-card';
     if (element.classList.contains('listening-moment__capsules')) return 'capsules';
-    if (element.classList.contains('listening-moment__coming-soon')) return 'coming-soon';
     return 'signoff';
   }));
   assert.deepEqual(listeningSequence, [
-    'heading', 'message-card', 'message-card', 'signoff', 'capsules', 'coming-soon',
+    'heading', 'message-card', 'message-card', 'signoff', 'capsules',
   ]);
   const listeningText = await listening.innerText();
-  assert.doesNotMatch(listeningText, /we are open|available now/i);
+  assert.doesNotMatch(listeningText, /coming soon|we are open|available now/i);
   assert.equal(await page.locator('.ls-closing').count(), 0);
   assert.match(await page.locator('.footer-brand > .brand-logo--footer + .footer-closing').innerText(), /HABLAR — Come as you are\.\s*Speak as you feel\./);
   await page.locator('[data-testid="link-about"]').click();
@@ -187,7 +186,7 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
       await page.setViewportSize({ width, height: 844 });
       const { viewportWidth, elements, cards, sectionScrollWidth, sectionClientWidth } = await listening.evaluate((element) => {
         const measured = Array.from(element.querySelectorAll(
-          '.listening-moment__heading, .listening-moment__message-card, .listening-moment__capsules li, .listening-moment__coming-soon, .listening-moment__signoff',
+          '.listening-moment__heading, .listening-moment__message-card, .listening-moment__capsules li, .listening-moment__signoff',
         ), (child) => {
           const rect = child.getBoundingClientRect();
           return {
@@ -256,7 +255,7 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
           sectionClientWidth: element.clientWidth,
         };
       });
-      assert.equal(elements.length, 9);
+      assert.equal(elements.length, 8);
       assert.equal(cards.length, 2);
       assert.ok(sectionScrollWidth <= sectionClientWidth, `Listening Moment should not overflow at ${width}px`);
       assert.ok(elements.every((element) =>
@@ -348,10 +347,17 @@ test('Our services preserves exact copy, reference layout, order, and responsive
   assert.deepEqual(await section.evaluate((element) => [
     element.previousElementSibling?.id, element.nextElementSibling?.id,
   ]), ['listening-moment', 'purpose']);
-  assert.equal(await page.locator('#listening-moment .listening-moment__coming-soon').textContent(), 'We’re coming soon');
+  assert.equal(await page.locator('.listening-moment__coming-soon').count(), 0, 'no old label or empty placeholder');
+  assert.doesNotMatch(await page.locator('#listening-moment').innerText(), /coming soon/i);
+  assert.equal(await page.locator('#listening-moment .listening-moment__inner').evaluate((element) =>
+    element.lastElementChild?.className), 'listening-moment__capsules hr-reveal');
   assert.equal(await section.locator('img, svg, picture, video, canvas, i, [role="img"], a, button').count(), 0);
   const eyebrow = section.locator('.our-services__eyebrow');
-  assert.equal((await eyebrow.textContent()).toUpperCase(), 'OUR SERVICES');
+  assert.equal(await eyebrow.textContent(), 'Coming soon');
+  assert.match(await eyebrow.ariaSnapshot(), /text: Coming soon/, 'status must be exposed to screen readers');
+  assert.deepEqual(await section.locator('.our-services__inner > *').evaluateAll((elements) =>
+    elements.slice(0, 3).map((element) => element.className || element.id)),
+  ['our-services__eyebrow', 'our-services__rule', 'our-services-heading']);
   assert.equal(await eyebrow.evaluate((element) => getComputedStyle(element).textTransform), 'uppercase');
   assert.equal(await section.locator('.our-services__decor').getAttribute('aria-hidden'), 'true');
   assert.equal(await section.locator('.our-services__decor').evaluate((element) =>
@@ -425,7 +431,7 @@ test('Our services preserves exact copy, reference layout, order, and responsive
                && Math.abs(dividerBounds.width - bounds.width) < 1
                && paragraphs[0].getBoundingClientRect().bottom < dividerBounds.top
                && dividerBounds.bottom < paragraphs[1].getBoundingClientRect().top,
-             children: Array.from(inner.querySelectorAll('h2, p'), (child) => {
+              children: Array.from(inner.querySelectorAll('.our-services__eyebrow, h2, p'), (child) => {
               const rect = child.getBoundingClientRect();
               const childStyle = getComputedStyle(child);
               const range = document.createRange();
@@ -463,8 +469,10 @@ test('Our services preserves exact copy, reference layout, order, and responsive
          assert.ok(layout.divider, `${context}: fine divider between paragraphs`);
         assert.ok(layout.children.every((child) => child.readable && child.plain), `${context}: ${JSON.stringify(layout)}`);
          assert.ok(layout.children.every((child) => child.contrast >= 4.5), `${context}: readable text contrast`);
+         assert.equal(layout.children.length, 4, 'measure the label, heading, and both paragraphs');
         assert.ok(layout.children[0].bottom < layout.children[1].top, context);
         assert.ok(layout.children[1].bottom < layout.children[2].top, context);
+         assert.ok(layout.children[2].bottom < layout.children[3].top, context);
       }
     }
   }

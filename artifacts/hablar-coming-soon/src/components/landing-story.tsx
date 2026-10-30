@@ -24,7 +24,6 @@ export function ListeningMoment() {
           <li>No judgment</li>
           <li>Just real conversations</li>
         </ul>
-        <p className="listening-moment__coming-soon hr-reveal">We’re coming soon</p>
       </div>
     </section>
   );
@@ -40,7 +39,7 @@ export function OurServices() {
         <span className="our-services__blob our-services__blob--br2" />
       </div>
       <div className="our-services__inner">
-        <span className="our-services__eyebrow" aria-hidden="true">Our services</span>
+        <span className="our-services__eyebrow">Coming soon</span>
         <span className="our-services__rule" aria-hidden="true" />
         <h2 id="our-services-heading">Our services</h2>
         <p>We offer a space where you can talk freely, navigating through your thoughts or a difficult moment. We’re here to listen - No labels; No assumptions; No judgment; Just real conversations; genuine support and a reminder that someone is here to hear you.</p>

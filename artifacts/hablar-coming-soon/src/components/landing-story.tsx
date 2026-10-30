@@ -73,6 +73,8 @@ export function AboutHablar() {
             <span className="ha-art__orbit ha-art__orbit--two" />
             <span className="ha-art__orbit ha-art__orbit--three" />
             <span className="ha-art__orbit ha-art__orbit--four" />
+            <span className="ha-art__orbit ha-art__orbit--five" />
+            <span className="ha-art__orbit ha-art__orbit--six" />
             <span className="ha-art__spark ha-art__spark--one" />
             <span className="ha-art__spark ha-art__spark--two" />
           </div>

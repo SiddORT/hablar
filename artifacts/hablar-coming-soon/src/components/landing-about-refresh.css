@@ -169,6 +169,36 @@
 .ha-art__orbit--three { inset: 24% 6%; transform: rotate(8deg); }
 .ha-art__orbit--four { inset: 12% 24%; transform: rotate(-38deg); }
 
+/* Logo-inspired yellow, orange, pink, violet, blue, and turquoise.
+   Mask only the new outlines so the original artwork stays visible through them. */
+.ha-art__orbit--five,
+.ha-art__orbit--six {
+  border: 0;
+  padding: 1px;
+  background: conic-gradient(
+    from 20deg,
+    #ffc900, #ff7800, #f50070, #8700cc, #006bff, #00b9dc, #00c9a5, #ffc900
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.ha-art__orbit--five {
+  inset: 5% 12%;
+  transform: rotate(-16deg);
+}
+
+.ha-art__orbit--six {
+  inset: 26% 3%;
+  transform: rotate(-32deg);
+  background: conic-gradient(
+    from 160deg,
+    #ffc900, #ff7800, #f50070, #8700cc, #006bff, #00b9dc, #00c9a5, #ffc900
+  );
+}
+
 .ha-art__spark {
   z-index: 2;
   width: 10px;

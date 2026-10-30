@@ -251,11 +251,21 @@ function Home() {
       document.getElementById(decodeURIComponent(targetId))?.scrollIntoView({ behavior: 'instant' });
     });
   }, []);
-  const emotions = [
+  const mascotExpressions = [
+    { label: 'Smiling', position: '0% 100%' },
     { label: 'Crying', position: '0% 0%' },
-    { label: 'Sad', position: '50% 0%' },
     { label: 'Unsure', position: '100% 0%' },
-    { label: 'Happy', position: '0% 100%' },
+    { label: 'Heart-eyed', position: '100% 100%' },
+  ];
+  const feelings = [
+    { label: 'Happy', tone: 'pink' },
+    { label: 'Overwhelmed', tone: 'purple' },
+    { label: 'Lonely', tone: 'purple' },
+    { label: 'Confused', tone: 'green' },
+    { label: 'Angry', tone: 'red' },
+    { label: 'Hopeful', tone: 'pink' },
+    { label: 'Tired', tone: 'green' },
+    { label: 'Anxious', tone: 'orange' },
   ];
   return (
     <main className="site-shell" tabIndex={-1}>
@@ -328,21 +338,28 @@ function Home() {
       <AboutHablar />
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">
         <div className="emotion-circle">
+          <ul className="emotion-ring" role="list" aria-label="HABLAR mascot expressions">
+            {mascotExpressions.map((expression, index) => (
+              <li className={`emotion-card slot-${index}`} key={expression.label}>
+                <div
+                  className="emotion-art"
+                  role="img"
+                  aria-label={`${expression.label} expression of the HABLAR mascot`}
+                  style={{ backgroundPosition: expression.position }}
+                />
+              </li>
+            ))}
+          </ul>
           <div className="emotion-center">
             <div className="emotion-center-copy scroll-reveal">
               <span className="section-kicker">Every feeling belongs</span>
               <h2 id="feelings-heading">There is room here for every feeling for every emotion. HABLAR meets you with care, just as you are.</h2>
             </div>
           </div>
-          <ul className="emotion-ring" role="list" aria-label="Four feelings welcomed at HABLAR">
-            {emotions.map((emotion, index) => (
-              <li className={`emotion-card slot-${index}`} key={emotion.label}>
-                <div
-                  className="emotion-art"
-                  role="img"
-                  aria-label={`${emotion.label} expression of the HABLAR mascot`}
-                  style={{ backgroundPosition: emotion.position }}
-                />
+          <ul className="emotion-feelings" role="list" aria-label="Feelings welcomed at HABLAR">
+            {feelings.map(({ label, tone }) => (
+              <li className={`emotion-feeling emotion-feeling--${tone}`} key={label}>
+                {label}
               </li>
             ))}
           </ul>

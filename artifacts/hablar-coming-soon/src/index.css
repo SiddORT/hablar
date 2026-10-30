@@ -462,97 +462,142 @@ a { color: inherit; }
 .emotion-circle {
   position: relative;
   width: min(100%, 1120px);
-  min-height: 620px;
+  min-height: 650px;
   margin: 0 auto;
-  --orbit-center-y: 50%;
-  --emotion-card-width: clamp(180px, 22vw, 240px);
 }
 .emotion-circle::before {
   content: '';
   position: absolute;
-  left: 50%; top: var(--orbit-center-y);
-  width: min(480px, 56%);
+  left: 50%;
+  top: 50%;
+  width: min(470px, 43%);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: radial-gradient(circle, #fff3dc 0%, #ffe9ef 58%, rgba(230, 248, 240, .6) 100%);
-  border: 1px dashed #efd3c4;
+  border: 1px solid rgba(239, 211, 196, .8);
   pointer-events: none;
 }
 .emotion-center {
   position: absolute;
   z-index: 2;
-  top: var(--orbit-center-y);
+  top: 50%;
   left: 50%;
-  width: min(100% - 32px, 410px);
-  translate: -50% -50%;
+  width: min(100% - 32px, 430px);
+  transform: translate(-50%, -50%);
   text-align: center;
-  padding: 0 6px;
+  padding: 0 8px;
 }
-.emotion-center h2 { font-family: 'Montserrat', sans-serif; font-size: clamp(24px, 2.8vw, 36px); line-height: 1.2; letter-spacing: -.045em; margin: 15px 0; color: #454545; }
-.emotion-ring {
+.emotion-center .section-kicker {
+  display: inline-flex;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: var(--theme-accent-soft);
+}
+.emotion-center h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(25px, 2.8vw, 36px);
+  line-height: 1.2;
+  letter-spacing: -.045em;
+  margin: 17px 0 0;
+  color: var(--theme-text);
+}
+.emotion-ring,
+.emotion-feelings {
   position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, .6fr) minmax(0, 1fr);
-  grid-template-rows: repeat(3, minmax(0, 1fr));
-  align-items: center;
   margin: 0;
   padding: 0;
   list-style: none;
 }
+.emotion-ring { z-index: 1; }
 .emotion-card {
-  position: relative;
-  z-index: 1;
-  width: var(--emotion-card-width);
-  min-width: 0;
-  justify-self: center;
-  align-self: center;
+  position: absolute;
   display: block;
-  padding: 10px;
-  border-radius: 26px;
-  background: #fff;
-  border: 1px solid #f0e8df;
-  box-shadow: 0 12px 35px rgba(108, 91, 70, .05);
+  width: clamp(168px, 19vw, 218px);
+  padding: 9px;
+  border-radius: 25px;
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 14px 34px rgba(108, 91, 70, .11);
+  animation: emotion-float 6.8s ease-in-out infinite;
+  will-change: translate;
 }
-.slot-0 { grid-column: 1; grid-row: 1; }
-.slot-1 { grid-column: 3; grid-row: 1; }
-.slot-2 { grid-column: 1; grid-row: 3; }
-.slot-3 { grid-column: 3; grid-row: 3; }
-.slot-0, .slot-2 { translate: 40px 0; }
-.slot-1, .slot-3 { translate: -40px 0; }
-.slot-1, .slot-2 { background: #fffaf1; }
-.slot-3 { background: #f5fbf8; }
-.emotion-card .emotion-art { width: 100%; border-radius: 18px; }
+.slot-0 { top: 10%; left: 6%; transform: rotate(-5deg); animation-delay: -.8s; }
+.slot-1 { top: 10%; right: 6%; transform: rotate(5deg); animation-delay: -2.4s; }
+.slot-2 { bottom: 10%; left: 6%; transform: rotate(-4deg); animation-delay: -4s; }
+.slot-3 { bottom: 10%; right: 6%; transform: rotate(4deg); animation-delay: -5.6s; }
+.emotion-card .emotion-art { width: 100%; border-radius: 17px; }
 .emotion-art {
   width: 100%;
   aspect-ratio: 4 / 3;
   background-image: url('/brand/hablar-mascot-grid.png');
   background-size: 300% 200%;
   background-repeat: no-repeat;
-  background-color: #fff;
+  background-color: var(--theme-surface-soft);
 }
-@media (min-width: 981px) and (max-width: 1100px) {
-  .emotion-circle { min-height: 700px; }
+@keyframes emotion-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -7px; }
 }
+.emotion-feelings { z-index: 3; pointer-events: none; }
+.emotion-feeling {
+  --emotion-tone: #a7255a;
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 15px;
+  border: 1px solid color-mix(in srgb, var(--emotion-tone) 28%, var(--theme-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--emotion-tone) 10%, var(--theme-surface));
+  color: var(--emotion-tone);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 5px 15px rgba(108, 91, 70, .06);
+}
+.emotion-feeling--pink { --emotion-tone: #a7255a; }
+.emotion-feeling--purple { --emotion-tone: #6240a4; }
+.emotion-feeling--green { --emotion-tone: #176b57; }
+.emotion-feeling--red { --emotion-tone: #a72d35; }
+.emotion-feeling--orange { --emotion-tone: #9a4b16; }
+.emotion-feeling:nth-child(1) { top: 1%; left: 24%; }
+.emotion-feeling:nth-child(2) { top: 2%; right: 22%; }
+.emotion-feeling:nth-child(3) { top: 43%; left: 1%; }
+.emotion-feeling:nth-child(4) { top: 43%; right: 1%; }
+.emotion-feeling:nth-child(5) { top: 56%; left: 5%; }
+.emotion-feeling:nth-child(6) { top: 56%; right: 5%; }
+.emotion-feeling:nth-child(7) { bottom: 1%; left: 24%; }
+.emotion-feeling:nth-child(8) { bottom: 1%; right: 22%; }
 @media (max-width: 980px) {
   .emotion-circle {
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 24px;
     min-height: 0;
   }
-  .emotion-circle::before { display: none; }
+  .emotion-circle::before {
+    top: 125px;
+    width: min(78vw, 440px);
+    transform: translate(-50%, 0);
+  }
   .emotion-center {
     position: relative;
+    order: 0;
     top: auto;
     left: auto;
     width: min(100%, 560px);
     margin: 0 auto;
-    translate: none;
+    transform: none;
+    padding: 30px 8px 34px;
   }
+  .emotion-center h2 { font-size: clamp(25px, 4.6vw, 34px); }
   .emotion-ring {
     position: relative;
+    order: 1;
     inset: auto;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -561,14 +606,21 @@ a { color: inherit; }
   .emotion-card {
     position: relative;
     inset: auto;
-    width: auto;
-    justify-self: stretch;
-    min-height: 0;
-    translate: none;
+    width: min(100%, 240px);
+    justify-self: center;
+    padding: 8px;
   }
-  .slot-0, .slot-1, .slot-2, .slot-3 { grid-column: auto; grid-row: auto; }
-  .emotion-card { padding: 8px; }
-  .emotion-card .emotion-art { border-radius: 16px; }
+  .emotion-feelings {
+    position: relative;
+    order: 2;
+    inset: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 9px;
+    pointer-events: auto;
+  }
+  .emotion-feeling { position: static; }
 }
 .boundary { border-top: 1px solid #eee2d9; border-bottom: 1px solid #eee2d9; padding: 29px 0; }
 .boundary-inner { width: min(1100px, calc(100% - 64px)); margin: auto; display: flex; gap: 18px; align-items: flex-start; }
@@ -674,6 +726,7 @@ a { color: inherit; }
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .instagram-sticky-cta::before, .hero-instagram-cta::before { animation: none; opacity: .68; }
   .instagram-sticky-cta:hover, .hero-instagram-cta:hover, .launch-sticky-cta:hover { transform: none; }
+  .emotion-card { animation: none; translate: none; }
 }
 @media (max-width: 850px) {
   .hero { min-height: max(540px, calc(100svh - 125px)); }
@@ -725,7 +778,7 @@ a { color: inherit; }
   .section-heading p { font-size: 15px; }
   .story-inner { width: calc(100% - 40px); padding: 56px 0; }
   .story-message { font-size: clamp(28px, 8vw, 38px); }
-  .emotions-section { padding-top: 52px; padding-bottom: 52px; }
+  .emotions-section { padding-top: 82px; padding-bottom: 52px; }
   .emotion-circle { gap: 24px; }
   .emotion-ring { gap: 10px; }
   .emotion-center { width: min(100%, 560px); padding: 0 4px; }

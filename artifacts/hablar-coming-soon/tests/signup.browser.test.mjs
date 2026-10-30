@@ -418,9 +418,34 @@ test('signup, safety boundary, and footer stay ordered with the closing line bel
   const expectedBoundary =
     'A clear, caring boundary: HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support services. If you are in immediate danger or need urgent help, or dealing with any of these issues contact your local emergency services or a trusted professional nearby.';
   const expectedClosingLine = 'HABLAR — Come as you are. Speak as you feel.';
+  const introduction = page.locator('#launch-note .signup-panel > div').first();
+  assert.equal(await introduction.locator('h2').textContent(), 'Hablar is a safe space for you.');
+  assert.equal(await introduction.locator('p').textContent(), "A reminder that you're never truly alone");
+  assert.equal(await introduction.locator('.section-kicker').count(), 0);
+  assert.deepEqual(await introduction.locator('*').allTextContents(), [
+    'Hablar is a safe space for you.',
+    "A reminder that you're never truly alone",
+  ]);
+  assert.equal((await page.locator('#launch-note button[type="submit"]').textContent()).trim(), 'Register Now');
+  await page.evaluate(() => document.fonts.ready);
 
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });
+    const copyFits = await introduction.locator('h2, p').evaluateAll((elements) =>
+      elements.every((element) => {
+        const bounds = element.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        const text = range.getBoundingClientRect();
+        const container = element.parentElement.getBoundingClientRect();
+        return bounds.width > 0 && bounds.height > 0
+          && bounds.left >= 0 && bounds.right <= innerWidth
+          && element.scrollWidth <= element.clientWidth
+          && text.top >= container.top - 1 && text.bottom <= container.bottom + 1
+          && text.left >= bounds.left - 1 && text.right <= bounds.right + 1;
+      }),
+    );
+    assert.ok(copyFits, `signup introduction should fit without clipping at ${width}px`);
     const orderedSections = await page.locator(
       '#launch-note, .boundary, .footer',
     ).evaluateAll((elements) => elements.map((element) => {

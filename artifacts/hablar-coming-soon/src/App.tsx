@@ -266,9 +266,8 @@ function Signup() {
     <section className="signup-section" id="launch-note">
       <div className="signup-panel scroll-reveal">
         <div>
-          <span className="section-kicker">A note when we open?</span>
-          <h2>Let the good news find you.</h2>
-          <p>Leave an email, a phone number, or both to request one launch update. Your contact details are encrypted before they are stored. Read the Privacy Notice before signing up.</p>
+          <h2>Hablar is a safe space for you.</h2>
+          <p>A reminder that you're never truly alone</p>
         </div>
         <form className="form-wrap" onSubmit={submitSignup} noValidate>
           <label className="form-label" htmlFor="email">Email address <span style={{ fontWeight: 400, color: '#888' }}>— optional</span></label>
@@ -296,7 +295,7 @@ function Signup() {
             <span>I agree that this form is only a request for one launch update; HABLAR’s listening service is not yet available, and no launch date is promised.</span>
           </label>
           <button className="button-primary form-submit" type="submit" disabled={signup.isPending}>
-            {signup.isPending ? 'Saving your place…' : 'Send me the first update'}
+            {signup.isPending ? 'Saving your place…' : 'Register Now'}
             <ArrowUpRight size={17} aria-hidden="true" />
           </button>
           <p className="prototype-note">Contact fields are encrypted in the database. See the Privacy Notice for details.</p>

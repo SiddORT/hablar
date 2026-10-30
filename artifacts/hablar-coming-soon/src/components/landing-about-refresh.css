@@ -86,13 +86,23 @@
 .ha-message--second,
 .ha-message--third { border-top: 1px solid var(--ha-line); }
 
-.ha-art {
-  position: relative;
+.ha-art-frame {
+  display: grid;
+  align-items: center;
   justify-self: center;
   width: min(100%, 440px);
+  /* Reserve vertical room for the enlarged, rotated ellipse without
+     resizing the pastel shapes or letting decoration enter the copy column. */
+  aspect-ratio: 1 / 1.12;
+  overflow: hidden;
+}
+
+.ha-art {
+  position: relative;
+  width: 100%;
   aspect-ratio: 1 / .92;
   isolation: isolate;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .ha-art__halo,
@@ -151,7 +161,13 @@
 }
 
 .ha-art__orbit--one { inset: 17% 1% 16%; }
-.ha-art__orbit--two { inset: 5% 14% 5%; transform: rotate(34deg); }
+.ha-art__orbit--two {
+  /* Original 72% × 90%, enlarged 30% about the same center. */
+  inset: -8.5% 3.2%;
+  transform: rotate(34deg);
+}
+.ha-art__orbit--three { inset: 24% 6%; transform: rotate(8deg); }
+.ha-art__orbit--four { inset: 12% 24%; transform: rotate(-38deg); }
 
 .ha-art__spark {
   z-index: 2;
@@ -175,13 +191,13 @@
   .ha-heading h2 { margin-top: 15px; font-size: clamp(36px, 9vw, 50px); }
   .ha-message { padding: 18px 0; font-size: 16px; }
   .ha-message--lead { padding-top: 22px; font-size: clamp(20px, 5vw, 24px); }
-  .ha-art { width: min(100%, 370px); margin: 0 auto; }
+  .ha-art-frame { width: min(100%, 370px); margin: 0 auto; }
 }
 
 @media (max-width: 380px) {
   .ha-shell { width: calc(100% - 32px); }
   .ha-heading h2 { font-size: 35px; }
-  .ha-art { width: min(100%, 320px); }
+  .ha-art-frame { width: min(100%, 320px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

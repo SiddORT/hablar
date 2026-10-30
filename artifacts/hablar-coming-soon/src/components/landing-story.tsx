@@ -63,15 +63,19 @@ export function AboutHablar() {
             </p>
           </div>
         </div>
-        <div className="ha-art hr-reveal" aria-hidden="true">
-          <span className="ha-art__halo" />
-          <span className="ha-art__form ha-art__form--peach" />
-          <span className="ha-art__form ha-art__form--lilac" />
-          <span className="ha-art__form ha-art__form--sage" />
-          <span className="ha-art__orbit ha-art__orbit--one" />
-          <span className="ha-art__orbit ha-art__orbit--two" />
-          <span className="ha-art__spark ha-art__spark--one" />
-          <span className="ha-art__spark ha-art__spark--two" />
+        <div className="ha-art-frame hr-reveal" aria-hidden="true">
+          <div className="ha-art">
+            <span className="ha-art__halo" />
+            <span className="ha-art__form ha-art__form--peach" />
+            <span className="ha-art__form ha-art__form--lilac" />
+            <span className="ha-art__form ha-art__form--sage" />
+            <span className="ha-art__orbit ha-art__orbit--one" />
+            <span className="ha-art__orbit ha-art__orbit--two" />
+            <span className="ha-art__orbit ha-art__orbit--three" />
+            <span className="ha-art__orbit ha-art__orbit--four" />
+            <span className="ha-art__spark ha-art__spark--one" />
+            <span className="ha-art__spark ha-art__spark--two" />
+          </div>
         </div>
       </div>
     </section>

@@ -204,6 +204,36 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   }
 });
 
+test('signup, safety boundary, closing line, and footer stay ordered on desktop and mobile', async (t) => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(appUrl, { waitUntil: 'networkidle' });
+
+  const expectedBoundary =
+    'A clear, caring boundary: HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support. If you are in immediate danger or need urgent help, contact your local emergency services or a trusted person nearby.';
+  const expectedClosingLine = 'HABLAR — Come as you are. Speak as you feel.';
+
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    const orderedSections = await page.locator(
+      '#launch-note, .boundary, .ls-closing, .footer',
+    ).evaluateAll((elements) => elements.map((element) => {
+      if (element.id === 'launch-note') return 'signup';
+      if (element.classList.contains('boundary')) return 'boundary';
+      if (element.classList.contains('ls-closing')) return 'closing';
+      return 'footer';
+    }));
+
+    assert.deepEqual(orderedSections, ['signup', 'boundary', 'closing', 'footer']);
+    assert.equal((await page.locator('.boundary p').innerText()).replace(/\s+/g, ' ').trim(), expectedBoundary);
+    assert.equal((await page.locator('.ls-closing').innerText()).replace(/\s+/g, ' ').trim(), expectedClosingLine);
+    await page.locator('#launch-note form').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#launch-note input[name="email"]').count(), 1);
+    assert.equal(await page.locator('#launch-note input[name="phone"]').count(), 1);
+  }
+});
+
 async function enableRequiredConsents(page, { consent = true, termsAccepted = true } = {}) {
   if (consent) await page.locator('input[name="consent"]').check();
   if (termsAccepted) await page.locator('input[name="termsAccepted"]').check();

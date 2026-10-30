@@ -349,6 +349,7 @@ function Home() {
           </ul>
         </div>
       </section>
+      <Signup />
       <div className="boundary">
         <div className="boundary-inner">
           <div className="boundary-icon"><ShieldCheck size={18} aria-hidden="true" /></div>
@@ -356,7 +357,6 @@ function Home() {
         </div>
       </div>
       <ClosingLine />
-      <Signup />
       <Footer />
     </main>
   );

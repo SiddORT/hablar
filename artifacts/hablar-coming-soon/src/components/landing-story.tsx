@@ -56,7 +56,7 @@ export function AboutHablar() {
           </header>
           <div className="ha-messages">
             <p className="ha-message ha-message--lead hr-reveal">
-              In a world more connected than ever, millions of people still feel unheard. In such times, all you need is to be heard.
+              In a world more connected than ever, millions of people still <span className="ha-emphasis">feel unheard</span>. In such times, all you need is to <span className="ha-emphasis">be heard</span>.
             </p>
             <p className="ha-message ha-message--second hr-reveal">
               HABLAR offers a safe and anonymous space for you to speak out and express yourself freely.
@@ -65,6 +65,30 @@ export function AboutHablar() {
               Because the first step toward feeling better is knowing you're not alone in the journey.
             </p>
           </div>
+        </div>
+        <div className="ha-art hr-reveal" aria-hidden="true">
+          <span className="ha-art__halo" />
+          <span className="ha-art__form ha-art__form--peach" />
+          <span className="ha-art__form ha-art__form--lilac" />
+          <span className="ha-art__form ha-art__form--sage" />
+          <span className="ha-art__orbit ha-art__orbit--one" />
+          <span className="ha-art__orbit ha-art__orbit--two" />
+          <svg className="ha-art__bubble" viewBox="0 0 320 250" fill="none">
+            <path
+              d="M57 39.5C57 22.6553 70.6553 9 87.5 9H261.5C278.345 9 292 22.6553 292 39.5V160.5C292 177.345 278.345 191 261.5 191H153L91 234V191H87.5C70.6553 191 57 177.345 57 160.5V39.5Z"
+              fill="#FFF9F4"
+              stroke="#754F62"
+              strokeWidth="2.2"
+              strokeLinejoin="round"
+            />
+            <path d="M92 67H246" stroke="#E6D8D1" strokeWidth="2" strokeLinecap="round" />
+            <path d="M92 91H218" stroke="#E6D8D1" strokeWidth="2" strokeLinecap="round" />
+            <circle cx="105" cy="133" r="5" fill="#C54C72" />
+            <circle cx="128" cy="133" r="5" fill="#D99AA7" />
+            <circle cx="151" cy="133" r="5" fill="#E8B78B" />
+          </svg>
+          <span className="ha-art__spark ha-art__spark--one" />
+          <span className="ha-art__spark ha-art__spark--two" />
         </div>
       </div>
     </section>

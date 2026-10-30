@@ -81,7 +81,9 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   const about = page.locator('#about');
   await listening.getByRole('heading', { name: 'A moment to be heard' }).waitFor();
   assert.equal(await hero.evaluate((element) => element.nextElementSibling?.id), 'listening-moment');
-  assert.equal(await listening.evaluate((element) => element.nextElementSibling?.id), 'about');
+  const purpose = page.locator('#purpose');
+  assert.equal(await listening.evaluate((element) => element.nextElementSibling?.id), 'purpose');
+  assert.equal(await purpose.evaluate((element) => element.nextElementSibling?.id), 'about');
   assert.equal(await page.locator('[data-testid="link-about"]').getAttribute('href'), '#about');
 
   const listeningLines = [
@@ -108,7 +110,7 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
     return 'signoff';
   }));
   assert.deepEqual(listeningSequence, [
-    'heading', 'message-card', 'message-card', 'capsules', 'coming-soon', 'signoff',
+    'heading', 'message-card', 'message-card', 'signoff', 'capsules', 'coming-soon',
   ]);
   const listeningText = await listening.innerText();
   assert.doesNotMatch(listeningText, /we are open|available now/i);
@@ -131,8 +133,29 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
     (await about.locator('.ha-message--third').textContent()).trim(),
     "Because the first step toward feeling better is knowing you're not alone in the journey.",
   );
-  assert.equal(await about.locator('img, figure, .ha-art').count(), 0, 'About should be text-only');
+  const illustration = about.locator('.ha-art');
+  assert.equal(await illustration.count(), 1, 'About should include its abstract conversation illustration');
+  assert.equal(await illustration.getAttribute('aria-hidden'), 'true', 'the illustration should be decorative');
+  assert.equal(await illustration.locator('svg.ha-art__bubble').count(), 1, 'the illustration should include an outlined chat bubble');
+  assert.equal(await illustration.locator('.ha-art__form').count(), 3, 'the chat bubble should sit among pastel abstract forms');
+  assert.equal(
+    (await about.locator('.ha-message--lead').innerText()).replace(/\s+/g, ' ').trim(),
+    'In a world more connected than ever, millions of people still feel unheard. In such times, all you need is to be heard.',
+    'emphasis must not change the lead copy',
+  );
+  assert.deepEqual(
+    await about.locator('.ha-emphasis').allTextContents(),
+    ['feel unheard', 'be heard'],
+    'the requested phrases should carry the restrained emphasis',
+  );
   assert.equal(await about.locator('.ha-message').count(), 3);
+  assert.deepEqual(
+    await about.locator('.ha-message--second, .ha-message--third').evaluateAll((messages) =>
+      messages.map((message) => getComputedStyle(message).borderTopStyle),
+    ),
+    ['solid', 'solid'],
+    'supporting paragraphs should be separated by thin dividers',
+  );
   assert.deepEqual(
     await about.locator('.ha-message').evaluateAll((messages) => messages.map((message) =>
       getComputedStyle(message, '::before').content,
@@ -140,10 +163,18 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
     ['none', 'none', 'none'],
     'About messages should not have generated number markers',
   );
-  const desktopAboutBounds = await about.locator('.ha-copy').boundingBox();
-  assert.ok(desktopAboutBounds);
-  assert.ok(desktopAboutBounds.width > 700 && desktopAboutBounds.width < 900);
-  assert.ok(desktopAboutBounds.x >= 0 && desktopAboutBounds.x + desktopAboutBounds.width <= 1280);
+  const desktopAboutLayout = await about.evaluate((element) => {
+    const copy = element.querySelector('.ha-copy').getBoundingClientRect();
+    const art = element.querySelector('.ha-art').getBoundingClientRect();
+    return {
+      copy: { x: copy.x, right: copy.right, width: copy.width },
+      art: { x: art.x, right: art.right, width: art.width },
+    };
+  });
+  assert.ok(desktopAboutLayout.copy.width > 400 && desktopAboutLayout.copy.width < 700);
+  assert.ok(desktopAboutLayout.art.width > 280);
+  assert.ok(desktopAboutLayout.copy.x >= 0 && desktopAboutLayout.art.right <= 1280);
+  assert.ok(desktopAboutLayout.copy.right <= desktopAboutLayout.art.x, 'desktop About content should use two non-overlapping columns');
 
   for (const theme of [null, 'blue-green', 'soft-lavender', 'yellow-orange']) {
     await page.evaluate((nextTheme) => {
@@ -227,6 +258,7 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
     const aboutLayout = await about.evaluate((element) => {
       const copy = element.querySelector('.ha-copy');
       const copyBounds = copy.getBoundingClientRect();
+      const artBounds = element.querySelector('.ha-art').getBoundingClientRect();
       const messages = Array.from(element.querySelectorAll('.ha-message'), (message) => {
         const bounds = message.getBoundingClientRect();
         return {
@@ -241,11 +273,28 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
         viewportWidth: document.documentElement.clientWidth,
         sectionScrollWidth: element.scrollWidth,
         sectionClientWidth: element.clientWidth,
-        copyBounds: { left: copyBounds.left, right: copyBounds.right, width: copyBounds.width },
+        copyBounds: {
+          left: copyBounds.left,
+          right: copyBounds.right,
+          top: copyBounds.top,
+          bottom: copyBounds.bottom,
+          width: copyBounds.width,
+        },
+        artBounds: {
+          left: artBounds.left,
+          right: artBounds.right,
+          top: artBounds.top,
+          bottom: artBounds.bottom,
+          width: artBounds.width,
+          height: artBounds.height,
+        },
         messages,
       };
     });
-    assert.ok(aboutLayout.sectionScrollWidth <= aboutLayout.sectionClientWidth, `About should not overflow at ${width}px`);
+    assert.ok(
+      aboutLayout.sectionScrollWidth <= aboutLayout.sectionClientWidth,
+      `About should not overflow at ${width}px: ${aboutLayout.sectionScrollWidth}/${aboutLayout.sectionClientWidth}`,
+    );
     assert.ok(aboutLayout.copyBounds.width > 0 && aboutLayout.copyBounds.width < aboutLayout.viewportWidth);
     assert.ok(aboutLayout.copyBounds.left >= 0 && aboutLayout.copyBounds.right <= aboutLayout.viewportWidth);
     assert.equal(aboutLayout.messages.length, 3);
@@ -253,6 +302,9 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
       message.width > 0 && message.height > 0 && message.left >= 0
       && message.right <= aboutLayout.viewportWidth && message.visible),
     `About copy should remain readable and fit at ${width}px`);
+    assert.ok(aboutLayout.artBounds.width > 0 && aboutLayout.artBounds.height > 0);
+    assert.ok(aboutLayout.artBounds.left >= 0 && aboutLayout.artBounds.right <= aboutLayout.viewportWidth);
+    assert.ok(aboutLayout.copyBounds.bottom <= aboutLayout.artBounds.top, `About illustration should stack beneath copy without overlap at ${width}px`);
   }
 });
 

@@ -423,7 +423,7 @@ function Home() {
           <div className="emotion-center">
             <div className="emotion-center-copy scroll-reveal">
               <span className="section-kicker">Every feeling belongs</span>
-              <h2 id="feelings-heading">There is room here for every feeling for every emotion. HABLAR meets you with care, just as you are.</h2>
+              <h2 id="feelings-heading">There is room here for every feeling forr every emotion. HABLAR meets you with care, just as you are.</h2>
             </div>
           </div>
         </div>

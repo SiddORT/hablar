@@ -325,21 +325,13 @@ function Home() {
       document.getElementById(decodeURIComponent(targetId))?.scrollIntoView({ behavior: 'instant' });
     });
   }, []);
+  // 320 × 280 crops at x=15/670, y=15/305, centered on each expression.
+  // CSS background percentages divide those origins by the sheet's remaining travel.
   const mascotExpressions = [
-    { label: 'Smiling', position: '0% 100%' },
-    { label: 'Crying', position: '0% 0%' },
-    { label: 'Unsure', position: '100% 0%' },
-    { label: 'Heart-eyed', position: '100% 100%' },
-  ];
-  const feelings = [
-    { label: 'Happy', tone: 'pink' },
-    { label: 'Overwhelmed', tone: 'purple' },
-    { label: 'Lonely', tone: 'purple' },
-    { label: 'Confused', tone: 'green' },
-    { label: 'Angry', tone: 'red' },
-    { label: 'Hopeful', tone: 'pink' },
-    { label: 'Tired', tone: 'green' },
-    { label: 'Anxious', tone: 'orange' },
+    { label: 'Smiling', position: '2.130682% 91.044776%' },
+    { label: 'Crying', position: '2.130682% 4.477612%' },
+    { label: 'Unsure', position: '95.170455% 4.477612%' },
+    { label: 'Heart-eyed', position: '95.170455% 91.044776%' },
   ];
   return (
     <main className="site-shell" tabIndex={-1}>
@@ -431,13 +423,6 @@ function Home() {
               <h2 id="feelings-heading">There is room here for every feeling for every emotion. HABLAR meets you with care, just as you are.</h2>
             </div>
           </div>
-          <ul className="emotion-feelings" role="list" aria-label="Feelings welcomed at HABLAR">
-            {feelings.map(({ label, tone }) => (
-              <li className={`emotion-feeling emotion-feeling--${tone}`} key={label}>
-                {label}
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
       <Signup />

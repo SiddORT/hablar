@@ -7,32 +7,36 @@ import './purpose-mission-flip.css';
 
 export function ListeningMoment() {
   return (
-    <section className="hablar-refresh hr-section" id="about" aria-labelledby="about-heading">
-      <div className="hr-shell">
-        <header className="hr-intro hr-reveal">
-          <span className="hr-eyebrow"><span className="hr-spark" aria-hidden="true" /> A moment to be heard</span>
-          <h2 id="about-heading">Ever felt like you had so much to say, but nowhere to say it?</h2>
-          <p className="hr-lede">Sometimes, what you need most is not advice or answers. It is the chance to be heard.</p>
-          <p className="hr-body">HABLAR is being built with the hope of making room for honest, human conversations. We are not open yet, but we believe every story deserves care and a listener who is willing to hear it.</p>
-        </header>
-
-        <div className="hr-messages">
-          <article className="hr-message hr-message--rose hr-reveal">
-            <span className="hr-message-mark" aria-hidden="true">01</span>
-            <h3>Not everything you carry is visible</h3>
-            <p>There can be a lot beneath the words we share with the world.</p>
-          </article>
-          <article className="hr-message hr-message--mint hr-reveal">
-            <span className="hr-message-mark" aria-hidden="true">02</span>
-            <h3>Sometimes, you just need someone to hear you out</h3>
-            <p>No fixing the story. No perfect words required. Just the possibility of being listened to.</p>
-          </article>
+    <section className="hablar-refresh hablar-about" id="about" aria-labelledby="about-heading">
+      <div className="ha-shell">
+        <div className="ha-copy">
+          <header className="ha-heading hr-reveal">
+            <span className="ha-eyebrow"><span className="ha-spark" aria-hidden="true" /> About HABLAR</span>
+            <h2 id="about-heading">A moment to be heard</h2>
+          </header>
+          <div className="ha-messages">
+            <p className="ha-message ha-message--lead hr-reveal">
+              In a world more connected than ever, millions of people still feel unheard. In such times, all you need is to be heard.
+            </p>
+            <p className="ha-message ha-message--second hr-reveal">
+              HABLAR offers a safe and anonymous space for you to speak out and express yourself freely.
+            </p>
+            <p className="ha-message ha-message--third hr-reveal">
+              Because the first step toward feeling better is knowing you're not alone in the journey.
+            </p>
+          </div>
         </div>
-
-        <div className="hr-signoff hr-reveal">
-          <p>Come as you are. <span>Speak as you feel.</span></p>
-          <span className="hr-coming-soon">Coming soon</span>
-        </div>
+        <figure className="ha-art hr-reveal">
+          <span className="ha-art-halo" aria-hidden="true" />
+          <img
+            src={`${import.meta.env.BASE_URL}brand/hablar-mascot-grid.png`}
+            alt="HABLAR mascot shown with six different expressions"
+            width={1024}
+            height={576}
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
       </div>
     </section>
   );

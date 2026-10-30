@@ -6,3 +6,4 @@
 - [Hero pill grid sizing](hero-pill-grid.md) — Use reserved-center grid slots on desktop, natural wrapping on narrow screens, and verify full label-plus-padding fit.
 - [Floating dock geometry](floating-dock-geometry.md) — Keep hidden actions in layout and settle responsive repositioning before overlap checks.
 - [Animated card clearance](animated-card-clearance.md) — Verify rotated bounds throughout staggered motion; resting gaps alone can hide collisions.
+- [Responsive browser measurements](responsive-browser-measurements.md) — Bring sections into view and settle layout before measuring repeated viewport, theme, and text-scale changes.

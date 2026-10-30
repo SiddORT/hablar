@@ -331,7 +331,7 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   }
 });
 
-test('Our services preserves exact copy, text-only content, order, and responsive theme readability', async (t) => {
+test('Our services preserves exact copy, reference layout, order, and responsive theme readability', async (t) => {
   const page = await browser.newPage();
   t.after(() => page.close());
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -350,34 +350,82 @@ test('Our services preserves exact copy, text-only content, order, and responsiv
   ]), ['listening-moment', 'purpose']);
   assert.equal(await page.locator('#listening-moment .listening-moment__coming-soon').textContent(), 'We’re coming soon');
   assert.equal(await section.locator('img, svg, picture, video, canvas, i, [role="img"], a, button').count(), 0);
-  assert.deepEqual(await section.locator('*').evaluateAll((elements) =>
-    elements.map((element) => element.tagName),
-  ), ['DIV', 'H2', 'P', 'P'], 'only a container, heading, and two paragraphs belong here');
+  const eyebrow = section.locator('.our-services__eyebrow');
+  assert.equal((await eyebrow.textContent()).toUpperCase(), 'OUR SERVICES');
+  assert.equal(await eyebrow.evaluate((element) => getComputedStyle(element).textTransform), 'uppercase');
+  assert.equal(await section.locator('.our-services__decor').getAttribute('aria-hidden'), 'true');
+  assert.equal(await section.locator('.our-services__decor').evaluate((element) =>
+    getComputedStyle(element).pointerEvents), 'none');
+  assert.equal(await section.locator('.our-services__rule, .our-services__divider').evaluateAll((elements) =>
+    elements.every((element) => element.getAttribute('aria-hidden') === 'true')), true);
+  assert.equal(await section.locator('p').count(), 2, 'copy must remain selectable paragraphs, not artwork');
 
-  for (const theme of ['original', 'blue-green', 'soft-lavender', 'yellow-orange']) {
-    await page.evaluate((value) => { document.documentElement.dataset.theme = value; }, theme);
-    for (const width of [1280, 390, 320]) {
+  // Sweep each text size together and settle the visible section after resizing
+  // so measurements reflect the current responsive styles, not the prior layout.
+  for (const fontSize of ['16px', '32px']) {
+    await page.evaluate(async (value) => {
+      document.documentElement.style.fontSize = value;
+      void document.documentElement.offsetHeight;
+      await document.fonts.ready;
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    }, fontSize);
+    for (const theme of [null, 'original', 'blue-green', 'soft-lavender', 'yellow-orange']) {
+    await page.evaluate((value) => {
+      if (value) document.documentElement.dataset.theme = value;
+      else delete document.documentElement.dataset.theme;
+    }, theme);
+    for (const width of [1280, 1024, 768, 390, 320]) {
       await page.setViewportSize({ width, height: 900 });
-      for (const fontSize of ['16px', '32px']) {
-        await page.evaluate((value) => { document.documentElement.style.fontSize = value; }, fontSize);
+      await section.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(100);
+        await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
         const layout = await section.evaluate((element) => {
-          const inner = element.firstElementChild;
+           const inner = element.querySelector('.our-services__inner');
           const bounds = inner.getBoundingClientRect();
           const style = getComputedStyle(element);
           const swatch = document.createElement('span');
           swatch.style.color = 'var(--theme-text)';
-          swatch.style.backgroundColor = 'var(--theme-page)';
+           swatch.style.backgroundColor = 'color-mix(in srgb, var(--theme-page) 92%, var(--theme-surface-warm))';
           element.append(swatch);
           const themeStyle = getComputedStyle(swatch);
-          const usesTheme = style.color === themeStyle.color && style.backgroundColor === themeStyle.backgroundColor;
+           const usesTheme = style.color === themeStyle.color && style.backgroundColor === themeStyle.backgroundColor;
           swatch.remove();
+           // Canvas normalizes CSS color formats, including color-mix() results.
+           const canvas = document.createElement('canvas');
+           canvas.width = canvas.height = 1;
+           const ctx = canvas.getContext('2d', { willReadFrequently: true });
+           const luminance = (color) => {
+             ctx.fillStyle = color;
+             ctx.fillRect(0, 0, 1, 1);
+             const linear = Array.from(ctx.getImageData(0, 0, 1, 1).data).slice(0, 3).map((channel) => {
+               const value = channel / 255;
+               return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+             });
+             return linear[0] * .2126 + linear[1] * .7152 + linear[2] * .0722;
+           };
+           const background = luminance(style.backgroundColor);
+           const headingStyle = getComputedStyle(element.querySelector('h2'));
+           const paragraphStyle = getComputedStyle(element.querySelector('p'));
+           const divider = element.querySelector('.our-services__divider');
+           const dividerStyle = getComputedStyle(divider);
+           const dividerBounds = divider.getBoundingClientRect();
+           const paragraphs = element.querySelectorAll('p');
           return {
+             rootFont: getComputedStyle(document.documentElement).fontSize,
             usesTheme,
             width: bounds.width,
             centered: Math.abs(bounds.left - (window.innerWidth - bounds.right)) < 1,
             fits: bounds.left >= 0 && bounds.right <= window.innerWidth
               && element.scrollWidth <= element.clientWidth,
-            children: Array.from(inner.children, (child) => {
+             headingSize: parseFloat(headingStyle.fontSize),
+             bodySize: parseFloat(paragraphStyle.fontSize),
+             lineHeight: parseFloat(paragraphStyle.lineHeight),
+             divider: dividerStyle.borderTopStyle === 'solid'
+               && parseFloat(dividerStyle.borderTopWidth) === 1
+               && Math.abs(dividerBounds.width - bounds.width) < 1
+               && paragraphs[0].getBoundingClientRect().bottom < dividerBounds.top
+               && dividerBounds.bottom < paragraphs[1].getBoundingClientRect().top,
+             children: Array.from(inner.querySelectorAll('h2, p'), (child) => {
               const rect = child.getBoundingClientRect();
               const childStyle = getComputedStyle(child);
               const range = document.createRange();
@@ -385,12 +433,18 @@ test('Our services preserves exact copy, text-only content, order, and responsiv
               const text = range.getBoundingClientRect();
               return {
                 top: rect.top, bottom: rect.bottom,
+                box: { left: rect.left, right: rect.right, textLeft: text.left, textRight: text.right,
+                  scrollWidth: child.scrollWidth, clientWidth: child.clientWidth,
+                  scrollHeight: child.scrollHeight, clientHeight: child.clientHeight },
                 readable: rect.height > 0 && child.scrollWidth <= child.clientWidth
                   && child.scrollHeight <= child.clientHeight + 1
                   && text.left >= rect.left - 1 && text.right <= rect.right + 1
-                  && childStyle.textAlign === 'left'
+                   && childStyle.textAlign === 'center'
+                   && childStyle.userSelect !== 'none'
                   && childStyle.visibility === 'visible' && Number(childStyle.opacity) === 1,
-                plain: childStyle.backgroundImage === 'none'
+                 contrast: (Math.max(luminance(childStyle.color), background) + .05)
+                   / (Math.min(luminance(childStyle.color), background) + .05),
+                 plain: childStyle.backgroundImage === 'none'
                   && childStyle.animationName === 'none'
                   && ['none', 'normal'].includes(getComputedStyle(child, '::before').content)
                   && ['none', 'normal'].includes(getComputedStyle(child, '::after').content),
@@ -400,11 +454,30 @@ test('Our services preserves exact copy, text-only content, order, and responsiv
         });
         const context = `${theme}, ${width}px, root text ${fontSize}`;
         assert.ok(layout.usesTheme && layout.centered && layout.fits, `${context}: ${JSON.stringify(layout)}`);
-        if (width === 1280 && fontSize === '16px') assert.ok(layout.width <= 704, context);
-        assert.ok(layout.children.every((child) => child.readable && child.plain), context);
+         if (width === 1024 && fontSize === '16px') {
+           assert.ok(Math.abs(layout.width - 936) <= 8, `${context}: broad reference margins: ${JSON.stringify(layout)}`);
+           assert.ok(layout.headingSize >= 44 && layout.headingSize <= 48, context);
+           assert.ok(layout.bodySize >= 19 && layout.bodySize <= 21, context);
+           assert.ok(layout.lineHeight >= 27 && layout.lineHeight <= 34, context);
+         }
+         assert.ok(layout.divider, `${context}: fine divider between paragraphs`);
+        assert.ok(layout.children.every((child) => child.readable && child.plain), `${context}: ${JSON.stringify(layout)}`);
+         assert.ok(layout.children.every((child) => child.contrast >= 4.5), `${context}: readable text contrast`);
         assert.ok(layout.children[0].bottom < layout.children[1].top, context);
         assert.ok(layout.children[1].bottom < layout.children[2].top, context);
       }
+    }
+  }
+  await page.evaluate(() => {
+    delete document.documentElement.dataset.theme;
+    document.documentElement.style.fontSize = '16px';
+  });
+  if (process.env.SERVICES_SCREENSHOT_DIR) {
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+    for (const width of [1024, 768, 390, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      await section.screenshot({ path: path.join(process.env.SERVICES_SCREENSHOT_DIR, `services-${width}.png`) });
     }
   }
 });

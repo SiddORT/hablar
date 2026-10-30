@@ -33,9 +33,18 @@ export function ListeningMoment() {
 export function OurServices() {
   return (
     <section className="our-services" id="our-services" aria-labelledby="our-services-heading">
+      <div className="our-services__decor" aria-hidden="true">
+        <span className="our-services__blob our-services__blob--tl1" />
+        <span className="our-services__blob our-services__blob--tl2" />
+        <span className="our-services__blob our-services__blob--br1" />
+        <span className="our-services__blob our-services__blob--br2" />
+      </div>
       <div className="our-services__inner">
+        <span className="our-services__eyebrow" aria-hidden="true">Our services</span>
+        <span className="our-services__rule" aria-hidden="true" />
         <h2 id="our-services-heading">Our services</h2>
         <p>We offer a space where you can talk freely, navigating through your thoughts or a difficult moment. We’re here to listen - No labels; No assumptions; No judgment; Just real conversations; genuine support and a reminder that someone is here to hear you.</p>
+        <hr className="our-services__divider" aria-hidden="true" />
         <p>We believe that being heard can make a difference. A conversation at HABLAR, at that very moment can bring in clarity, comfort, and a fresh perspective. It’s a reminder that you matter, your feelings matter, your thoughts matter.</p>
       </div>
     </section>

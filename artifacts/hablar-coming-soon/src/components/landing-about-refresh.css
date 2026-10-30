@@ -170,7 +170,7 @@
 .ha-art__orbit--three { inset: 24% 6%; transform: rotate(8deg); }
 .ha-art__orbit--four { inset: 12% 24%; transform: rotate(-38deg); }
 
-/* Filled logo-color planets, kept in the open spaces between pastel forms. */
+/* Filled pastel logo-color planets, matching the surrounding soft forms. */
 .ha-art__planet {
   z-index: 1;
   aspect-ratio: 1;
@@ -181,14 +181,14 @@
   top: 53%;
   left: 14%;
   width: 19%;
-  background: #f50070;
+  background: #f3d3e1;
 }
 
 .ha-art__planet--blue {
   top: 14%;
   left: 48%;
   width: 12%;
-  background: #00b9dc;
+  background: #cfe7ec;
 }
 
 .ha-art__spark {

@@ -12,7 +12,7 @@ import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter
 import NotFound from '@/pages/not-found';
 import LegalPage from '@/pages/legal';
 import { usePageSeo } from '@/lib/use-page-seo';
-import { ListeningMoment, OurServices, AboutHablar, PurposeMission, ClosingLine } from '@/components/landing-story';
+import { ListeningMoment, OurServices, AboutHablar, PurposeMission } from '@/components/landing-story';
 import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
 import { BrandLogo } from '@/components/brand-logo';
 
@@ -166,7 +166,7 @@ function Header() {
   );
 }
 
-function Footer() {
+function Footer({ showClosingLine = false }: { showClosingLine?: boolean }) {
   return (
     <footer className="footer">
       <div className="footer-inner">
@@ -176,6 +176,9 @@ function Footer() {
             src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`}
             alt="HABLAR"
           />
+          {showClosingLine && (
+            <p className="footer-closing">HABLAR — Come as you are. <span>Speak as you feel.</span></p>
+          )}
         </div>
         <nav className="footer-links" aria-label="Footer navigation">
           <Link href="/privacy">Privacy Notice</Link>
@@ -432,8 +435,7 @@ function Home() {
           <p><strong>A clear, caring boundary:</strong> HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support services. If you are in immediate danger or need urgent help, or dealing with any of these issues contact your local emergency services or a trusted professional nearby.</p>
         </div>
       </div>
-      <ClosingLine />
-      <Footer />
+      <Footer showClosingLine />
     </main>
   );
 }

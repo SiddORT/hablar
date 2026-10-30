@@ -237,14 +237,6 @@ export function SafetyPrivacy() {
   );
 }
 
-export function ClosingLine() {
-  return (
-    <section className="ls-closing" aria-label="HABLAR closing line">
-      <p>HABLAR — Come as you are. <span>Speak as you feel.</span></p>
-    </section>
-  );
-}
-
 export default function LandingStory() {
   return (
     <>
@@ -254,7 +246,6 @@ export default function LandingStory() {
       <AboutHablar />
       <Philosophy />
       <SafetyPrivacy />
-      <ClosingLine />
     </>
   );
 }

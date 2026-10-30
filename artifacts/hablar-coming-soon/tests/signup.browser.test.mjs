@@ -115,7 +115,8 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   ]);
   const listeningText = await listening.innerText();
   assert.doesNotMatch(listeningText, /we are open|available now/i);
-  assert.match(await page.locator('.ls-closing').innerText(), /HABLAR — Come as you are\.\s*Speak as you feel\./);
+  assert.equal(await page.locator('.ls-closing').count(), 0);
+  assert.match(await page.locator('.footer-brand > .brand-logo--footer + .footer-closing').innerText(), /HABLAR — Come as you are\.\s*Speak as you feel\./);
   await page.locator('[data-testid="link-about"]').click();
   assert.equal(new URL(page.url()).hash, '#about');
 
@@ -408,7 +409,7 @@ test('Our services preserves exact copy, text-only content, order, and responsiv
   }
 });
 
-test('signup, safety boundary, closing line, and footer stay ordered on desktop and mobile', async (t) => {
+test('signup, safety boundary, and footer stay ordered with the closing line below the logo', async (t) => {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   t.after(() => page.close());
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -421,21 +422,37 @@ test('signup, safety boundary, closing line, and footer stay ordered on desktop 
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     const orderedSections = await page.locator(
-      '#launch-note, .boundary, .ls-closing, .footer',
+      '#launch-note, .boundary, .footer',
     ).evaluateAll((elements) => elements.map((element) => {
       if (element.id === 'launch-note') return 'signup';
       if (element.classList.contains('boundary')) return 'boundary';
-      if (element.classList.contains('ls-closing')) return 'closing';
       return 'footer';
     }));
 
-    assert.deepEqual(orderedSections, ['signup', 'boundary', 'closing', 'footer']);
+    assert.deepEqual(orderedSections, ['signup', 'boundary', 'footer']);
     assert.equal((await page.locator('.boundary p').innerText()).replace(/\s+/g, ' ').trim(), expectedBoundary);
-    assert.equal((await page.locator('.ls-closing').innerText()).replace(/\s+/g, ' ').trim(), expectedClosingLine);
+    assert.equal(await page.locator('.ls-closing').count(), 0);
+    assert.equal(await page.locator('.footer-closing').count(), 1);
+    assert.equal((await page.locator('.footer-brand > .brand-logo--footer + .footer-closing').innerText()).replace(/\s+/g, ' ').trim(), expectedClosingLine);
+    const closingLayout = await page.locator('.footer-closing').evaluate((line) => {
+      const rect = line.getBoundingClientRect();
+      const footer = line.closest('.footer');
+      return {
+        fits: rect.left >= 0 && rect.right <= innerWidth && line.scrollWidth <= line.clientWidth,
+        adjacent: footer.previousElementSibling.classList.contains('boundary'),
+        gap: footer.getBoundingClientRect().top - footer.previousElementSibling.getBoundingClientRect().bottom,
+      };
+    });
+    assert.ok(closingLayout.fits);
+    assert.ok(closingLayout.adjacent);
+    assert.equal(closingLayout.gap, 0);
     await page.locator('#launch-note form').waitFor({ state: 'visible' });
     assert.equal(await page.locator('#launch-note input[name="email"]').count(), 1);
     assert.equal(await page.locator('#launch-note input[name="phone"]').count(), 1);
   }
+  await page.locator('.footer-links a').click();
+  await page.locator('#legal-main').waitFor();
+  assert.equal(await page.locator('.footer-closing').count(), 0);
 });
 
 async function enableRequiredConsents(page, { consent = true, termsAccepted = true } = {}) {

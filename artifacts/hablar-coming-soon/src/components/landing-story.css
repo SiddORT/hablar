@@ -35,9 +35,6 @@
 .ls-block h3 { font: 700 18px 'Montserrat', sans-serif; color: #454545; margin: 10px 0 8px; }
 .ls-legal { font-size: 14px; color: #736b68; line-height: 1.7; margin: 24px 0 0; }
 .ls-legal a { color: #9b2855; font-weight: 700; }
-.ls-closing { padding: 24px 20px 56px; text-align: center; }
-.ls-closing p { font: 700 clamp(26px, 3.6vw, 44px)/1.2 'Montserrat', sans-serif; letter-spacing: -.04em; color: #454545; margin: 0; }
-.ls-closing span { color: #e7337d; }
 .listening-moment {
   --lm-ink: var(--theme-text, #3d4140);
   --lm-accent: var(--theme-accent, #c54c72);

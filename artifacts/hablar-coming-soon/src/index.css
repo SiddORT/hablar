@@ -728,6 +728,8 @@ a { color: inherit; }
 .footer-brand { max-width: 280px; }
 .footer-brand .brand-logo--footer { width: 95px; margin-bottom: 8px; --brand-trademark-size: 12px; }
 .footer-brand p { font-size: 12px; color: #827b77; line-height: 1.5; margin: 0; }
+.footer-brand .footer-closing { font-size: 14px; font-weight: 500; line-height: 1.6; overflow-wrap: anywhere; }
+.footer-closing span { color: var(--theme-accent, #b22560); font-weight: 700; }
 .footer-links { display: flex; gap: 22px; font-size: 12px; font-weight: 700; }
 .footer-links a { text-decoration: none; }
 .footer-note { width: min(1240px, calc(100% - 64px)); margin: 31px auto 0; border-top: 1px solid #ece2d8; padding-top: 17px; font-size: 11px; color: #89817b; }
@@ -943,7 +945,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .legal-content li { color: var(--theme-muted); }
 [data-theme] .site-shell .section-kicker,
 [data-theme] .site-shell .hero h1 span,
-[data-theme] .site-shell .ls-closing span,
 [data-theme] .site-shell .hr-intro h2 span,
 [data-theme] .legal-content a,
 [data-theme] .legal-back { color: var(--theme-accent); }
@@ -1041,7 +1042,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .hr-signoff { color: var(--theme-muted); }
 [data-theme] .ls-title,
 [data-theme] .ls-block h3,
-[data-theme] .ls-closing p,
 [data-theme] .pm-flip-face,
 [data-theme] .pm-flip-face h3,
 [data-theme] .pm-detail { color: var(--theme-text); }
@@ -1170,8 +1170,7 @@ html[data-theme="yellow-orange"] {
 .site-shell.spectrum-active .hero h1 span,
 .site-shell.spectrum-active .section-kicker,
 .site-shell.spectrum-active .ha-eyebrow,
-.site-shell.spectrum-active .ha-emphasis,
-.site-shell.spectrum-active .ls-closing span {
+.site-shell.spectrum-active .ha-emphasis {
   color: var(--spectrum-accent);
 }
 .site-shell.spectrum-active .listening-moment {
@@ -1185,8 +1184,7 @@ html[data-theme="yellow-orange"] {
 }
 .site-shell.spectrum-active .ls-wrap,
 .site-shell.spectrum-active .emotions-section,
-.site-shell.spectrum-active .boundary,
-.site-shell.spectrum-active .ls-closing {
+.site-shell.spectrum-active .boundary {
   background-color: color-mix(in srgb, var(--theme-page) 92%, var(--spectrum-tint));
 }
 .site-shell.spectrum-active .hablar-about {

@@ -50,7 +50,7 @@ after(async () => {
   await viteServer?.close();
 });
 
-test('feelings cards stay small, centered and clear throughout their float on every layout', async (t) => {
+test('feelings cards stay enlarged, centered and clear throughout their float on every layout', async (t) => {
   const page = await browser.newPage();
   t.after(() => page.close());
   await page.goto(`${appUrl}/#feelings`, { waitUntil: 'domcontentloaded' });
@@ -114,9 +114,9 @@ test('feelings cards stay small, centered and clear throughout their float on ev
     });
     assert.equal(result.overflow, false, `No horizontal overflow at ${width}px`);
     for (const size of result.sizes) {
-      assert.ok(Math.abs(size.width / result.oldWidth - .6) < .015, `60% card width at ${width}px`);
+      assert.ok(Math.abs(size.width / result.oldWidth - .72) < .015, `20% enlargement over the previous 60% card width at ${width}px`);
       const oldHeight = (result.oldWidth - (width <= 980 ? 18 : 20)) * .75 + (width <= 980 ? 18 : 20);
-      assert.ok(Math.abs(size.height / oldHeight - .6) < .02, `60% card height at ${width}px`);
+      assert.ok(Math.abs(size.height / oldHeight - .72) < .02, `20% enlargement over the previous 60% card height at ${width}px`);
       assert.ok(Math.abs(size.centerOffsetX) < 1, `Artwork horizontally centered at ${width}px`);
       assert.ok(Math.abs(size.centerOffsetY) < 1, `Artwork vertically centered at ${width}px`);
       assert.ok(Math.abs(size.cropRatio - 8 / 7) < .01, 'Undistorted sprite crop');

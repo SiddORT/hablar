@@ -590,8 +590,8 @@ a { color: inherit; }
 .emotion-card {
   position: absolute;
   display: block;
-  width: clamp(100.8px, 11.4vw, 130.8px);
-  padding: 5px;
+  width: clamp(120.96px, 13.68vw, 156.96px);
+  padding: 6px;
   border-radius: 15px;
   background: var(--theme-surface);
   border: 1px solid var(--theme-border);
@@ -599,10 +599,10 @@ a { color: inherit; }
   animation: emotion-float 6.8s ease-in-out infinite;
   will-change: translate;
 }
-.slot-0 { top: 10%; left: 6%; transform: rotate(-5deg); animation-delay: -.8s; }
-.slot-1 { top: 10%; right: 6%; transform: rotate(5deg); animation-delay: -2.4s; }
-.slot-2 { bottom: 10%; left: 6%; transform: rotate(-4deg); animation-delay: -4s; }
-.slot-3 { bottom: 10%; right: 6%; transform: rotate(4deg); animation-delay: -5.6s; }
+.slot-0 { top: 12%; left: 16%; transform: rotate(-5deg); animation-delay: -.8s; }
+.slot-1 { top: 12%; right: 16%; transform: rotate(5deg); animation-delay: -2.4s; }
+.slot-2 { bottom: 12%; left: 16%; transform: rotate(-4deg); animation-delay: -4s; }
+.slot-3 { bottom: 12%; right: 16%; transform: rotate(4deg); animation-delay: -5.6s; }
 .emotion-card .emotion-art { width: 100%; border-radius: 10px; }
 .emotion-art {
   display: grid;
@@ -630,7 +630,7 @@ a { color: inherit; }
   .emotion-circle {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     min-height: 0;
   }
   .emotion-circle::before {
@@ -656,14 +656,14 @@ a { color: inherit; }
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 36px 14px;
-    padding: 18px 0 0;
+    padding: 12px 0 0;
   }
   .emotion-card {
     position: relative;
     inset: auto;
-    width: min(60%, 144px);
+    width: min(72%, 172.8px);
     justify-self: center;
-    padding: 4.4px;
+    padding: 5.28px;
   }
 }
 .boundary { border-top: 1px solid #eee2d9; border-bottom: 1px solid #eee2d9; padding: 29px 0; }
@@ -835,7 +835,7 @@ a { color: inherit; }
   .story-inner { width: calc(100% - 40px); padding: 56px 0; }
   .story-message { font-size: clamp(28px, 8vw, 38px); }
   .emotions-section { padding-top: 82px; padding-bottom: 52px; }
-  .emotion-circle { gap: 24px; }
+  .emotion-circle { gap: 16px; }
   .emotion-ring { gap: 36px 10px; }
   .emotion-center { width: min(100%, 560px); padding: 0 4px; }
   .emotion-center h2 { font-size: clamp(24px, 7.2vw, 34px); }
@@ -1111,7 +1111,7 @@ html[data-theme="yellow-orange"] {
 
 @media (max-width: 360px) {
   .emotion-ring { grid-template-columns: 1fr; }
-  .emotion-card { width: min(60%, 156px); justify-self: center; }
+  .emotion-card { width: min(72%, 187.2px); justify-self: center; }
   [data-theme] .theme-select { width: 108px; padding-right: 24px; }
   [data-theme] .nav-links { gap: 6px; }
   [data-theme] .nav-cta { padding: 8px; font-size: 11px; }

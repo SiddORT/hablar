@@ -1,6 +1,6 @@
 import { useRef, useState, type PointerEvent } from 'react';
 import { Link } from 'wouter';
-import { Ear, MessageCircleMore, ShieldCheck, Phone, LockKeyhole, type LucideIcon } from 'lucide-react';
+import { ShieldCheck, Phone, LockKeyhole } from 'lucide-react';
 import './landing-story.css';
 import './landing-about-refresh.css';
 import './purpose-mission-flip.css';
@@ -103,11 +103,10 @@ type VisionMissionCardProps = {
   id: string;
   label: string;
   detail: string;
-  icon: LucideIcon;
   tone: 'rose' | 'mint';
 };
 
-function VisionMissionCard({ id, label, detail, icon: Icon, tone }: VisionMissionCardProps) {
+function VisionMissionCard({ id, label, detail, tone }: VisionMissionCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const cardRef = useRef<HTMLElement>(null);
   const frontButtonRef = useRef<HTMLButtonElement>(null);
@@ -147,11 +146,6 @@ function VisionMissionCard({ id, label, detail, icon: Icon, tone }: VisionMissio
     >
       <div className="pm-card-inner">
         <div className="pm-face pm-front" aria-hidden={isFlipped}>
-          <span className="pm-artwork" aria-hidden="true">
-            <Icon className="pm-icon" strokeWidth={1.8} />
-          </span>
-          <span className="pm-spark pm-spark--one" aria-hidden="true" />
-          <span className="pm-spark pm-spark--two" aria-hidden="true" />
           <h3 id={`${id}-title`}>Our <span>{title}</span></h3>
           <button
             ref={frontButtonRef}
@@ -195,14 +189,12 @@ export function PurposeMission() {
           id="vision-card"
           label="Our purpose"
           detail="Our purpose is simple yet deeply meaningful: to give people a safe space to talk and be heard."
-          icon={MessageCircleMore}
           tone="rose"
         />
         <VisionMissionCard
           id="mission-card"
           label="Our mission"
           detail="Our mission is to create a space where everyone feels heard, valued, and free to express themselves. Talking helps combat loneliness and fosters meaningful human conversations in increasingly AI-driven world."
-          icon={Ear}
           tone="mint"
         />
       </div>

@@ -39,10 +39,10 @@ export function seoPlugin(origin: string, base: string): Plugin {
     },
     configurePreviewServer(server) {
       // Vite's SPA fallback otherwise returns the home head for extensionless
-      // legal URLs, even when the route's index.html exists on disk.
+      // policy URLs, even when the route's index.html exists on disk.
       server.middlewares.use((request, _response, next) => {
         const route = routeFromUrl(request.url || '/');
-        if (route === '/privacy' || route === '/terms') {
+        if (route === '/privacy') {
           request.url = `${base.replace(/\/$/, '')}${route}/index.html`;
         }
         next();

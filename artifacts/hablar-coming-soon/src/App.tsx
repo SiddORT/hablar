@@ -105,7 +105,6 @@ function Footer() {
         </div>
         <nav className="footer-links" aria-label="Footer navigation">
           <Link href="/privacy">Privacy Notice</Link>
-          <Link href="/terms">Terms &amp; Conditions</Link>
         </nav>
       </div>
       <p className="footer-note">HABLAR is a listening space, not therapy, diagnosis, professional mental-health care, or emergency support. If you may be in immediate danger, contact local emergency services or a trusted person nearby.</p>
@@ -158,7 +157,7 @@ function Signup() {
       return;
     }
     if (!termsAccepted) {
-      setFeedback({ kind: 'error', message: 'Please agree to the Terms & Conditions.' });
+      setFeedback({ kind: 'error', message: 'Please accept the signup agreement.' });
       return;
     }
     setFeedback(null);
@@ -193,7 +192,7 @@ function Signup() {
         <div>
           <span className="section-kicker">A note when we open?</span>
           <h2>Let the good news find you.</h2>
-          <p>Leave an email, a phone number, or both. Your contact details are encrypted before they are stored. Please review the draft policies before signing up.</p>
+          <p>Leave an email, a phone number, or both to request one launch update. Your contact details are encrypted before they are stored. Read the Privacy Notice before signing up.</p>
         </div>
         <form className="form-wrap" onSubmit={submitSignup} noValidate>
           <label className="form-label" htmlFor="email">Email address <span style={{ fontWeight: 400, color: '#888' }}>— optional</span></label>
@@ -218,13 +217,13 @@ function Signup() {
           </label>
           <label className="consent">
             <input type="checkbox" name="termsAccepted" required />
-            <span>I agree to the <Link href="/terms" target="_blank" rel="noreferrer">Terms &amp; Conditions</Link>.</span>
+            <span>I agree that this form is only a request for one launch update; HABLAR’s listening service is not yet available, and no launch date is promised.</span>
           </label>
           <button className="button-primary form-submit" type="submit" disabled={signup.isPending}>
             {signup.isPending ? 'Saving your place…' : 'Send me the first update'}
             <ArrowUpRight size={17} aria-hidden="true" />
           </button>
-          <p className="prototype-note">Contact fields are encrypted in the database. This privacy notice and the terms are drafts for review.</p>
+          <p className="prototype-note">Contact fields are encrypted in the database. See the Privacy Notice for details.</p>
           {feedback?.kind === 'success' && (
             <div className="form-status form-status--success" role="status" aria-live="polite" aria-atomic="true">
               <span className="form-status-icon" aria-hidden="true"><Check size={17} /></span>
@@ -374,7 +373,7 @@ function Router() {
   const [showHeroDock, setShowHeroDock] = useState(true);
   const [showReturnToTop, setShowReturnToTop] = useState(false);
   const [showContentOverlayControls, setShowContentOverlayControls] = useState(true);
-  const isLegalPage = location === '/privacy' || location === '/terms';
+  const isLegalPage = location === '/privacy';
   usePageSeo(location);
   useEffect(() => {
     const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
@@ -511,8 +510,7 @@ function Router() {
         <div className="app-scrollport">
           <Switch>
             <Route path="/" component={Home} />
-            <Route path="/privacy"><LegalPage page="privacy" footer={<Footer />} /></Route>
-            <Route path="/terms"><LegalPage page="terms" footer={<Footer />} /></Route>
+            <Route path="/privacy"><LegalPage footer={<Footer />} /></Route>
             <Route component={NotFound} />
           </Switch>
         </div>

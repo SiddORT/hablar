@@ -209,14 +209,14 @@ export function SafetyPrivacy() {
           <div className="ls-block">
             <LockKeyhole size={20} aria-hidden="true" />
             <h3>What we collect today</h3>
-            <p>The form asks for an email and/or phone number, with separate launch-update consent and terms acceptance, for one launch update. Stored contact fields are encrypted, but remain personal data, not anonymous data. Sign-up also records consent evidence, and infrastructure receives technical information such as your IP address. No system is absolutely secure or confidential. Please use the form for contact details only, not personal stories, financial details or other sensitive or identifying information.</p>
+            <p>The form asks for an email and/or phone number, with separate launch-update consent and a required signup agreement, for one launch update. Stored contact fields are encrypted, but remain personal data, not anonymous data. Sign-up also records consent evidence, and infrastructure receives technical information such as your IP address. No system is absolutely secure or confidential. Please use the form for contact details only, not personal stories, financial details or other sensitive or identifying information.</p>
           </div>
           <div className="ls-block">
             <h3>Not built yet</h3>
             <p>There are no accounts, calls or payment processing here. Any future listening service, including how listeners, anonymity and confidentiality would work, will need its own disclosures before use.</p>
           </div>
         </div>
-        <p className="ls-legal">Read the draft <Link href="/privacy" data-testid="link-safety-notice">Privacy Notice</Link> and <Link href="/terms" data-testid="link-safety-terms">Terms &amp; Conditions</Link> for data use, access and disclosure details. Operator identity, a working privacy-request contact route, retention and provider details are still awaiting owner and legal review. These gaps should be resolved before public sign-ups.</p>
+        <p className="ls-legal">The <Link href="/privacy" data-testid="link-safety-notice">Privacy Notice</Link> explains how the optional launch-update form works and what information it uses. HABLAR’s listening service is still in development and is not available through this website.</p>
       </div>
     </section>
   );

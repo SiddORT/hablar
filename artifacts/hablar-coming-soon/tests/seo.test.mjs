@@ -22,6 +22,10 @@ test('unrecognized routes cannot inherit a homepage canonical or structured data
   const head = seoHead('/missing', 'https://hablar.example');
   assert.match(head, /noindex, follow/);
   assert.doesNotMatch(head, /rel="canonical"|application\/ld\+json/);
+  assert.deepEqual(publicPaths, ['/', '/privacy']);
+  assert.equal(pageMetadata('/terms').title, 'Page Not Found | HABLAR');
+  assert.match(seoHead('/terms', 'https://hablar.example'), /noindex, follow/);
+  assert.doesNotMatch(seoHead('/terms', 'https://hablar.example'), /Terms &amp; Conditions/);
 });
 
 test('built and served public pages share accurate metadata and crawl files', async () => {

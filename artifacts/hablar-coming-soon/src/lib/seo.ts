@@ -1,7 +1,7 @@
 export const landingTitle = 'HABLAR — A Human Listening Space, Coming Soon';
-export const landingDescription = 'HABLAR is developing a human listening space. Discover our purpose and philosophy, read the draft policies, and request a one-time launch update.';
+export const landingDescription = 'HABLAR is developing a human listening space. Discover our purpose and philosophy, read the Privacy Notice, and request one launch update.';
 
-export const publicPaths = ['/', '/privacy', '/terms'] as const;
+export const publicPaths = ['/', '/privacy'] as const;
 
 export function normalizeSiteOrigin(value: string): string {
   if (!value.trim()) return '';
@@ -23,11 +23,11 @@ export function normalizeSiteOrigin(value: string): string {
 
 export function pageMetadata(path: string) {
   if (path === '/') return { title: landingTitle, description: landingDescription };
-  if (path === '/privacy' || path === '/terms') {
-    const title = path === '/privacy' ? 'Privacy Notice' : 'Terms & Conditions';
+  if (path === '/privacy') {
+    const title = 'Privacy Notice';
     return {
       title: `${title} | HABLAR`,
-      description: `${title} for HABLAR’s pre-launch website, including current practices and matters requiring owner and legal review.`,
+      description: 'How HABLAR’s current pre-launch website and optional launch-update form use the information you provide.',
     };
   }
   return { title: 'Page Not Found | HABLAR', description: 'This page could not be found. Return to the HABLAR pre-launch website.' };

@@ -343,7 +343,7 @@ test('return-to-top is hidden until scrolling and works by keyboard on landing a
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   t.after(() => page.close());
 
-  for (const route of ['/', '/privacy', '/terms']) {
+  for (const route of ['/', '/privacy']) {
     await page.goto(`${appUrl}${route}`, { waitUntil: 'networkidle' });
     const scrollport = page.locator('.app-scrollport');
     const button = page.getByRole('button', { name: 'Return to top' });
@@ -374,6 +374,48 @@ test('return-to-top is hidden until scrolling and works by keyboard on landing a
   }
 });
 
+test('Privacy Notice is complete and the removed Terms page stays unavailable', async (t) => {
+  const page = await browser.newPage();
+  t.after(() => page.close());
+  await page.goto(`${appUrl}/privacy`, { waitUntil: 'networkidle' });
+
+  const notice = page.locator('#legal-main');
+  await notice.getByRole('heading', { name: 'Privacy Notice', level: 1 }).waitFor();
+  const copy = await notice.innerText();
+  assert.match(copy, /HABLAR is the company name used in this notice/);
+  assert.match(copy, /optional form to request one launch update/);
+  assert.doesNotMatch(copy, /Replit|configured to run|requests and grievances|working privacy-request channel/);
+  assert.doesNotMatch(copy, /Outstanding owner and legal review|Important details still need owner and legal review/);
+  assert.equal(await notice.locator('#requests').count(), 0);
+
+  const sections = notice.locator('article > section');
+  assert.equal(await sections.count(), 9);
+  const anchors = await notice.locator('.legal-toc a').evaluateAll((links) =>
+    links.map((link) => ({ href: link.getAttribute('href'), exists: !!document.querySelector(link.getAttribute('href')) })),
+  );
+  assert.equal(anchors.length, 9);
+  assert.ok(anchors.every((anchor) => anchor.href?.startsWith('#') && anchor.exists));
+  assert.match((await sections.nth(8).locator('h2').textContent()).trim(), /^9\. Notice updates and future service$/);
+  assert.equal(await page.locator('a[href="/terms"]').count(), 0);
+
+  await page.goto(`${appUrl}/terms`, { waitUntil: 'networkidle' });
+  await page.getByRole('heading', { name: '404 Page Not Found' }).waitFor();
+  assert.equal(await page.locator('.legal-page').count(), 0);
+  assert.equal(await page.getByRole('heading', { name: 'Terms & Conditions' }).count(), 0);
+});
+
+test('landing page has no Terms page links and keeps the agreement required inline', async (t) => {
+  const page = await browser.newPage();
+  t.after(() => page.close());
+  await page.goto(appUrl, { waitUntil: 'networkidle' });
+
+  assert.equal(await page.locator('a[href="/terms"]').count(), 0);
+  assert.equal(await page.locator('a').filter({ hasText: /Terms & Conditions/i }).count(), 0);
+  const agreement = page.locator('input[name="termsAccepted"]');
+  assert.equal(await agreement.getAttribute('required'), '');
+  assert.match(await page.locator('label').filter({ has: agreement }).innerText(), /request for one launch update.*not yet available.*no launch date is promised/i);
+});
+
 test('browser form validates contact details and both consent checkboxes', async (t) => {
   const { page, form, requests } = await openSignup();
   t.after(() => page.close());
@@ -396,7 +438,7 @@ test('browser form validates contact details and both consent checkboxes', async
 
   await page.locator('input[name="consent"]').check();
   await form.locator('button[type="submit"]').click();
-  assert.match(await statusText(page, 'Please agree to the Terms & Conditions'), /Please agree to the Terms & Conditions/);
+  assert.match(await statusText(page, 'Please accept the signup agreement'), /Please accept the signup agreement/);
   assert.equal(requests.length, 0);
 });
 

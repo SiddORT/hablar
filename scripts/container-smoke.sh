@@ -29,11 +29,10 @@ base="http://127.0.0.1:$HTTP_PORT"
 curl -fsS "$base/healthz" | grep -qx ok
 curl -fsS "$base/api/healthz" | grep -q '"status":"ok"'
 home="$(curl -fsS "$base/")"
-for route in privacy terms; do
-  policy="$(curl -fsS "$base/$route")"
-  if [ "$route" = privacy ]; then title="Privacy Notice"; else title="Terms &amp; Conditions"; fi
-  printf '%s' "$policy" | grep -q "<title data-hablar-seo>$title | HABLAR</title>"
-done
+policy="$(curl -fsS "$base/privacy")"
+printf '%s' "$policy" | grep -q '<title data-hablar-seo>Privacy Notice | HABLAR</title>'
+
+test "$(curl -s -o /dev/null -w '%{http_code}' "$base/terms")" = 404
 curl -fsS "$base/robots.txt" | grep -q 'User-agent:'
 curl -fsS "$base/sitemap.xml" | grep -q '<urlset'
 curl -fsS "$base/brand/hablar-logo-transparent.png" -o /dev/null

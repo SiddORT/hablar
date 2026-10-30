@@ -724,16 +724,17 @@ a { color: inherit; }
   text-align: left;
 }
 .footer { background: #fff8ef; padding: 42px 0 30px; }
-.footer-inner { width: min(1240px, calc(100% - 64px)); margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 25px; }
-.footer-brand { max-width: 280px; }
+.footer-inner { width: min(1240px, calc(100% - 64px)); margin: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 25px; }
+.footer-brand { min-width: 0; max-width: 100%; }
 .footer-brand .brand-logo--footer { width: 95px; margin-bottom: 8px; --brand-trademark-size: 12px; }
 .footer-brand p { font-size: 12px; color: #827b77; line-height: 1.5; margin: 0; }
 .footer-brand .footer-closing { font-size: 14px; font-weight: 500; line-height: 1.6; overflow-wrap: anywhere; }
 .footer-closing span { color: var(--theme-accent, #b22560); font-weight: 700; }
+.footer-legal { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
 .footer-links { display: flex; gap: 22px; font-size: 12px; font-weight: 700; }
 .footer-links a { text-decoration: none; }
 .footer-note { width: min(1240px, calc(100% - 64px)); margin: 31px auto 0; border-top: 1px solid #ece2d8; padding-top: 17px; font-size: 11px; color: #89817b; }
-.footer-copyright { width: min(1240px, calc(100% - 64px)); margin: 16px auto 0; font-size: 12px; line-height: 1.5; color: #706967; }
+.footer-copyright { margin: 8px 0 0; font-size: 12px; line-height: 1.5; color: #706967; }
 
 .legal-page { min-height: 100vh; background: #fffdf8; }
 .legal-top { width: min(1050px, calc(100% - 48px)); margin: auto; padding: 26px 0; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
@@ -849,7 +850,7 @@ a { color: inherit; }
   .phone-country-select { padding: 0 7px; font-size: 11px; }
   .phone-local-input { padding: 13px 9px; font-size: 13px; }
   .footer-inner { width: calc(100% - 40px); flex-direction: column; align-items: flex-start; }
-  .footer-note, .footer-copyright { width: calc(100% - 40px); }
+  .footer-note { width: calc(100% - 40px); }
   .footer-links { flex-wrap: wrap; }
 }
 

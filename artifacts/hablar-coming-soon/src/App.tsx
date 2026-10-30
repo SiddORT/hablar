@@ -180,11 +180,13 @@ function Footer({ showClosingLine = false }: { showClosingLine?: boolean }) {
             <p className="footer-closing">HABLAR — Come as you are. <span>Speak as you feel.</span></p>
           )}
         </div>
-        <nav className="footer-links" aria-label="Footer navigation">
-          <Link href="/privacy">Privacy Notice</Link>
-        </nav>
+        <div className="footer-legal">
+          <nav className="footer-links" aria-label="Footer navigation">
+            <Link href="/privacy">Privacy Notice</Link>
+          </nav>
+          <p className="footer-copyright">Copyright © 2026 HABLAR</p>
+        </div>
       </div>
-      <p className="footer-copyright">Copyright © 2026 HABLAR</p>
     </footer>
   );
 }

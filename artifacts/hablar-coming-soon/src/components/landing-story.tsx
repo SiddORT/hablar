@@ -48,6 +48,9 @@ export function ListeningMoment() {
 export function AboutHablar() {
   return (
     <section className="hablar-refresh hablar-about" id="about" aria-labelledby="about-heading">
+      <span className="ha-logo" aria-hidden="true">
+        <img src="/brand/hablar-logo-transparent.png" alt="" />
+      </span>
       <div className="ha-shell">
         <div className="ha-copy">
           <header className="ha-heading hr-reveal">

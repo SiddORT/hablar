@@ -13,7 +13,7 @@ export function ListeningMoment() {
           <h2 id="listening-moment-heading">A moment to be <span>heard</span></h2>
         </header>
         <p className="listening-moment__intro hr-reveal">
-          <span>Maybe you don’t need advice.</span>
+          <span className="listening-moment__rainbow">Maybe you don’t need advice.</span>
           <span>Maybe you don’t need answers.</span>
           <span>Maybe you just need someone to listen.</span>
         </p>

@@ -87,6 +87,38 @@
   color: color-mix(in srgb, var(--lm-ink) 72%, var(--lm-surface));
   font: 400 clamp(15px, 1.5vw, 17px)/1.5 'DM Sans', sans-serif;
 }
+/* Wordmark hue order, deepened so the small text stays legible on each theme. */
+.listening-moment__rainbow {
+  justify-self: center;
+  width: fit-content;
+  max-width: 100%;
+  color: var(--lm-ink);
+}
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .listening-moment__rainbow {
+    background-image: linear-gradient(
+      to right,
+      #bc175b 0%,
+      #b9430b 17%,
+      #896800 33%,
+      #137744 50%,
+      #007b8b 67%,
+      #245bc1 83%,
+      #7834ac 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+@media (forced-colors: active) {
+  .listening-moment__rainbow {
+    background-image: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+}
 .listening-moment__messages {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -491,9 +491,7 @@ function Router() {
           const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
           const dockRect = dock?.getBoundingClientRect();
           if (!dock || !dockRect) return;
-          const alreadyObscured = dock.classList.contains('is-launch-hidden')
-            || dock.classList.contains('is-follow-obscured');
-          const overlapMargin = alreadyObscured ? 28 : 10;
+          const overlapMargin = 10;
           const legalText = document.querySelectorAll<HTMLElement>(
             '#legal-main h1, #legal-main h2, #legal-main p, #legal-main li, #legal-main a',
           );
@@ -537,7 +535,7 @@ function Router() {
       const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
       if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
       const dockRect = dock.getBoundingClientRect();
-      const contentMargin = dock.classList.contains('is-content-section-visible') ? 28 : 10;
+      const contentMargin = 10;
       const contentPanels = document.querySelectorAll<HTMLElement>('.listening-moment, .hablar-refresh, .ls-pm');
       const overlapsFeatureContent = Array.from(contentPanels).some((panel) => {
         return rectanglesOverlapWithMargin(panel.getBoundingClientRect(), dockRect, contentMargin);
@@ -545,7 +543,7 @@ function Router() {
       setShowContentOverlayControls(!overlapsFeatureContent);
       const topicList = document.querySelector<HTMLElement>('.hero-topic-list');
       if (topicList) {
-        const topicMargin = dock.classList.contains('is-hero-art-obscured') ? 28 : 10;
+        const topicMargin = 10;
         const overlapsTopics = rectanglesOverlapWithMargin(topicList.getBoundingClientRect(), dockRect, topicMargin);
         setShowHeroDock(!overlapsTopics);
       } else {
@@ -555,7 +553,7 @@ function Router() {
       const signupContent = document.querySelectorAll<HTMLElement>(
         '#launch-note h2, #launch-note p, #launch-note label, #launch-note input, #launch-note button',
       );
-      const signupMargin = dock.classList.contains('is-follow-obscured') ? 28 : 10;
+      const signupMargin = 10;
       const overlapsContent = Array.from(signupContent).some((element) => {
         if (element.tagName === 'P' && !element.textContent?.trim()) return false;
         return rectanglesOverlapWithMargin(element.getBoundingClientRect(), ctaRect, signupMargin);

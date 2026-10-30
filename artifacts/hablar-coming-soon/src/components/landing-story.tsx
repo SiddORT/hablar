@@ -14,8 +14,8 @@ export function ListeningMoment() {
         </header>
         <p className="listening-moment__intro hr-reveal">
           <span className="listening-moment__rainbow">Maybe you don’t need advice.</span>
-          <span>Maybe you don’t need answers.</span>
-          <span>Maybe you just need someone to listen.</span>
+          <span className="listening-moment__rainbow">Maybe you don’t need answers.</span>
+          <span className="listening-moment__rainbow">Maybe you just need someone to listen.</span>
         </p>
         <p className="listening-moment__signoff hr-reveal">Come as you are. Spereak as you feel.</p>
         <ul className="listening-moment__capsules hr-reveal" aria-label="What to expect from a conversation">

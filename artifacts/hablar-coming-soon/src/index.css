@@ -294,9 +294,9 @@ a { color: inherit; }
 .launch-sticky-cta:focus-visible { outline: 3px solid #075c54; outline-offset: 4px; }
 .return-top-button {
   position: fixed;
-  z-index: 45;
-  left: max(20px, calc(env(safe-area-inset-left, 0px) + 16px));
-  bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+  z-index: 60;
+  right: max(20px, calc(env(safe-area-inset-right, 0px) + 16px));
+  bottom: calc(max(20px, calc(env(safe-area-inset-bottom, 0px) + 16px)) + 120px);
   display: grid;
   width: 48px;
   height: 48px;
@@ -805,6 +805,14 @@ a { color: inherit; }
 }
 @media (max-width: 680px) {
   .site-loader__content { width: min(64vw, 248px); }
+  .return-top-button {
+    right: max(16px, calc(env(safe-area-inset-right, 0px) + 12px));
+    bottom: calc(max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px)) + 112px);
+  }
+  .return-top-button.is-legal-page {
+    top: calc(env(safe-area-inset-top, 0px) + 70px);
+    bottom: auto;
+  }
   .launch-sticky-dock.is-legal-page {
     top: calc(env(safe-area-inset-top, 0px) + 130px);
     bottom: auto;

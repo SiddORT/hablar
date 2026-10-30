@@ -597,7 +597,7 @@ function Router() {
           </a>
         </div>
         <button
-          className="return-top-button"
+          className={`return-top-button${isLegalPage ? ' is-legal-page' : ''}`}
           type="button"
           aria-label="Return to top"
           title="Return to top"

@@ -455,6 +455,8 @@ test('return-to-top stays visible when sticky controls are hidden and works by k
         return {
           button: { left: buttonRect.left, right: buttonRect.right, top: buttonRect.top, bottom: buttonRect.bottom },
           dock: { left: dockRect.left, right: dockRect.right, top: dockRect.top, bottom: dockRect.bottom },
+          unobstructed: Boolean(document.elementFromPoint(buttonRect.left + buttonRect.width / 2, buttonRect.top + buttonRect.height / 2)
+            ?.closest('.return-top-button')),
         };
       });
       const overlaps = bounds.button.left < bounds.dock.right
@@ -462,6 +464,9 @@ test('return-to-top stays visible when sticky controls are hidden and works by k
         && bounds.button.top < bounds.dock.bottom
         && bounds.button.bottom > bounds.dock.top;
       assert.equal(overlaps, false, `return-to-top should not overlap sticky actions at ${width}px`);
+      assert.ok(bounds.button.bottom <= bounds.dock.top - 10, `return-to-top must sit above sticky actions at ${width}px`);
+      assert.ok(Math.abs(bounds.button.right - bounds.dock.right) < 1, `return-to-top must align with sticky actions at ${width}px`);
+      assert.equal(bounds.unobstructed, true, `return-to-top must not be covered at ${width}px`);
 
       await page.evaluate(() => {
         const scrollport = document.querySelector('.app-scrollport');

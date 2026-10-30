@@ -480,6 +480,44 @@ test('return-to-top stays visible when sticky controls are hidden and works by k
   }
 });
 
+test('return-to-top does not flicker near its scroll threshold', async (t) => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto(appUrl, { waitUntil: 'networkidle' });
+    const scrollport = page.locator('.app-scrollport');
+    const button = page.getByRole('button', { name: 'Return to top' });
+    assert.equal(await button.isHidden(), true);
+
+    const setScrollTop = async (top) => {
+      await scrollport.evaluate((element, nextTop) => {
+        element.scrollTop = nextTop;
+      }, top);
+      await page.waitForTimeout(30);
+    };
+
+    await setScrollTop(280);
+    await button.waitFor({ state: 'visible' });
+    for (const top of [210, 250, 205, 255]) {
+      await setScrollTop(top);
+      assert.equal(await button.isVisible(), true, `return-to-top should stay visible at ${top}px (${width}px viewport)`);
+    }
+
+    await setScrollTop(170);
+    await button.waitFor({ state: 'hidden' });
+    for (const top of [190, 230, 255, 205]) {
+      await setScrollTop(top);
+      assert.equal(await button.isHidden(), true, `return-to-top should stay hidden at ${top}px (${width}px viewport)`);
+    }
+
+    await setScrollTop(270);
+    await button.waitFor({ state: 'visible' });
+  }
+});
+
 test('floating controls keep stable visibility while scrolling both pages', async (t) => {
   const page = await browser.newPage({ viewport: { width: 1280, height: 844 } });
   t.after(() => page.close());

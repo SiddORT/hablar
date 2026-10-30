@@ -91,6 +91,13 @@ function interpolateHex(start: string, end: string, amount: number) {
   return `#${channels.join('')}`;
 }
 
+function rectanglesOverlapWithMargin(first: DOMRect, second: DOMRect, margin: number) {
+  return first.left < second.right + margin
+    && first.right > second.left - margin
+    && first.top < second.bottom + margin
+    && first.bottom > second.top - margin;
+}
+
 function useLogoSpectrum() {
   useEffect(() => {
     const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
@@ -457,7 +464,12 @@ function Router() {
     const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
     if (!scrollport) return;
 
-    const updateVisibility = () => setShowReturnToTop(scrollport.scrollTop > 240);
+    const updateVisibility = () => {
+      const scrollTop = scrollport.scrollTop;
+      setShowReturnToTop((currentlyVisible) =>
+        currentlyVisible ? scrollTop > 180 : scrollTop > 260,
+      );
+    };
     updateVisibility();
     scrollport.addEventListener('scroll', updateVisibility, { passive: true });
     return () => scrollport.removeEventListener('scroll', updateVisibility);
@@ -476,17 +488,18 @@ function Router() {
           const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
           if (!cta || !instagramCta) return;
           if (document.activeElement === cta || document.activeElement === instagramCta) return;
-          const dockRect = document.querySelector<HTMLElement>('.launch-sticky-dock')?.getBoundingClientRect();
-          if (!dockRect) return;
+          const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
+          const dockRect = dock?.getBoundingClientRect();
+          if (!dock || !dockRect) return;
+          const alreadyObscured = dock.classList.contains('is-launch-hidden')
+            || dock.classList.contains('is-follow-obscured');
+          const overlapMargin = alreadyObscured ? 28 : 10;
           const legalText = document.querySelectorAll<HTMLElement>(
             '#legal-main h1, #legal-main h2, #legal-main p, #legal-main li, #legal-main a',
           );
           const overlapsText = Array.from(legalText).some((element) => {
             const rect = element.getBoundingClientRect();
-            return rect.left < dockRect.right
-              && rect.right > dockRect.left
-              && rect.top < dockRect.bottom
-              && rect.bottom > dockRect.top;
+            return rectanglesOverlapWithMargin(rect, dockRect, overlapMargin);
           });
           setShowLaunchCta(!overlapsText);
           setShowInstagramCta(!overlapsText);
@@ -518,55 +531,61 @@ function Router() {
 
     let frame = 0;
     let settledFrame = 0;
+    let dockPositionSettling = false;
+    const measureInstagramVisibility = () => {
+      const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
+      const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
+      if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
+      const dockRect = dock.getBoundingClientRect();
+      const contentMargin = dock.classList.contains('is-content-section-visible') ? 28 : 10;
+      const contentPanels = document.querySelectorAll<HTMLElement>('.listening-moment, .hablar-refresh, .ls-pm');
+      const overlapsFeatureContent = Array.from(contentPanels).some((panel) => {
+        return rectanglesOverlapWithMargin(panel.getBoundingClientRect(), dockRect, contentMargin);
+      });
+      setShowContentOverlayControls(!overlapsFeatureContent);
+      const topicList = document.querySelector<HTMLElement>('.hero-topic-list');
+      if (topicList) {
+        const topicMargin = dock.classList.contains('is-hero-art-obscured') ? 28 : 10;
+        const overlapsTopics = rectanglesOverlapWithMargin(topicList.getBoundingClientRect(), dockRect, topicMargin);
+        setShowHeroDock(!overlapsTopics);
+      } else {
+        setShowHeroDock(true);
+      }
+      const ctaRect = instagramCta.getBoundingClientRect();
+      const signupContent = document.querySelectorAll<HTMLElement>(
+        '#launch-note h2, #launch-note p, #launch-note label, #launch-note input, #launch-note button',
+      );
+      const signupMargin = dock.classList.contains('is-follow-obscured') ? 28 : 10;
+      const overlapsContent = Array.from(signupContent).some((element) => {
+        if (element.tagName === 'P' && !element.textContent?.trim()) return false;
+        return rectanglesOverlapWithMargin(element.getBoundingClientRect(), ctaRect, signupMargin);
+      });
+      setShowInstagramCta(!overlapsContent);
+    };
     const updateInstagramVisibility = () => {
-      cancelAnimationFrame(frame);
-      cancelAnimationFrame(settledFrame);
+      if (frame || dockPositionSettling) return;
       frame = requestAnimationFrame(() => {
+        frame = 0;
+        measureInstagramVisibility();
+      });
+    };
+    const updateAfterDockReposition = () => {
+      dockPositionSettling = true;
+      cancelAnimationFrame(frame);
+      frame = 0;
+      cancelAnimationFrame(settledFrame);
+      settledFrame = requestAnimationFrame(() => {
         settledFrame = requestAnimationFrame(() => {
-          const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
-          const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
-          if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
-          const dockRect = dock.getBoundingClientRect();
-          const contentPanels = document.querySelectorAll<HTMLElement>('.listening-moment, .hablar-refresh, .ls-pm');
-          const overlapsFeatureContent = Array.from(contentPanels).some((panel) => {
-            const panelRect = panel.getBoundingClientRect();
-            return panelRect.left < dockRect.right
-              && panelRect.right > dockRect.left
-              && panelRect.top < dockRect.bottom
-              && panelRect.bottom > dockRect.top;
-          });
-          setShowContentOverlayControls(!overlapsFeatureContent);
-          const topicList = document.querySelector<HTMLElement>('.hero-topic-list');
-          if (topicList) {
-            const topicsRect = topicList.getBoundingClientRect();
-            const overlapsTopics = topicsRect.left < dockRect.right
-              && topicsRect.right > dockRect.left
-              && topicsRect.top < dockRect.bottom
-              && topicsRect.bottom > dockRect.top;
-            setShowHeroDock(!overlapsTopics);
-          } else {
-            setShowHeroDock(true);
-          }
-          const ctaRect = instagramCta.getBoundingClientRect();
-          const signupContent = document.querySelectorAll<HTMLElement>(
-            '#launch-note h2, #launch-note p, #launch-note label, #launch-note input, #launch-note button',
-          );
-          const overlapsContent = Array.from(signupContent).some((element) => {
-            if (element.tagName === 'P' && !element.textContent?.trim()) return false;
-            const rect = element.getBoundingClientRect();
-            return rect.left < ctaRect.right
-              && rect.right > ctaRect.left
-              && rect.top < ctaRect.bottom
-              && rect.bottom > ctaRect.top;
-          });
-          setShowInstagramCta(!overlapsContent);
+          settledFrame = 0;
+          dockPositionSettling = false;
+          measureInstagramVisibility();
         });
       });
     };
     const observer = new IntersectionObserver(
       ([entry]) => {
         setShowLaunchCta(!entry.isIntersecting);
-        updateInstagramVisibility();
+        updateAfterDockReposition();
       },
       { root: scrollport, threshold: 0.01 },
     );

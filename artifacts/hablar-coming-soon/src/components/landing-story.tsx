@@ -30,6 +30,18 @@ export function ListeningMoment() {
   );
 }
 
+export function OurServices() {
+  return (
+    <section className="our-services" id="our-services" aria-labelledby="our-services-heading">
+      <div className="our-services__inner">
+        <h2 id="our-services-heading">Our services</h2>
+        <p>We offer a space where you can talk freely, navigating through your thoughts or a difficult moment. We’re here to listen - No labels; No assumptions; No judgment; Just real conversations; genuine support and a reminder that someone is here to hear you.</p>
+        <p>We believe that being heard can make a difference. A conversation at HABLAR, at that very moment can bring in clarity, comfort, and a fresh perspective. It’s a reminder that you matter, your feelings matter, your thoughts matter.</p>
+      </div>
+    </section>
+  );
+}
+
 export function AboutHablar() {
   return (
     <section className="hablar-refresh hablar-about" id="about" aria-labelledby="about-heading">
@@ -247,6 +259,7 @@ export default function LandingStory() {
   return (
     <>
       <ListeningMoment />
+      <OurServices />
       <PurposeMission />
       <AboutHablar />
       <Philosophy />

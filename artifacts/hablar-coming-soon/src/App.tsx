@@ -12,7 +12,7 @@ import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter
 import NotFound from '@/pages/not-found';
 import LegalPage from '@/pages/legal';
 import { usePageSeo } from '@/lib/use-page-seo';
-import { ListeningMoment, AboutHablar, PurposeMission, ClosingLine } from '@/components/landing-story';
+import { ListeningMoment, OurServices, AboutHablar, PurposeMission, ClosingLine } from '@/components/landing-story';
 import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
 import { BrandLogo } from '@/components/brand-logo';
 
@@ -410,6 +410,7 @@ function Home() {
         </div>
       </section>
       <ListeningMoment />
+      <OurServices />
       <PurposeMission />
       <AboutHablar />
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">

@@ -82,7 +82,8 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   await listening.getByRole('heading', { name: 'A moment to be heard' }).waitFor();
   assert.equal(await hero.evaluate((element) => element.nextElementSibling?.id), 'listening-moment');
   const purpose = page.locator('#purpose');
-  assert.equal(await listening.evaluate((element) => element.nextElementSibling?.id), 'purpose');
+  assert.equal(await listening.evaluate((element) => element.nextElementSibling?.id), 'our-services');
+  assert.equal(await page.locator('#our-services').evaluate((element) => element.nextElementSibling?.id), 'purpose');
   assert.equal(await purpose.evaluate((element) => element.nextElementSibling?.id), 'about');
   assert.equal(await page.locator('[data-testid="link-about"]').getAttribute('href'), '#about');
 
@@ -326,6 +327,84 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
     assert.ok(aboutLayout.artBounds.width > 0 && aboutLayout.artBounds.height > 0);
     assert.ok(aboutLayout.artBounds.left >= 0 && aboutLayout.artBounds.right <= aboutLayout.viewportWidth);
     assert.ok(aboutLayout.copyBounds.bottom <= aboutLayout.artBounds.top, `About illustration should stack beneath copy without overlap at ${width}px`);
+  }
+});
+
+test('Our services preserves exact copy, text-only content, order, and responsive theme readability', async (t) => {
+  const page = await browser.newPage();
+  t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(appUrl, { waitUntil: 'networkidle' });
+  await page.evaluate(() => document.fonts.ready);
+
+  const section = page.getByRole('region', { name: 'Our services', exact: true });
+  assert.equal(await section.count(), 1);
+  assert.equal(await section.getByRole('heading', { name: 'Our services', level: 2 }).count(), 1);
+  assert.deepEqual(await section.locator('p').allTextContents(), [
+    'We offer a space where you can talk freely, navigating through your thoughts or a difficult moment. We’re here to listen - No labels; No assumptions; No judgment; Just real conversations; genuine support and a reminder that someone is here to hear you.',
+    'We believe that being heard can make a difference. A conversation at HABLAR, at that very moment can bring in clarity, comfort, and a fresh perspective. It’s a reminder that you matter, your feelings matter, your thoughts matter.',
+  ]);
+  assert.deepEqual(await section.evaluate((element) => [
+    element.previousElementSibling?.id, element.nextElementSibling?.id,
+  ]), ['listening-moment', 'purpose']);
+  assert.equal(await page.locator('#listening-moment .listening-moment__coming-soon').textContent(), 'We’re coming soon');
+  assert.equal(await section.locator('img, svg, picture, video, canvas, i, [role="img"], a, button').count(), 0);
+  assert.deepEqual(await section.locator('*').evaluateAll((elements) =>
+    elements.map((element) => element.tagName),
+  ), ['DIV', 'H2', 'P', 'P'], 'only a container, heading, and two paragraphs belong here');
+
+  for (const theme of ['original', 'blue-green', 'soft-lavender', 'yellow-orange']) {
+    await page.evaluate((value) => { document.documentElement.dataset.theme = value; }, theme);
+    for (const width of [1280, 390, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const fontSize of ['16px', '32px']) {
+        await page.evaluate((value) => { document.documentElement.style.fontSize = value; }, fontSize);
+        const layout = await section.evaluate((element) => {
+          const inner = element.firstElementChild;
+          const bounds = inner.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          const swatch = document.createElement('span');
+          swatch.style.color = 'var(--theme-text)';
+          swatch.style.backgroundColor = 'var(--theme-page)';
+          element.append(swatch);
+          const themeStyle = getComputedStyle(swatch);
+          const usesTheme = style.color === themeStyle.color && style.backgroundColor === themeStyle.backgroundColor;
+          swatch.remove();
+          return {
+            usesTheme,
+            width: bounds.width,
+            centered: Math.abs(bounds.left - (window.innerWidth - bounds.right)) < 1,
+            fits: bounds.left >= 0 && bounds.right <= window.innerWidth
+              && element.scrollWidth <= element.clientWidth,
+            children: Array.from(inner.children, (child) => {
+              const rect = child.getBoundingClientRect();
+              const childStyle = getComputedStyle(child);
+              const range = document.createRange();
+              range.selectNodeContents(child);
+              const text = range.getBoundingClientRect();
+              return {
+                top: rect.top, bottom: rect.bottom,
+                readable: rect.height > 0 && child.scrollWidth <= child.clientWidth
+                  && child.scrollHeight <= child.clientHeight + 1
+                  && text.left >= rect.left - 1 && text.right <= rect.right + 1
+                  && childStyle.textAlign === 'left'
+                  && childStyle.visibility === 'visible' && Number(childStyle.opacity) === 1,
+                plain: childStyle.backgroundImage === 'none'
+                  && childStyle.animationName === 'none'
+                  && ['none', 'normal'].includes(getComputedStyle(child, '::before').content)
+                  && ['none', 'normal'].includes(getComputedStyle(child, '::after').content),
+              };
+            }),
+          };
+        });
+        const context = `${theme}, ${width}px, root text ${fontSize}`;
+        assert.ok(layout.usesTheme && layout.centered && layout.fits, `${context}: ${JSON.stringify(layout)}`);
+        if (width === 1280 && fontSize === '16px') assert.ok(layout.width <= 704, context);
+        assert.ok(layout.children.every((child) => child.readable && child.plain), context);
+        assert.ok(layout.children[0].bottom < layout.children[1].top, context);
+        assert.ok(layout.children[1].bottom < layout.children[2].top, context);
+      }
+    }
   }
 });
 

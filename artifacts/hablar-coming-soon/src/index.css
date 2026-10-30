@@ -405,6 +405,8 @@ a { color: inherit; }
 .hero-art {
   min-height: 470px;
   display: grid;
+  /* Preserve the original canvas width as the topic grid tightens. */
+  grid-template-columns: minmax(362px, 1fr);
   place-items: center;
   padding: 20px 10px;
 }
@@ -420,10 +422,12 @@ a { color: inherit; }
 .hero-topic-list {
   position: relative;
   z-index: 2;
-  width: min(100%, 480px);
-  height: 430px;
+  justify-self: center;
+  width: min(calc(100% - 16px), 456px);
+  min-width: 392px;
+  height: 394px;
   display: grid;
-  grid-template-columns: minmax(120px, 1fr) minmax(110px, .9fr) minmax(120px, 1fr);
+  grid-template-columns: minmax(150px, 1fr) minmax(110px, .9fr) minmax(120px, 1fr);
   grid-template-rows: repeat(6, minmax(0, 1fr));
   gap: 8px 6px;
   margin: 0;
@@ -492,11 +496,12 @@ a { color: inherit; }
 .hero-topic-item:nth-child(13) { grid-column: 3; grid-row: 4; justify-self: end; margin-right: 6px; --topic-tilt: 1deg; }
 .hero-topic-hash { font-weight: 800; }
 @media (max-width: 980px) {
-  .hero-art { min-height: 470px; }
+  .hero-art { min-height: 470px; grid-template-columns: minmax(266px, 1fr); }
   .hero-connection-art { width: min(100%, 360px); }
   .hero-topic-list {
-    width: min(100%, 460px);
-    grid-template-columns: minmax(80px, 1fr) minmax(96px, 1.2fr) minmax(80px, 1fr);
+    width: min(calc(100% - 16px), 440px);
+    min-width: 310px;
+    grid-template-columns: minmax(100px, 1fr) minmax(116px, 1.2fr) minmax(84px, 1fr);
     column-gap: 5px;
   }
   .hero-topic-item {
@@ -854,7 +859,7 @@ a { color: inherit; }
   .hero-actions { gap: 10px; margin-top: 18px; }
   .hero-actions .button-primary, .hero-actions .hero-instagram-cta { min-height: 48px; }
   .hero-art { min-height: 0; margin-top: 19px; padding: 10px 0 18px; }
-  .hero-topic-list { min-height: 410px; }
+  .hero-topic-list { min-height: 394px; }
   .section { width: calc(100% - 40px); padding: 54px 0; }
   .section-heading { margin-bottom: 30px; }
   .section-heading p { font-size: 15px; }
@@ -1151,7 +1156,7 @@ html[data-theme="yellow-orange"] {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    gap: 12px;
+    gap: 10px;
     min-height: 0;
   }
   .hero-center-logo {
@@ -1163,6 +1168,8 @@ html[data-theme="yellow-orange"] {
   }
   .hero-topic-list {
     display: flex;
+    width: min(100%, 460px);
+    min-width: 0;
     flex-wrap: wrap;
     justify-content: center;
     align-content: flex-start;

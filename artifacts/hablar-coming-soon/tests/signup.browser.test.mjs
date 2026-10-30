@@ -263,7 +263,7 @@ test('signup, safety boundary, closing line, and footer stay ordered on desktop 
   await page.goto(appUrl, { waitUntil: 'networkidle' });
 
   const expectedBoundary =
-    'A clear, caring boundary: HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support. If you are in immediate danger or need urgent help, contact your local emergency services or a trusted person nearby.';
+    'A clear, caring boundary: HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support services. If you are in immediate danger or need urgent help, or dealing with any of these issues contact your local emergency services or a trusted professional nearby.';
   const expectedClosingLine = 'HABLAR — Come as you are. Speak as you feel.';
 
   for (const width of [1280, 390, 320]) {

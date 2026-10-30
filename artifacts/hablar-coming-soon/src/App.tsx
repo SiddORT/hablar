@@ -353,7 +353,7 @@ function Home() {
       <div className="boundary">
         <div className="boundary-inner">
           <div className="boundary-icon"><ShieldCheck size={18} aria-hidden="true" /></div>
-          <p><strong>A clear, caring boundary:</strong> HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support. If you are in immediate danger or need urgent help, contact your local emergency services or a trusted person nearby.</p>
+          <p><strong>A clear, caring boundary:</strong> HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support services. If you are in immediate danger or need urgent help, or dealing with any of these issues contact your local emergency services or a trusted professional nearby.</p>
         </div>
       </div>
       <ClosingLine />

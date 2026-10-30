@@ -85,26 +85,31 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   assert.equal(await page.locator('[data-testid="link-about"]').getAttribute('href'), '#about');
 
   const listeningLines = [
-    'Maybe you don’t need advice.',
-    'Maybe you don’t need answers.',
-    'Maybe you just need someone to listen.',
-    'You don’t have to carry every thought alone!',
+    'Not everything you carry is visible',
+    'Sometimes you just need someone to hear you out.',
   ];
-  assert.deepEqual(await listening.locator('.listening-moment__messages p').allTextContents(), listeningLines);
+  assert.deepEqual(
+    await listening.locator('.listening-moment__message-card p').allTextContents(),
+    listeningLines,
+  );
   assert.deepEqual(await listening.locator('.listening-moment__capsules li').allTextContents(), [
     'No labels',
     'No assumptions',
     'No judgment',
     'Just real conversations',
   ]);
-  const closingSequence = await listening.locator(
-    '.listening-moment__capsules, .listening-moment__coming-soon, .listening-moment__signoff',
+  const listeningSequence = await listening.locator(
+    '.listening-moment__heading, .listening-moment__message-card, .listening-moment__capsules, .listening-moment__coming-soon, .listening-moment__signoff',
   ).evaluateAll((elements) => elements.map((element) => {
+    if (element.classList.contains('listening-moment__heading')) return 'heading';
+    if (element.classList.contains('listening-moment__message-card')) return 'message-card';
     if (element.classList.contains('listening-moment__capsules')) return 'capsules';
     if (element.classList.contains('listening-moment__coming-soon')) return 'coming-soon';
     return 'signoff';
   }));
-  assert.deepEqual(closingSequence, ['capsules', 'coming-soon', 'signoff']);
+  assert.deepEqual(listeningSequence, [
+    'heading', 'message-card', 'message-card', 'capsules', 'coming-soon', 'signoff',
+  ]);
   const listeningText = await listening.innerText();
   assert.doesNotMatch(listeningText, /we are open|available now/i);
   assert.match(await page.locator('.ls-closing').innerText(), /HABLAR — Come as you are\.\s*Speak as you feel\./);
@@ -140,38 +145,85 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   assert.ok(desktopAboutBounds.width > 700 && desktopAboutBounds.width < 900);
   assert.ok(desktopAboutBounds.x >= 0 && desktopAboutBounds.x + desktopAboutBounds.width <= 1280);
 
-  for (const width of [390, 320]) {
-    await page.setViewportSize({ width, height: 844 });
-    const { viewportWidth, regions, elements, sectionScrollWidth, sectionClientWidth } = await listening.evaluate((element) => {
-      const section = element.getBoundingClientRect();
-      const measured = Array.from(element.querySelectorAll(
-        '.listening-moment__heading, .listening-moment__messages p, .listening-moment__capsules li, .listening-moment__coming-soon, .listening-moment__signoff',
-      ), (child) => {
-        const rect = child.getBoundingClientRect();
+  for (const theme of [null, 'blue-green', 'soft-lavender', 'yellow-orange']) {
+    await page.evaluate((nextTheme) => {
+      if (nextTheme) document.documentElement.dataset.theme = nextTheme;
+      else delete document.documentElement.dataset.theme;
+    }, theme);
+    for (const width of [1280, 390, 320]) {
+      await page.setViewportSize({ width, height: 844 });
+      const { viewportWidth, elements, cards, sectionScrollWidth, sectionClientWidth } = await listening.evaluate((element) => {
+        const measured = Array.from(element.querySelectorAll(
+          '.listening-moment__heading, .listening-moment__message-card, .listening-moment__capsules li, .listening-moment__coming-soon, .listening-moment__signoff',
+        ), (child) => {
+          const rect = child.getBoundingClientRect();
+          return {
+            left: rect.left,
+            right: rect.right,
+            width: rect.width,
+            height: rect.height,
+            visible: getComputedStyle(child).visibility !== 'hidden' && Number(getComputedStyle(child).opacity) > 0,
+          };
+        });
+        const cardBounds = Array.from(element.querySelectorAll('.listening-moment__message-card'), (card) => {
+          const rect = card.getBoundingClientRect();
+          const style = getComputedStyle(card);
+          const parseColor = (value) => {
+            const srgb = value.match(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+            if (srgb) return srgb.slice(1).map((channel) => Number(channel) * 255);
+            return value.match(/[\d.]+/g).slice(0, 3).map(Number);
+          };
+          const channels = parseColor(style.color);
+          const background = parseColor(style.backgroundColor);
+          const luminance = ([red, green, blue]) => {
+            const linear = [red, green, blue].map((channel) => {
+              const normalized = channel / 255;
+              return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+            });
+            return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+          };
+          const textLuminance = luminance(channels);
+          const backgroundLuminance = luminance(background);
+          return {
+            left: rect.left,
+            right: rect.right,
+            top: rect.top,
+            bottom: rect.bottom,
+            backgroundColor: style.backgroundColor,
+            contrast: (Math.max(textLuminance, backgroundLuminance) + 0.05)
+              / (Math.min(textLuminance, backgroundLuminance) + 0.05),
+          };
+        });
         return {
-          left: rect.left,
-          right: rect.right,
-          width: rect.width,
-          height: rect.height,
-          visible: getComputedStyle(child).visibility !== 'hidden' && Number(getComputedStyle(child).opacity) > 0,
+          viewportWidth: document.documentElement.clientWidth,
+          elements: measured,
+          cards: cardBounds,
+          sectionScrollWidth: element.scrollWidth,
+          sectionClientWidth: element.clientWidth,
         };
       });
-      return {
-        viewportWidth: document.documentElement.clientWidth,
-        regions: { left: section.left, right: section.right, width: section.width },
-        elements: measured,
-        sectionScrollWidth: element.scrollWidth,
-        sectionClientWidth: element.clientWidth,
-      };
-    });
-    assert.ok(regions.width > 0);
-    assert.equal(elements.length, 11);
-    assert.ok(sectionScrollWidth <= sectionClientWidth, `Listening Moment should not overflow at ${width}px`);
-    assert.ok(elements.every((element) =>
-      element.width > 0 && element.height > 0 && element.left >= 0
-      && element.right <= viewportWidth && element.visible),
-    `Listening Moment should remain visible and fit at ${width}px with reduced motion`);
+      assert.equal(elements.length, 9);
+      assert.equal(cards.length, 2);
+      assert.ok(sectionScrollWidth <= sectionClientWidth, `Listening Moment should not overflow at ${width}px`);
+      assert.ok(elements.every((element) =>
+        element.width > 0 && element.height > 0 && element.left >= 0
+        && element.right <= viewportWidth && element.visible),
+      `Listening Moment should remain visible and fit at ${width}px with reduced motion`);
+      assert.notEqual(cards[0].backgroundColor, cards[1].backgroundColor, `cards should be distinct in ${theme ?? 'default'} theme`);
+      assert.ok(
+        cards.every((card) => card.contrast >= 4.5),
+        `card text should remain legible in ${theme ?? 'default'} theme: ${JSON.stringify(cards)}`,
+      );
+      if (width <= 760) {
+        assert.ok(cards[0].bottom <= cards[1].top, `message cards should stack without overlap at ${width}px`);
+      } else {
+        assert.ok(cards[0].right <= cards[1].left, `message cards should sit side by side without overlap at ${width}px`);
+      }
+    }
+  }
 
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
     const aboutLayout = await about.evaluate((element) => {
       const copy = element.querySelector('.ha-copy');
       const copyBounds = copy.getBoundingClientRect();

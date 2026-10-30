@@ -13,10 +13,12 @@ export function ListeningMoment() {
           <h2 id="listening-moment-heading">A moment to be heard</h2>
         </header>
         <div className="listening-moment__messages">
-          <p className="hr-reveal">Maybe you don’t need advice.</p>
-          <p className="hr-reveal">Maybe you don’t need answers.</p>
-          <p className="hr-reveal">Maybe you just need someone to listen.</p>
-          <p className="listening-moment__reassurance hr-reveal">You don’t have to carry every thought alone!</p>
+          <article className="listening-moment__message-card hr-reveal">
+            <p>Not everything you carry is visible</p>
+          </article>
+          <article className="listening-moment__message-card listening-moment__message-card--secondary hr-reveal">
+            <p>Sometimes you just need someone to hear you out.</p>
+          </article>
         </div>
         <ul className="listening-moment__capsules hr-reveal" aria-label="What to expect from a conversation">
           <li>No labels</li>

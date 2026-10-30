@@ -97,7 +97,7 @@ a { color: inherit; }
 .brand-logo__trademark {
   position: absolute;
   z-index: 1;
-  top: 30%;
+  top: 12%;
   left: 90%;
   transform: translateY(-100%);
   color: var(--theme-text, #454545);

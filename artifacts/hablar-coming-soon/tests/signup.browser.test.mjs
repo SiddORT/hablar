@@ -541,6 +541,8 @@ test('floating controls keep stable visibility while scrolling both pages', asyn
     await page.setViewportSize({ width, height: 844 });
     for (const route of ['/', '/privacy']) {
       await page.goto(`${appUrl}${route}`, { waitUntil: 'networkidle' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(450);
       const scrollport = page.locator('.app-scrollport');
       const selectors = route === '/' ? landingTargets : legalTargets;
       const targets = await page.evaluate((targetSelectors) => {
@@ -568,6 +570,7 @@ test('floating controls keep stable visibility while scrolling both pages', asyn
 
       for (const target of [...targets, ...targets.slice().reverse()]) {
         await scrollport.evaluate((element, top) => element.scrollTo({ top, behavior: 'instant' }), target.scrollTop);
+        await page.waitForTimeout(400);
         const frames = await page.evaluate(async () => {
           for (let index = 0; index < 3; index += 1) {
             await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -616,8 +619,9 @@ test('floating controls keep stable visibility while scrolling both pages', asyn
           frames[0].instagramVisibility === 'visible' ? 0 : -1,
           `Instagram action keyboard access should follow visibility at ${route} ${target.selector} (${width}px)`,
         );
-        assert.equal(frames[0].launchPointerEvents, 'auto');
-        assert.equal(frames[0].instagramPointerEvents, 'auto');
+        const expectedPointerEvents = frames[0].dockClasses.includes('is-content-section-visible') ? 'none' : 'auto';
+        assert.equal(frames[0].launchPointerEvents, expectedPointerEvents);
+        assert.equal(frames[0].instagramPointerEvents, expectedPointerEvents);
         const previousSnapshot = snapshots.get(target.selector);
         if (previousSnapshot) {
           assert.deepEqual(
@@ -647,6 +651,67 @@ test('floating controls keep stable visibility while scrolling both pages', asyn
         );
       }
     }
+  }
+});
+
+test('floating dock stays anchored and does not toggle during continuous normal-motion wheel scrolling', async (t) => {
+  const page = await browser.newPage();
+  t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto(appUrl, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(2000);
+    await page.mouse.move(width / 2, 400);
+    for (const direction of [1, -1]) {
+      await page.waitForTimeout(500);
+      const start = await page.locator('.launch-sticky-dock').evaluate((dock) => ({
+        top: dock.getBoundingClientRect().top,
+        visibleActions: dock.getAttribute('aria-hidden') === 'true'
+          ? 'none' : dock.classList.contains('is-launch-hidden') ? 'instagram' : 'both',
+      }));
+      for (let step = 0; step < 50; step += 1) {
+        await page.mouse.wheel(0, direction * 180);
+        await page.waitForTimeout(40);
+        const sample = await page.evaluate(() => {
+          const scrollport = document.querySelector('.app-scrollport');
+          const dock = document.querySelector('.launch-sticky-dock');
+          return {
+            top: dock.getBoundingClientRect().top,
+            visibleActions: dock.getAttribute('aria-hidden') === 'true'
+              ? 'none' : dock.classList.contains('is-launch-hidden') ? 'instagram' : 'both',
+            scrollTop: scrollport.scrollTop,
+            maxScroll: scrollport.scrollHeight - scrollport.clientHeight,
+          };
+        });
+        assert.ok(Math.abs(sample.top - start.top) < 1, `dock must not jump at ${width}px`);
+        assert.equal(sample.visibleActions, start.visibleActions, `visible dock actions must not toggle during active scrolling at ${width}px`);
+        if ((direction === 1 && sample.scrollTop >= sample.maxScroll - 1)
+          || (direction === -1 && sample.scrollTop <= 1)) break;
+      }
+    }
+    await page.waitForTimeout(500);
+    const before = await page.locator('.launch-sticky-dock').evaluate((dock) => dock.getBoundingClientRect().top);
+    await page.locator('.app-scrollport').evaluate((element) => element.scrollTo({ top: element.scrollHeight, behavior: 'instant' }));
+    await page.waitForTimeout(500);
+    const after = await page.locator('.launch-sticky-dock').evaluate((dock) => dock.getBoundingClientRect().top);
+    assert.ok(Math.abs(after - before) < 1, 'signup visibility must not move the dock to the top');
+    const footerCovered = await page.evaluate(() => {
+      const dock = document.querySelector('.launch-sticky-dock');
+      if (getComputedStyle(dock).visibility === 'hidden') return false;
+      const rect = dock.getBoundingClientRect();
+      return Array.from(document.querySelectorAll('.footer p, .footer a')).some((element) => {
+        const text = element.getBoundingClientRect();
+        return text.left < rect.right && text.right > rect.left && text.top < rect.bottom && text.bottom > rect.top;
+      });
+    });
+    assert.equal(footerCovered, false, 'settled controls must not cover footer text');
+    await page.locator('.app-scrollport').evaluate((element) => element.scrollTo({ top: 500, behavior: 'instant' }));
+    await page.waitForTimeout(500);
+    await page.getByRole('button', { name: 'Return to top' }).hover();
+    await page.mouse.wheel(0, 160);
+    await page.waitForFunction(() => document.querySelector('.app-scrollport').scrollTop > 500);
   }
 });
 

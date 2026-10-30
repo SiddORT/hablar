@@ -3,10 +3,10 @@ name: Floating dock geometry
 description: Stable overlap calculations for responsive sticky actions.
 ---
 
-Keep hidden floating actions in layout with `visibility: hidden`, not `display: none`, so overlap checks use a consistent dock footprint. When responsive positioning depends on an action's visibility, wait for that position change to settle before measuring overlaps.
+Keep hidden floating actions in layout with `visibility: hidden`, not `display: none`, so overlap checks use a consistent dock footprint. The dock's viewport anchor must not depend on which action is visible.
 
-Continuous scroll measurements must not repeatedly cancel a nested animation-frame callback. Keep normal per-frame measurements separate from the one-off wait after the dock changes position. Keep dock clearance deterministic; state-dependent overlap margins can produce different visibility at the same position depending on scroll direction.
+Treat dock visibility as one coordinated decision. Evaluate content collisions after scrolling pauses, with a short fade, rather than toggling independently as each section passes behind it. Measure the dock's layout box rather than hover-transformed child buttons. Keep clearance deterministic.
 
-**Why:** Removing an action from layout or measuring before a mobile reposition commits can make the overlap result depend on scroll direction. Cancelling nested callbacks on every scroll event can starve measurements until scrolling pauses, producing delayed visibility flashes.
+**Why:** Real normal-motion scrolling reproduced disappearing/reappearing controls and a mobile bottom-to-top jump even though settled, reduced-motion tests passed. Faster frame scheduling alone did not fix the independent visibility rules. State-dependent clearance can also return different results at the same position.
 
-**How to apply:** Preserve control geometry and test continuous movement as well as settled forward-and-reverse positions at desktop and narrow mobile widths. A separate show/hide threshold is useful for the return-to-top arrow, but dock overlap must return to the same state at the same position.
+**How to apply:** Test continuous normal-motion wheel movement, reversals, pointer-over-control scrolling, and settled overlap behavior on desktop/mobile. Wait for fonts before comparing baseline positions. Preserve focused controls. The return-to-top arrow can use separate show/hide thresholds.

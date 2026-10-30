@@ -197,13 +197,17 @@ a { color: inherit; }
   justify-content: flex-end;
   gap: 10px;
   pointer-events: none;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .18s ease, visibility 0s;
 }
 .launch-sticky-dock.is-launch-hidden .launch-sticky-cta { visibility: hidden; }
-.launch-sticky-dock.is-follow-obscured .instagram-sticky-cta { visibility: hidden; }
-.launch-sticky-dock.is-hero-art-obscured .instagram-sticky-cta,
-.launch-sticky-dock.is-hero-art-obscured .launch-sticky-cta { visibility: hidden; }
-.launch-sticky-dock.is-content-section-visible .instagram-sticky-cta,
-.launch-sticky-dock.is-content-section-visible .launch-sticky-cta { visibility: hidden; }
+.launch-sticky-dock.is-content-section-visible {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .18s ease, visibility 0s .18s;
+}
+.launch-sticky-dock.is-content-section-visible > a { pointer-events: none; }
 .instagram-sticky-cta,
 .hero-instagram-cta {
   position: relative;
@@ -783,6 +787,7 @@ a { color: inherit; }
 .js-motion .reveal.is-visible { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .launch-sticky-dock, .launch-sticky-dock.is-content-section-visible { transition: none; }
   .instagram-sticky-cta::before, .hero-instagram-cta::before { animation: none; opacity: .68; }
   .instagram-sticky-cta:hover, .hero-instagram-cta:hover, .launch-sticky-cta:hover { transform: none; }
   .emotion-card { animation: none; translate: none; }
@@ -802,10 +807,6 @@ a { color: inherit; }
   .site-loader__content { width: min(64vw, 248px); }
   .launch-sticky-dock.is-legal-page {
     top: calc(env(safe-area-inset-top, 0px) + 130px);
-    bottom: auto;
-  }
-  .launch-sticky-dock.is-launch-hidden:not(.is-legal-page) {
-    top: calc(env(safe-area-inset-top, 0px) + 12px);
     bottom: auto;
   }
   .launch-sticky-dock {

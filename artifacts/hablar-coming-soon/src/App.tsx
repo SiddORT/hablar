@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode, type WheelEvent } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCreateWaitlistSignup } from '@workspace/api-client-react';
 import { CountryPicker, phoneCountries } from '@/components/country-picker';
@@ -96,6 +96,14 @@ function rectanglesOverlapWithMargin(first: DOMRect, second: DOMRect, margin: nu
     && first.right > second.left - margin
     && first.top < second.bottom + margin
     && first.bottom > second.top - margin;
+}
+
+function forwardFloatingWheel(event: WheelEvent<HTMLElement>) {
+  if (event.ctrlKey) return;
+  const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
+  if (!scrollport) return;
+  const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? scrollport.clientHeight : 1;
+  scrollport.scrollBy({ top: event.deltaY * scale, left: event.deltaX * scale, behavior: 'instant' });
 }
 
 function useLogoSpectrum() {
@@ -453,11 +461,8 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 
 function Router() {
   const [location] = useLocation();
-  const [showLaunchCta, setShowLaunchCta] = useState(true);
-  const [showInstagramCta, setShowInstagramCta] = useState(true);
-  const [showHeroDock, setShowHeroDock] = useState(true);
+  const [dockState, setDockState] = useState({ visible: true, launchVisible: true });
   const [showReturnToTop, setShowReturnToTop] = useState(false);
-  const [showContentOverlayControls, setShowContentOverlayControls] = useState(true);
   const isLegalPage = location === '/privacy';
   usePageSeo(location);
   useEffect(() => {
@@ -477,131 +482,60 @@ function Router() {
   useEffect(() => {
     const signupSection = document.getElementById('launch-note');
     const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
-
-    if (isLegalPage && scrollport) {
-      setShowContentOverlayControls(true);
-      let frame = 0;
-      const updateVisibility = () => {
-        cancelAnimationFrame(frame);
-        frame = requestAnimationFrame(() => {
-          const cta = document.querySelector<HTMLElement>('.launch-sticky-cta');
-          const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
-          if (!cta || !instagramCta) return;
-          if (document.activeElement === cta || document.activeElement === instagramCta) return;
-          const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
-          const dockRect = dock?.getBoundingClientRect();
-          if (!dock || !dockRect) return;
-          const overlapMargin = 10;
-          const legalText = document.querySelectorAll<HTMLElement>(
-            '#legal-main h1, #legal-main h2, #legal-main p, #legal-main li, #legal-main a',
-          );
-          const overlapsText = Array.from(legalText).some((element) => {
-            const rect = element.getBoundingClientRect();
-            return rectanglesOverlapWithMargin(rect, dockRect, overlapMargin);
-          });
-          setShowLaunchCta(!overlapsText);
-          setShowInstagramCta(!overlapsText);
-        });
-      };
-
-      updateVisibility();
-      const cta = document.querySelector<HTMLElement>('.launch-sticky-cta');
-      const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
-      cta?.addEventListener('blur', updateVisibility);
-      instagramCta?.addEventListener('blur', updateVisibility);
-      scrollport.addEventListener('scroll', updateVisibility, { passive: true });
-      window.addEventListener('resize', updateVisibility);
-      return () => {
-        cancelAnimationFrame(frame);
-        cta?.removeEventListener('blur', updateVisibility);
-        instagramCta?.removeEventListener('blur', updateVisibility);
-        scrollport.removeEventListener('scroll', updateVisibility);
-        window.removeEventListener('resize', updateVisibility);
-      };
-    }
-
-    if (location !== '/' || !signupSection || !scrollport) {
-      setShowLaunchCta(true);
-      setShowInstagramCta(true);
-      setShowContentOverlayControls(true);
-      return;
-    }
-
-    let frame = 0;
-    let settledFrame = 0;
-    let dockPositionSettling = false;
-    const measureInstagramVisibility = () => {
-      const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
+    if (!scrollport) return;
+    let idleTimer: ReturnType<typeof setTimeout> | undefined;
+    let disposed = false;
+    const measureVisibility = () => {
       const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
-      if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
+      if (!dock || dock.contains(document.activeElement)) return;
+      // Measure the fixed layout box, never a hover-transformed child.
       const dockRect = dock.getBoundingClientRect();
-      const contentMargin = 10;
-      const contentPanels = document.querySelectorAll<HTMLElement>('.listening-moment, .hablar-refresh, .ls-pm');
-      const overlapsFeatureContent = Array.from(contentPanels).some((panel) => {
-        return rectanglesOverlapWithMargin(panel.getBoundingClientRect(), dockRect, contentMargin);
-      });
-      setShowContentOverlayControls(!overlapsFeatureContent);
-      const topicList = document.querySelector<HTMLElement>('.hero-topic-list');
-      if (topicList) {
-        const topicMargin = 10;
-        const overlapsTopics = rectanglesOverlapWithMargin(topicList.getBoundingClientRect(), dockRect, topicMargin);
-        setShowHeroDock(!overlapsTopics);
-      } else {
-        setShowHeroDock(true);
-      }
-      const ctaRect = instagramCta.getBoundingClientRect();
-      const signupContent = document.querySelectorAll<HTMLElement>(
-        '#launch-note h2, #launch-note p, #launch-note label, #launch-note input, #launch-note button',
+      const obstacles = document.querySelectorAll<HTMLElement>(
+        isLegalPage
+          ? '#legal-main h1, #legal-main h2, #legal-main p, #legal-main li, #legal-main a, .footer p, .footer a'
+          : location === '/'
+            ? '.listening-moment, .hablar-refresh, .ls-pm, .hero-art, #launch-note h2, #launch-note p, #launch-note label, #launch-note input, #launch-note button, .footer p, .footer a'
+            : ':not(*)',
       );
-      const signupMargin = 10;
-      const overlapsContent = Array.from(signupContent).some((element) => {
+      const overlapsContent = Array.from(obstacles).some((element) => {
         if (element.tagName === 'P' && !element.textContent?.trim()) return false;
-        return rectanglesOverlapWithMargin(element.getBoundingClientRect(), ctaRect, signupMargin);
+        return rectanglesOverlapWithMargin(element.getBoundingClientRect(), dockRect, 10);
       });
-      setShowInstagramCta(!overlapsContent);
-    };
-    const updateInstagramVisibility = () => {
-      if (frame || dockPositionSettling) return;
-      frame = requestAnimationFrame(() => {
-        frame = 0;
-        measureInstagramVisibility();
-      });
-    };
-    const updateAfterDockReposition = () => {
-      dockPositionSettling = true;
-      cancelAnimationFrame(frame);
-      frame = 0;
-      cancelAnimationFrame(settledFrame);
-      settledFrame = requestAnimationFrame(() => {
-        settledFrame = requestAnimationFrame(() => {
-          settledFrame = 0;
-          dockPositionSettling = false;
-          measureInstagramVisibility();
-        });
+      const signupRect = signupSection?.getBoundingClientRect();
+      const viewportRect = scrollport.getBoundingClientRect();
+      const launchVisible = !signupRect
+        || signupRect.bottom <= viewportRect.top
+        || signupRect.top >= viewportRect.bottom;
+      setDockState((previous) => {
+        const visible = !overlapsContent;
+        return previous.visible === visible && previous.launchVisible === launchVisible
+          ? previous
+          : { visible, launchVisible };
       });
     };
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowLaunchCta(!entry.isIntersecting);
-        updateAfterDockReposition();
-      },
-      { root: scrollport, threshold: 0.01 },
-    );
-    observer.observe(signupSection);
-    scrollport.addEventListener('scroll', updateInstagramVisibility, { passive: true });
-    window.addEventListener('resize', updateInstagramVisibility);
-    const dockLinks = document.querySelectorAll<HTMLElement>(
-      '.launch-sticky-cta, .instagram-sticky-cta',
-    );
-    dockLinks.forEach((link) => link.addEventListener('blur', updateInstagramVisibility));
-    updateInstagramVisibility();
+    const updateAfterScroll = () => {
+      if (disposed) return;
+      clearTimeout(idleTimer);
+      // Section boundaries must not toggle controls during an active scroll.
+      idleTimer = setTimeout(measureVisibility, 180);
+    };
+    const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
+    const initialFrame = requestAnimationFrame(measureVisibility);
+    const layoutObserver = new ResizeObserver(updateAfterScroll);
+    layoutObserver.observe(scrollport);
+    scrollport.querySelectorAll('.site-shell, #legal-main').forEach((element) => layoutObserver.observe(element));
+    void document.fonts.ready.then(updateAfterScroll);
+    scrollport.addEventListener('scroll', updateAfterScroll, { passive: true });
+    window.addEventListener('resize', updateAfterScroll);
+    dock?.addEventListener('focusout', updateAfterScroll);
     return () => {
-      observer.disconnect();
-      cancelAnimationFrame(frame);
-      cancelAnimationFrame(settledFrame);
-      scrollport.removeEventListener('scroll', updateInstagramVisibility);
-      window.removeEventListener('resize', updateInstagramVisibility);
-      dockLinks.forEach((link) => link.removeEventListener('blur', updateInstagramVisibility));
+      disposed = true;
+      layoutObserver.disconnect();
+      clearTimeout(idleTimer);
+      cancelAnimationFrame(initialFrame);
+      scrollport.removeEventListener('scroll', updateAfterScroll);
+      window.removeEventListener('resize', updateAfterScroll);
+      dock?.removeEventListener('focusout', updateAfterScroll);
     };
   }, [location]);
   return (
@@ -615,7 +549,9 @@ function Router() {
           </Switch>
         </div>
         <div
-          className={`launch-sticky-dock${showLaunchCta ? '' : ' is-launch-hidden'}${showInstagramCta ? '' : ' is-follow-obscured'}${showHeroDock || location !== '/' ? '' : ' is-hero-art-obscured'}${showContentOverlayControls ? '' : ' is-content-section-visible'}${isLegalPage ? ' is-legal-page' : ''}`}
+          className={`launch-sticky-dock${dockState.launchVisible ? '' : ' is-launch-hidden'}${dockState.visible ? '' : ' is-content-section-visible'}${isLegalPage ? ' is-legal-page' : ''}`}
+          aria-hidden={!dockState.visible}
+          onWheel={forwardFloatingWheel}
         >
           <a
             className="instagram-sticky-cta"
@@ -623,7 +559,7 @@ function Router() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow us on Instagram (opens in a new tab)"
-            tabIndex={showInstagramCta && showContentOverlayControls && (showHeroDock || location !== '/') ? 0 : -1}
+            tabIndex={dockState.visible ? 0 : -1}
             data-testid="link-instagram"
           >
             <InstagramGradientIcon gradientId="instagram-icon-gradient-sticky" />
@@ -633,7 +569,7 @@ function Router() {
             className="launch-sticky-cta"
             href={`${import.meta.env.BASE_URL}#launch-note`}
             aria-label="Interested? Let's talk"
-            tabIndex={showLaunchCta && showContentOverlayControls && (showHeroDock || location !== '/') ? 0 : -1}
+            tabIndex={dockState.launchVisible && dockState.visible ? 0 : -1}
           >
             Interested? Let's talk
             <ArrowUpRight size={17} aria-hidden="true" />
@@ -645,6 +581,7 @@ function Router() {
           aria-label="Return to top"
           title="Return to top"
           hidden={!showReturnToTop}
+          onWheel={forwardFloatingWheel}
           onClick={() => {
             const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
             if (!scrollport) return;

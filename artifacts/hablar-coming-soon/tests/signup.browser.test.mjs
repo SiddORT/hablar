@@ -480,6 +480,138 @@ test('return-to-top stays visible when sticky controls are hidden and works by k
   }
 });
 
+test('floating controls keep stable visibility while scrolling both pages', async (t) => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 844 } });
+  t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+
+  const landingTargets = [
+    '.hero',
+    '.listening-moment',
+    '.hablar-refresh',
+    '.ls-pm',
+    '#purpose',
+    '#about',
+    '#feelings',
+    '#launch-note',
+    '.boundary',
+    '.footer',
+  ];
+  const legalTargets = ['#legal-main h1', '#legal-main h2', '#legal-main p', '#legal-main li'];
+
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const route of ['/', '/privacy']) {
+      await page.goto(`${appUrl}${route}`, { waitUntil: 'networkidle' });
+      const scrollport = page.locator('.app-scrollport');
+      const selectors = route === '/' ? landingTargets : legalTargets;
+      const targets = await page.evaluate((targetSelectors) => {
+        const scrollportElement = document.querySelector('.app-scrollport');
+        return targetSelectors
+          .map((selector) => {
+            const element = document.querySelector(selector);
+            if (!element) return null;
+            const rect = element.getBoundingClientRect();
+            return {
+              selector,
+              scrollTop: Math.max(
+                0,
+                Math.min(
+                  scrollportElement.scrollHeight - scrollportElement.clientHeight,
+                  scrollportElement.scrollTop + rect.top - scrollportElement.getBoundingClientRect().top
+                    - scrollportElement.clientHeight * 0.2,
+                ),
+              ),
+            };
+          })
+          .filter(Boolean);
+      }, selectors);
+      const snapshots = new Map();
+
+      for (const target of [...targets, ...targets.slice().reverse()]) {
+        await scrollport.evaluate((element, top) => element.scrollTo({ top, behavior: 'instant' }), target.scrollTop);
+        const frames = await page.evaluate(async () => {
+          for (let index = 0; index < 3; index += 1) {
+            await new Promise((resolve) => requestAnimationFrame(resolve));
+          }
+          const readSnapshot = () => {
+            const dock = document.querySelector('.launch-sticky-dock');
+            const launch = document.querySelector('.launch-sticky-cta');
+            const instagram = document.querySelector('.instagram-sticky-cta');
+            const returnTop = document.querySelector('.return-top-button');
+            const bounds = (element) => {
+              const rect = element.getBoundingClientRect();
+              return [rect.left, rect.top, rect.right, rect.bottom].map((value) => Math.round(value * 10) / 10);
+            };
+            return {
+              dockClasses: dock.className,
+              launchVisibility: getComputedStyle(launch).visibility,
+              launchTabIndex: launch.tabIndex,
+              launchPointerEvents: getComputedStyle(launch).pointerEvents,
+              instagramVisibility: getComputedStyle(instagram).visibility,
+              instagramTabIndex: instagram.tabIndex,
+              instagramPointerEvents: getComputedStyle(instagram).pointerEvents,
+              launchBounds: bounds(launch),
+              instagramBounds: bounds(instagram),
+              returnTopHidden: returnTop.hidden,
+            };
+          };
+          const samples = [];
+          for (let index = 0; index < 4; index += 1) {
+            await new Promise((resolve) => requestAnimationFrame(resolve));
+            samples.push(readSnapshot());
+          }
+          return samples;
+        });
+
+        assert.ok(
+          frames.every((frame) => JSON.stringify(frame) === JSON.stringify(frames[0])),
+          `floating controls should settle without flicker at ${route} ${target.selector} (${width}px): ${JSON.stringify(frames)}`,
+        );
+        assert.equal(
+          frames[0].launchTabIndex,
+          frames[0].launchVisibility === 'visible' ? 0 : -1,
+          `launch action keyboard access should follow visibility at ${route} ${target.selector} (${width}px)`,
+        );
+        assert.equal(
+          frames[0].instagramTabIndex,
+          frames[0].instagramVisibility === 'visible' ? 0 : -1,
+          `Instagram action keyboard access should follow visibility at ${route} ${target.selector} (${width}px)`,
+        );
+        assert.equal(frames[0].launchPointerEvents, 'auto');
+        assert.equal(frames[0].instagramPointerEvents, 'auto');
+        const previousSnapshot = snapshots.get(target.selector);
+        if (previousSnapshot) {
+          assert.deepEqual(
+            frames[0],
+            previousSnapshot,
+            `floating controls should return to the same state at ${route} ${target.selector} (${width}px)`,
+          );
+        } else {
+          snapshots.set(target.selector, frames[0]);
+        }
+      }
+
+      if (route === '/') {
+        await scrollport.evaluate((element) => {
+          const signup = document.querySelector('#launch-note');
+          const top = element.scrollTop + signup.getBoundingClientRect().top
+            - element.getBoundingClientRect().top - element.clientHeight * 0.2;
+          element.scrollTo({ top, behavior: 'instant' });
+        });
+        await page.waitForFunction(() =>
+          document.querySelector('.launch-sticky-dock')?.classList.contains('is-launch-hidden'),
+        );
+        assert.equal(
+          await page.locator('.launch-sticky-cta').evaluate((element) => getComputedStyle(element).visibility),
+          'hidden',
+          `launch action should stay hidden over signup at ${width}px`,
+        );
+      }
+    }
+  }
+});
+
 test('Privacy Notice is complete and the removed Terms page stays unavailable', async (t) => {
   const page = await browser.newPage();
   t.after(() => page.close());

@@ -4,3 +4,4 @@
 - [Static SEO route delivery](seo-routing.md) — SPA fallbacks can serve homepage metadata despite generated legal-page files; check direct URL responses.
 - [One-time launch email behavior](launch-email-delivery.md) — Claim the launch campaign permanently before sending; never retry uncertain sends that could duplicate the update.
 - [Hero pill grid sizing](hero-pill-grid.md) — Use reserved-center grid slots on desktop, natural wrapping on narrow screens, and verify full label-plus-padding fit.
+- [Floating dock geometry](floating-dock-geometry.md) — Keep hidden actions in layout and settle responsive repositioning before overlap checks.

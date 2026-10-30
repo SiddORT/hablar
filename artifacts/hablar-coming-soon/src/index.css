@@ -198,7 +198,7 @@ a { color: inherit; }
   gap: 10px;
   pointer-events: none;
 }
-.launch-sticky-dock.is-launch-hidden .launch-sticky-cta { display: none; }
+.launch-sticky-dock.is-launch-hidden .launch-sticky-cta { visibility: hidden; }
 .launch-sticky-dock.is-follow-obscured .instagram-sticky-cta { visibility: hidden; }
 .launch-sticky-dock.is-hero-art-obscured .instagram-sticky-cta,
 .launch-sticky-dock.is-hero-art-obscured .launch-sticky-cta { visibility: hidden; }

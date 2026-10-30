@@ -517,46 +517,50 @@ function Router() {
     }
 
     let frame = 0;
+    let settledFrame = 0;
     const updateInstagramVisibility = () => {
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(settledFrame);
       frame = requestAnimationFrame(() => {
-        const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
-        const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
-        if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
-        const dockRect = dock.getBoundingClientRect();
-        const contentPanels = document.querySelectorAll<HTMLElement>('.listening-moment, .hablar-refresh, .ls-pm');
-        const overlapsFeatureContent = Array.from(contentPanels).some((panel) => {
-          const panelRect = panel.getBoundingClientRect();
-          return panelRect.left < dockRect.right
-            && panelRect.right > dockRect.left
-            && panelRect.top < dockRect.bottom
-            && panelRect.bottom > dockRect.top;
+        settledFrame = requestAnimationFrame(() => {
+          const instagramCta = document.querySelector<HTMLElement>('.instagram-sticky-cta');
+          const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
+          if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
+          const dockRect = dock.getBoundingClientRect();
+          const contentPanels = document.querySelectorAll<HTMLElement>('.listening-moment, .hablar-refresh, .ls-pm');
+          const overlapsFeatureContent = Array.from(contentPanels).some((panel) => {
+            const panelRect = panel.getBoundingClientRect();
+            return panelRect.left < dockRect.right
+              && panelRect.right > dockRect.left
+              && panelRect.top < dockRect.bottom
+              && panelRect.bottom > dockRect.top;
+          });
+          setShowContentOverlayControls(!overlapsFeatureContent);
+          const topicList = document.querySelector<HTMLElement>('.hero-topic-list');
+          if (topicList) {
+            const topicsRect = topicList.getBoundingClientRect();
+            const overlapsTopics = topicsRect.left < dockRect.right
+              && topicsRect.right > dockRect.left
+              && topicsRect.top < dockRect.bottom
+              && topicsRect.bottom > dockRect.top;
+            setShowHeroDock(!overlapsTopics);
+          } else {
+            setShowHeroDock(true);
+          }
+          const ctaRect = instagramCta.getBoundingClientRect();
+          const signupContent = document.querySelectorAll<HTMLElement>(
+            '#launch-note h2, #launch-note p, #launch-note label, #launch-note input, #launch-note button',
+          );
+          const overlapsContent = Array.from(signupContent).some((element) => {
+            if (element.tagName === 'P' && !element.textContent?.trim()) return false;
+            const rect = element.getBoundingClientRect();
+            return rect.left < ctaRect.right
+              && rect.right > ctaRect.left
+              && rect.top < ctaRect.bottom
+              && rect.bottom > ctaRect.top;
+          });
+          setShowInstagramCta(!overlapsContent);
         });
-        setShowContentOverlayControls(!overlapsFeatureContent);
-        const topicList = document.querySelector<HTMLElement>('.hero-topic-list');
-        if (topicList) {
-          const topicsRect = topicList.getBoundingClientRect();
-          const overlapsTopics = topicsRect.left < dockRect.right
-            && topicsRect.right > dockRect.left
-            && topicsRect.top < dockRect.bottom
-            && topicsRect.bottom > dockRect.top;
-          setShowHeroDock(!overlapsTopics);
-        } else {
-          setShowHeroDock(true);
-        }
-        const ctaRect = instagramCta.getBoundingClientRect();
-        const signupContent = document.querySelectorAll<HTMLElement>(
-          '#launch-note h2, #launch-note p, #launch-note label, #launch-note input, #launch-note button',
-        );
-        const overlapsContent = Array.from(signupContent).some((element) => {
-          if (element.tagName === 'P' && !element.textContent?.trim()) return false;
-          const rect = element.getBoundingClientRect();
-          return rect.left < ctaRect.right
-            && rect.right > ctaRect.left
-            && rect.top < ctaRect.bottom
-            && rect.bottom > ctaRect.top;
-        });
-        setShowInstagramCta(!overlapsContent);
       });
     };
     const observer = new IntersectionObserver(
@@ -577,6 +581,7 @@ function Router() {
     return () => {
       observer.disconnect();
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(settledFrame);
       scrollport.removeEventListener('scroll', updateInstagramVisibility);
       window.removeEventListener('resize', updateInstagramVisibility);
       dockLinks.forEach((link) => link.removeEventListener('blur', updateInstagramVisibility));

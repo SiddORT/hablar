@@ -25,26 +25,41 @@
   --lm-paper: var(--theme-page, #fffaf3);
   --lm-surface: var(--theme-surface, #fffdf9);
   --lm-line: var(--theme-border, #ead8c9);
+  position: relative;
+  isolation: isolate;
   padding: clamp(64px, 8vw, 100px) 0;
   color: var(--lm-ink);
   background:
-    radial-gradient(ellipse at 85% 10%, rgba(245, 221, 204, .48), transparent 30rem),
+    radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--lm-accent-soft) 64%, transparent), transparent 24rem),
+    radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--lm-secondary-soft) 72%, transparent), transparent 26rem),
     var(--lm-paper);
   font-family: 'DM Sans', sans-serif;
 }
 .listening-moment__inner {
+  position: relative;
+  z-index: 1;
   width: min(1000px, calc(100% - 64px));
   margin: 0 auto;
   text-align: center;
 }
-.listening-moment__heading { margin-bottom: 30px; }
+.listening-moment__heading { margin-bottom: 28px; }
+.listening-moment__eyebrow {
+  display: block;
+  color: var(--lm-accent);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .2em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
 .listening-moment__heading h2 {
-  margin: 16px 0 0;
+  margin: 12px 0 0;
   color: var(--lm-ink);
   font: 700 clamp(36px, 5vw, 58px)/1.1 'Montserrat', sans-serif;
   letter-spacing: -.05em;
   text-wrap: balance;
 }
+.listening-moment__heading h2 span { color: var(--lm-accent); }
 .listening-moment__messages {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -55,19 +70,33 @@
 .listening-moment__message-card {
   position: relative;
   display: grid;
-  min-height: 148px;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 22px;
+  min-height: 138px;
   align-items: center;
-  padding: 26px 30px;
-  border: 1px solid var(--lm-line);
-  border-left: 5px solid var(--lm-accent);
-  border-radius: 22px;
-  background: color-mix(in srgb, var(--lm-surface) 66%, var(--lm-accent-soft));
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--lm-ink) 8%, transparent);
+  padding: 22px 26px;
+  border: 1px solid color-mix(in srgb, var(--lm-accent) 18%, var(--lm-line));
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--lm-surface) 76%, var(--lm-accent-soft));
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--lm-ink) 6%, transparent);
   text-align: left;
 }
 .listening-moment__message-card--secondary {
-  border-left-color: var(--lm-secondary);
-  background: color-mix(in srgb, var(--lm-surface) 66%, var(--lm-secondary-soft));
+  border-color: color-mix(in srgb, var(--lm-secondary) 18%, var(--lm-line));
+  background: color-mix(in srgb, var(--lm-surface) 76%, var(--lm-secondary-soft));
+}
+.listening-moment__message-icon {
+  display: grid;
+  width: 76px;
+  height: 76px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--lm-accent-soft);
+  color: var(--lm-accent);
+}
+.listening-moment__message-card--secondary .listening-moment__message-icon {
+  background: var(--lm-secondary-soft);
+  color: var(--lm-secondary);
 }
 .listening-moment__message-card p {
   margin: 0;
@@ -81,7 +110,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin: 34px 0 0;
+  margin: 18px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -97,19 +126,64 @@
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
-.listening-moment__coming-soon {
-  margin: 30px 0 0;
+.listening-moment__capsules li:nth-child(1) {
+  border-color: color-mix(in srgb, var(--lm-accent) 25%, var(--lm-line));
+  background: color-mix(in srgb, var(--lm-accent-soft) 76%, var(--lm-surface));
   color: var(--lm-accent);
-  font: 800 12px/1.4 'DM Sans', sans-serif;
-  letter-spacing: .16em;
-  text-transform: uppercase;
+}
+.listening-moment__capsules li:nth-child(2) {
+  border-color: #e1c3ea;
+  background: #f7eefa;
+  color: #813c9b;
+}
+.listening-moment__capsules li:nth-child(3) {
+  border-color: #f0c5cb;
+  background: #fff0f1;
+  color: #bd4657;
+}
+.listening-moment__capsules li:nth-child(4) {
+  border-color: color-mix(in srgb, var(--lm-secondary) 25%, var(--lm-line));
+  background: color-mix(in srgb, var(--lm-secondary-soft) 76%, var(--lm-surface));
+  color: var(--lm-secondary);
+}
+.listening-moment__coming-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 9px 17px;
+  border: 1px solid #f0d69e;
+  border-radius: 999px;
+  background: #fff4df;
+  color: #75582e;
+  font: 700 12px/1.4 'DM Sans', sans-serif;
+}
+.listening-moment__coming-soon::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #efbd59;
 }
 .listening-moment__signoff {
-  margin: 9px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 22px 0 0;
   color: var(--lm-ink);
   font: 600 clamp(18px, 2.3vw, 24px)/1.5 'Montserrat', sans-serif;
   letter-spacing: -.02em;
   text-wrap: balance;
+}
+.listening-moment__signoff::before,
+.listening-moment__signoff::after {
+  content: "";
+  width: clamp(28px, 6vw, 64px);
+  height: 1px;
+  flex: 0 0 auto;
+  background: var(--lm-line);
 }
 @media (max-width: 760px) {
   .ls-wrap, .ls-philo { padding: 50px 0; }
@@ -119,12 +193,27 @@
   .listening-moment__inner { width: calc(100% - 40px); }
   .listening-moment__heading { margin-bottom: 24px; }
   .listening-moment__messages { grid-template-columns: 1fr; gap: 12px; }
-  .listening-moment__message-card { min-height: 112px; padding: 22px 23px; border-radius: 19px; }
-  .listening-moment__capsules { gap: 9px; margin-top: 27px; }
+  .listening-moment__message-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 16px;
+    min-height: 112px;
+    padding: 18px 20px;
+    border-radius: 19px;
+  }
+  .listening-moment__message-icon { width: 62px; height: 62px; }
+  .listening-moment__message-icon svg { width: 27px; height: 27px; }
+  .listening-moment__signoff { gap: 9px; margin-top: 18px; }
+  .listening-moment__signoff::before,
+  .listening-moment__signoff::after { width: clamp(18px, 6vw, 32px); }
+  .listening-moment__capsules { gap: 9px; margin-top: 18px; }
   .listening-moment__capsules li { padding: 10px 15px; font-size: 14px; }
+  .listening-moment__coming-soon { margin-top: 18px; }
 }
 @media (max-width: 360px) {
   .listening-moment__inner { width: calc(100% - 32px); }
   .listening-moment__capsules { gap: 8px; }
   .listening-moment__capsules li { padding: 9px 12px; font-size: 13px; }
+  .listening-moment__signoff { gap: 6px; }
+  .listening-moment__signoff::before,
+  .listening-moment__signoff::after { width: 12px; }
 }

@@ -304,23 +304,23 @@ function Home() {
             />
             <ul className="hero-topic-list" aria-label="Topics you may want to talk about">
               {[
-                'relationships',
-                'heartbreak',
-                'friendship',
-                'family',
-                'marriage',
-                'work',
-                'sexuality',
-                'trauma',
-                'shame',
-                'financial-situation',
-                'guilt',
-                'grief',
-                'loss',
-              ].map((topic) => (
-                <li className="hero-topic-item" key={topic}>
+                { label: 'relationships', tone: 'pink' },
+                { label: 'heartbreak', tone: 'purple' },
+                { label: 'friendship', tone: 'blue' },
+                { label: 'family', tone: 'green' },
+                { label: 'marriage', tone: 'orange' },
+                { label: 'work', tone: 'purple' },
+                { label: 'sexuality', tone: 'blue' },
+                { label: 'trauma', tone: 'orange' },
+                { label: 'shame', tone: 'green' },
+                { label: 'financial-situation', tone: 'pink' },
+                { label: 'guilt', tone: 'blue' },
+                { label: 'grief', tone: 'orange' },
+                { label: 'loss', tone: 'green' },
+              ].map(({ label, tone }) => (
+                <li className={`hero-topic-item hero-topic-item--${tone}`} key={label}>
                   <span className="hero-topic-hash" aria-hidden="true">#</span>
-                  <span>{topic}</span>
+                  <span>{label}</span>
                 </li>
               ))}
             </ul>

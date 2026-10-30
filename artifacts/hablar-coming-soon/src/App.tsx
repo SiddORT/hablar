@@ -86,7 +86,7 @@ function Header() {
         <a className="nav-plain" href="#about" data-testid="link-about">About HABLAR</a>
         <a className="nav-plain" href="#our-promise">Our mission</a>
         <ThemeSelector />
-        <a className="nav-cta" href="#launch-note">Interested. Let's Talk</a>
+        <a className="nav-cta" href="#launch-note">Interested? Let's talk</a>
       </nav>
     </header>
   );
@@ -297,15 +297,6 @@ function Home() {
             </div>
           </div>
           <div className="hero-art hero-reveal">
-            <svg
-              className="hero-tag-structure"
-              viewBox="0 0 460 430"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <ellipse className="hero-orbit-line" cx="230" cy="215" rx="210" ry="190" />
-            </svg>
             <BrandLogo
               className="hero-center-logo"
               src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`}
@@ -397,7 +388,7 @@ function Home() {
             <div className="connection-actions">
               <p className="connection-launch-note">HABLAR is coming soon. Sign up for a launch update.</p>
               <a className="button-primary connection-cta" href="#launch-note">
-                Interested. Let's Talk <ArrowDown size={16} aria-hidden="true" />
+                Interested? Let's talk <ArrowDown size={16} aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -588,10 +579,10 @@ function Router() {
           <a
             className="launch-sticky-cta"
             href={`${import.meta.env.BASE_URL}#launch-note`}
-            aria-label="Interested. Let's Talk"
+            aria-label="Interested? Let's talk"
             tabIndex={showLaunchCta && showContentOverlayControls && (showHeroDock || location !== '/') ? 0 : -1}
           >
-            Interested. Let's Talk
+            Interested? Let's talk
             <ArrowUpRight size={17} aria-hidden="true" />
           </a>
         </div>

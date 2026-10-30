@@ -15,7 +15,6 @@ import { usePageSeo } from '@/lib/use-page-seo';
 import { AboutServices, PurposeMission, ClosingLine } from '@/components/landing-story';
 import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
 import { BrandLogo } from '@/components/brand-logo';
-import { ServicesSection } from '@/components/services-section';
 
 const queryClient = new QueryClient();
 gsap.registerPlugin(ScrollTrigger);
@@ -327,7 +326,6 @@ function Home() {
           </div>
         </div>
       </section>
-      <ServicesSection />
       <PurposeMission />
       <AboutServices />
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">
@@ -492,7 +490,7 @@ function Router() {
         const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
         if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
         const dockRect = dock.getBoundingClientRect();
-        const contentPanels = document.querySelectorAll<HTMLElement>('.services-panel, .ls-pm');
+        const contentPanels = document.querySelectorAll<HTMLElement>('.ls-pm');
         const overlapsFeatureContent = Array.from(contentPanels).some((panel) => {
           const panelRect = panel.getBoundingClientRect();
           return panelRect.left < dockRect.right

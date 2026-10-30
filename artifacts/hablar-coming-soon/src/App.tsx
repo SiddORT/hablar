@@ -253,12 +253,10 @@ function Home() {
     });
   }, []);
   const emotions = [
-    { label: 'Crying', position: '0% 0%', copy: 'If tears come, you do not have to hold them back.' },
-    { label: 'Sad', position: '50% 0%', copy: 'You can bring the heavy days, too.' },
-    { label: 'Unsure', position: '100% 0%', copy: 'You can begin without knowing exactly what you feel.' },
-    { label: 'Happy', position: '0% 100%', copy: 'Your small wins and bright moments belong here.' },
-    { label: 'Very happy', position: '50% 100%', copy: 'There is room for the big, joyful moments.' },
-    { label: 'Feeling loved', position: '100% 100%', copy: 'Share the warmth when your heart feels full.' },
+    { label: 'Crying', position: '0% 0%' },
+    { label: 'Sad', position: '50% 0%' },
+    { label: 'Unsure', position: '100% 0%' },
+    { label: 'Happy', position: '0% 100%' },
   ];
   return (
     <main className="site-shell" tabIndex={-1}>
@@ -333,11 +331,10 @@ function Home() {
           <div className="emotion-center">
             <div className="emotion-center-copy scroll-reveal">
               <span className="section-kicker">Every feeling belongs</span>
-              <h2 id="feelings-heading">Different feelings. Same welcome.</h2>
-              <p>There is room here for tears, for joy, and for not being sure yet. HABLAR meets you with care, just as you are.</p>
+              <h2 id="feelings-heading">There is room here for every feeling for every emotion. HABLAR meets you with care, just as you are.</h2>
             </div>
           </div>
-          <ul className="emotion-ring" role="list" aria-label="Six feelings welcomed at HABLAR">
+          <ul className="emotion-ring" role="list" aria-label="Four feelings welcomed at HABLAR">
             {emotions.map((emotion, index) => (
               <li className={`emotion-card slot-${index}`} key={emotion.label}>
                 <div
@@ -346,10 +343,6 @@ function Home() {
                   aria-label={`${emotion.label} expression of the HABLAR mascot`}
                   style={{ backgroundPosition: emotion.position }}
                 />
-                <div className="emotion-card-copy">
-                  <h3>{emotion.label}</h3>
-                  <p>{emotion.copy}</p>
-                </div>
               </li>
             ))}
           </ul>

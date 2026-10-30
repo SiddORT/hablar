@@ -13,6 +13,11 @@ export function ListeningMoment() {
           <span className="listening-moment__eyebrow">A space to be heard</span>
           <h2 id="listening-moment-heading">A moment to be <span>heard</span></h2>
         </header>
+        <p className="listening-moment__intro hr-reveal">
+          <span>Maybe you don’t need advice.</span>
+          <span>Maybe you don’t need answers.</span>
+          <span>Maybe you just need someone to listen.</span>
+        </p>
         <div className="listening-moment__messages">
           <article className="listening-moment__message-card hr-reveal">
             <span className="listening-moment__message-icon" aria-hidden="true">

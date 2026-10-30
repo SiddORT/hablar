@@ -42,7 +42,7 @@
   margin: 0 auto;
   text-align: center;
 }
-.listening-moment__heading { margin-bottom: 28px; }
+.listening-moment__heading { margin-bottom: 15px; }
 .listening-moment__eyebrow {
   display: block;
   color: var(--lm-accent);
@@ -60,6 +60,14 @@
   text-wrap: balance;
 }
 .listening-moment__heading h2 span { color: var(--lm-accent); }
+.listening-moment__intro {
+  display: grid;
+  gap: 2px;
+  width: min(100%, 680px);
+  margin: 0 auto 24px;
+  color: color-mix(in srgb, var(--lm-ink) 72%, var(--lm-surface));
+  font: 400 clamp(15px, 1.5vw, 17px)/1.5 'DM Sans', sans-serif;
+}
 .listening-moment__messages {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -191,7 +199,8 @@
   .ls-philo-grid, .ls-safety { grid-template-columns: 1fr; gap: 18px; }
   .listening-moment { padding: 54px 0 60px; }
   .listening-moment__inner { width: calc(100% - 40px); }
-  .listening-moment__heading { margin-bottom: 24px; }
+  .listening-moment__heading { margin-bottom: 14px; }
+  .listening-moment__intro { margin-bottom: 20px; }
   .listening-moment__messages { grid-template-columns: 1fr; gap: 12px; }
   .listening-moment__message-card {
     grid-template-columns: 64px minmax(0, 1fr);

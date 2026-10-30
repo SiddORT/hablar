@@ -7,6 +7,32 @@ import './purpose-mission-flip.css';
 
 export function ListeningMoment() {
   return (
+    <section className="listening-moment" id="listening-moment" aria-labelledby="listening-moment-heading">
+      <div className="listening-moment__inner">
+        <header className="listening-moment__heading hr-reveal">
+          <h2 id="listening-moment-heading">A moment to be heard</h2>
+        </header>
+        <div className="listening-moment__messages">
+          <p className="hr-reveal">Maybe you don’t need advice.</p>
+          <p className="hr-reveal">Maybe you don’t need answers.</p>
+          <p className="hr-reveal">Maybe you just need someone to listen.</p>
+          <p className="listening-moment__reassurance hr-reveal">You don’t have to carry every thought alone!</p>
+        </div>
+        <ul className="listening-moment__capsules hr-reveal" aria-label="What to expect from a conversation">
+          <li>No labels</li>
+          <li>No assumptions</li>
+          <li>No judgment</li>
+          <li>Just real conversations</li>
+        </ul>
+        <p className="listening-moment__coming-soon hr-reveal">We’re coming soon</p>
+        <p className="listening-moment__signoff hr-reveal">Come as you are. Speak as you feel.</p>
+      </div>
+    </section>
+  );
+}
+
+export function AboutHablar() {
+  return (
     <section className="hablar-refresh hablar-about" id="about" aria-labelledby="about-heading">
       <div className="ha-shell">
         <div className="ha-copy">
@@ -218,6 +244,7 @@ export default function LandingStory() {
     <>
       <PurposeMission />
       <ListeningMoment />
+      <AboutHablar />
       <Philosophy />
       <SafetyPrivacy />
       <ClosingLine />

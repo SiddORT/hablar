@@ -70,44 +70,95 @@ async function openSignup(response = {
   return { page, form, requests };
 }
 
-test('Listening Moment stays readable with reduced motion and at mobile widths', async (t) => {
+test('Listening Moment and About HABLAR remain separate, ordered, and readable', async (t) => {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   t.after(() => page.close());
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(appUrl, { waitUntil: 'networkidle' });
 
+  const hero = page.locator('.hero');
+  const listening = page.locator('#listening-moment');
   const about = page.locator('#about');
-  await assert.doesNotReject(() => about.getByRole('heading', {
-    name: 'Ever felt like you had so much to say, but nowhere to say it?',
-  }).waitFor());
+  await listening.getByRole('heading', { name: 'A moment to be heard' }).waitFor();
+  assert.equal(await hero.evaluate((element) => element.nextElementSibling?.id), 'listening-moment');
+  assert.equal(await listening.evaluate((element) => element.nextElementSibling?.id), 'about');
+  assert.equal(await page.locator('[data-testid="link-about"]').getAttribute('href'), '#about');
+
+  const listeningLines = [
+    'Maybe you don’t need advice.',
+    'Maybe you don’t need answers.',
+    'Maybe you just need someone to listen.',
+    'You don’t have to carry every thought alone!',
+  ];
+  assert.deepEqual(await listening.locator('.listening-moment__messages p').allTextContents(), listeningLines);
+  assert.deepEqual(await listening.locator('.listening-moment__capsules li').allTextContents(), [
+    'No labels',
+    'No assumptions',
+    'No judgment',
+    'Just real conversations',
+  ]);
+  const closingSequence = await listening.locator(
+    '.listening-moment__capsules, .listening-moment__coming-soon, .listening-moment__signoff',
+  ).evaluateAll((elements) => elements.map((element) => {
+    if (element.classList.contains('listening-moment__capsules')) return 'capsules';
+    if (element.classList.contains('listening-moment__coming-soon')) return 'coming-soon';
+    return 'signoff';
+  }));
+  assert.deepEqual(closingSequence, ['capsules', 'coming-soon', 'signoff']);
+  const listeningText = await listening.innerText();
+  assert.doesNotMatch(listeningText, /we are open|available now/i);
+  assert.match(await page.locator('.ls-closing').innerText(), /HABLAR — Come as you are\.\s*Speak as you feel\./);
+  await page.locator('[data-testid="link-about"]').click();
+  assert.equal(new URL(page.url()).hash, '#about');
+
   const aboutCopy = await about.innerText();
-  assert.match(aboutCopy, /not advice or answers/i);
-  assert.match(aboutCopy, /Not everything you carry is visible/);
-  assert.match(aboutCopy, /Sometimes, you just need someone to hear you out/);
-  assert.match(aboutCopy, /Come as you are\.\s*Speak as you feel\./);
-  assert.match(aboutCopy, /Coming soon/);
-  assert.doesNotMatch(aboutCopy, /We are open|available now|confidential|anonymous/i);
-  assert.equal(await about.locator('.hr-message').count(), 2);
+  assert.match(aboutCopy, /About HABLAR/i);
+  assert.equal((await about.locator('#about-heading').textContent()).trim(), 'A moment to be heard');
+  assert.equal(
+    (await about.locator('.ha-message--lead').textContent()).trim(),
+    'In a world more connected than ever, millions of people still feel unheard. In such times, all you need is to be heard.',
+  );
+  assert.equal(
+    (await about.locator('.ha-message--second').textContent()).trim(),
+    'HABLAR offers a safe and anonymous space for you to speak out and express yourself freely.',
+  );
+  assert.equal(
+    (await about.locator('.ha-message--third').textContent()).trim(),
+    "Because the first step toward feeling better is knowing you're not alone in the journey.",
+  );
+  assert.equal(await about.locator('.ha-art img').getAttribute('src'), '/brand/hablar-mascot-grid.png');
 
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
-    const { sectionWidth, contentRight, viewportWidth, cards } = await about.evaluate((element) => {
+    const { viewportWidth, regions, elements, sectionScrollWidth, sectionClientWidth } = await listening.evaluate((element) => {
       const section = element.getBoundingClientRect();
-      const cardRects = Array.from(element.querySelectorAll('.hr-message'), (card) => {
-        const rect = card.getBoundingClientRect();
-        return { left: rect.left, right: rect.right, width: rect.width };
+      const measured = Array.from(element.querySelectorAll(
+        '.listening-moment__heading, .listening-moment__messages p, .listening-moment__capsules li, .listening-moment__coming-soon, .listening-moment__signoff',
+      ), (child) => {
+        const rect = child.getBoundingClientRect();
+        return {
+          left: rect.left,
+          right: rect.right,
+          width: rect.width,
+          height: rect.height,
+          visible: getComputedStyle(child).visibility !== 'hidden' && Number(getComputedStyle(child).opacity) > 0,
+        };
       });
       return {
-        sectionWidth: section.width,
-        contentRight: Math.max(section.right, ...cardRects.map((rect) => rect.right)),
         viewportWidth: document.documentElement.clientWidth,
-        cards: cardRects,
+        regions: { left: section.left, right: section.right, width: section.width },
+        elements: measured,
+        sectionScrollWidth: element.scrollWidth,
+        sectionClientWidth: element.clientWidth,
       };
     });
-    assert.ok(sectionWidth > 0);
-    assert.equal(cards.length, 2);
-    assert.ok(cards.every((card) => card.width > 0 && card.left >= 0));
-    assert.ok(contentRight <= viewportWidth, `About section overflows at ${width}px`);
+    assert.ok(regions.width > 0);
+    assert.equal(elements.length, 11);
+    assert.ok(sectionScrollWidth <= sectionClientWidth, `Listening Moment should not overflow at ${width}px`);
+    assert.ok(elements.every((element) =>
+      element.width > 0 && element.height > 0 && element.left >= 0
+      && element.right <= viewportWidth && element.visible),
+    `Listening Moment should remain visible and fit at ${width}px with reduced motion`);
   }
 });
 

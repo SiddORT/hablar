@@ -176,7 +176,7 @@ function Footer() {
             src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`}
             alt="HABLAR"
           />
-          <p>A little more room to be human. Come as you are.</p>
+          <p>A little more roomremo to be human. Come as you are.</p>
         </div>
         <nav className="footer-links" aria-label="Footer navigation">
           <Link href="/privacy">Privacy Notice</Link>

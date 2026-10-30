@@ -3,4 +3,4 @@
 - [Container runtime scope](container-runtime.md) — Python API packaging was approved; nested Docker exec failures can prevent local health checks.
 - [Static SEO route delivery](seo-routing.md) — SPA fallbacks can serve homepage metadata despite generated legal-page files; check direct URL responses.
 - [One-time launch email behavior](launch-email-delivery.md) — Claim the launch campaign permanently before sending; never retry uncertain sends that could duplicate the update.
-- [Hero pill grid sizing](hero-pill-grid.md) — Grid spans for hashtag pills must be checked against each label's full text and padding in the rendered layout.
+- [Hero pill grid sizing](hero-pill-grid.md) — Use reserved-center grid slots on desktop, natural wrapping on narrow screens, and verify full label-plus-padding fit.

@@ -3,8 +3,8 @@ name: Hero pill grid sizing
 description: A layout lesson for wrapping hashtag pills into deliberate desktop rows.
 ---
 
-When arranging text pills in a fixed-column grid, ensure each span can fit the full label plus horizontal padding. Otherwise `overflow-wrap` can split short words even when the overall row appears balanced. Keep a natural wrapping layout at narrower widths.
+When arranging variable-width topic pills around a central illustration, avoid percentage-based absolute coordinates; labels collide as their widths and viewport dimensions change. Use non-overlapping grid slots with reserved center rows on desktop, then put the illustration in normal flow and let pills wrap naturally on narrow screens. Check each full label plus padding.
 
-**Why:** Visual checks exposed wrapped labels where span widths had been estimated too narrowly.
+**Why:** Repeated visual checks showed absolute coordinates could overlap long pills even after individual positions were adjusted.
 
-**How to apply:** Verify the rendered desktop rows include the longest and shortest labels without broken words, then check narrow widths where the layout should return to natural wrapping.
+**How to apply:** Verify all labels and their padding at desktop and tablet widths, confirm the logo’s center area stays clear, and check narrow screens for natural wrapping without clipping or overlap.

@@ -127,3 +127,87 @@ test('keyboard focus dismisses the decorative overlay and mobile and desktop lay
     `Loader should fit the ${width}px viewport`);
   }
 });
+
+test('visible header artwork aligns with unchanged hero text across responsive breakpoints', async (t) => {
+  const page = await browser.newPage();
+  t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(appUrl, { waitUntil: 'domcontentloaded' });
+  await page.getByTestId('site-loader').waitFor({ state: 'hidden' });
+  await page.evaluate(() => document.fonts.ready);
+
+  // Measure the actual PNG alpha bounds, not its transparent image box.
+  const artwork = await page.locator('.topbar .brand-mini img').evaluate(async (image) => {
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext('2d');
+    context.drawImage(image, 0, 0);
+    const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+    let left = canvas.width;
+    for (let y = 0; y < canvas.height; y++) {
+      for (let x = 0; x < left; x++) {
+        if (data[(y * canvas.width + x) * 4 + 3] > 0) left = x;
+      }
+    }
+    return { leftFraction: left / canvas.width };
+  });
+
+  for (const width of [320, 360, 361, 390, 640, 680, 681, 768, 850, 851, 980, 981, 1304, 1305, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    const layout = await page.evaluate(({ leftFraction }) => {
+      const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
+      const image = rect('.topbar .brand-mini img');
+      const heading = rect('.hero h1');
+      const lede = rect('.hero-lede');
+      const header = rect('.topbar');
+      const controls = [...document.querySelectorAll('.topbar a, .topbar select')]
+        .filter((element) => element.getClientRects().length > 0)
+        .map((element) => {
+          const bounds = element.getBoundingClientRect();
+          return {
+            left: bounds.left, right: bounds.right, top: bounds.top, bottom: bounds.bottom,
+            fitsContent: element.scrollWidth <= element.clientWidth + 1,
+          };
+        });
+      return {
+        visibleLogoLeft: image.left + image.width * leftFraction,
+        logoWidth: image.width,
+        headingLeft: heading.left,
+        ledeLeft: lede.left,
+        headerTop: header.top,
+        headerBottom: header.bottom,
+        controls,
+        viewportWidth: document.querySelector('.site-shell').clientWidth,
+        scrollWidth: document.querySelector('.app-scrollport').scrollWidth,
+      };
+    }, artwork);
+    const expectedHeroLeft = width <= 680 ? 20
+      : (layout.viewportWidth - Math.min(1240, layout.viewportWidth - 64)) / 2
+        + layout.viewportWidth * (width <= 850 ? .04 : .052);
+    assert.ok(Math.abs(layout.headingLeft - expectedHeroLeft) < 1, `Hero must not move at ${width}px`);
+    assert.ok(Math.abs(layout.visibleLogoLeft - layout.headingLeft) < 1, `Visible logo aligns with heading at ${width}px`);
+    assert.ok(Math.abs(layout.visibleLogoLeft - layout.ledeLeft) < 1, `Visible logo aligns with supporting text at ${width}px`);
+    assert.equal(layout.logoWidth, width <= 680 ? 66 : 84, `Logo size is preserved at ${width}px`);
+    assert.ok(layout.scrollWidth <= layout.viewportWidth, `No horizontal scrolling at ${width}px`);
+    for (const control of layout.controls) {
+      assert.ok(control.left >= 0 && control.right <= layout.viewportWidth + 1
+        && control.top >= layout.headerTop && control.bottom <= layout.headerBottom + 1
+        && control.fitsContent, `Header control fits at ${width}px`);
+    }
+    for (let index = 1; index < layout.controls.length; index++) {
+      const first = layout.controls[index - 1];
+      const second = layout.controls[index];
+      assert.ok(first.right <= second.left || first.bottom <= second.top,
+        `Header controls do not overlap at ${width}px`);
+    }
+    assert.equal(await page.locator('.nav-cta').textContent(), "Interested? Let's talk");
+  }
+  await page.locator('.nav-cta').click();
+  assert.equal(new URL(page.url()).hash, '#launch-note');
+  await page.locator('.app-scrollport').evaluate((element) => element.scrollTo({ top: 0, behavior: 'instant' }));
+  await page.getByTestId('link-about').click();
+  assert.equal(new URL(page.url()).hash, '#about');
+});

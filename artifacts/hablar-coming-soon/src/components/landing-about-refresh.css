@@ -15,51 +15,6 @@
   font-family: 'DM Sans', sans-serif;
 }
 
-.ha-logo {
-  position: relative;
-  display: block;
-  width: clamp(72px, 8vw, 96px);
-  margin: 0 auto clamp(20px, 3vw, 32px);
-  overflow: hidden;
-  animation: ha-logo-float 6s ease-in-out infinite;
-}
-
-.ha-logo img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.ha-logo::after {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    112deg,
-    transparent 36%,
-    color-mix(in srgb, var(--theme-surface, #fff) 30%, transparent) 46%,
-    color-mix(in srgb, var(--theme-surface, #fff) 78%, transparent) 51%,
-    transparent 61%
-  );
-  content: '';
-  opacity: 0;
-  pointer-events: none;
-  -webkit-mask: url('/brand/hablar-logo-transparent.png') center / 100% 100% no-repeat;
-  mask: url('/brand/hablar-logo-transparent.png') center / 100% 100% no-repeat;
-  mix-blend-mode: screen;
-  animation: ha-logo-glint 6s ease-in-out infinite;
-}
-
-@keyframes ha-logo-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-
-@keyframes ha-logo-glint {
-  0%, 56%, 100% { transform: translateX(-115%); opacity: 0; }
-  62% { opacity: .55; }
-  82% { transform: translateX(115%); opacity: .4; }
-}
-
 .ha-shell {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(300px, .92fr);
@@ -241,10 +196,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ha-logo,
-  .ha-logo::after { animation: none; }
-  .ha-logo { transform: none; }
-  .ha-logo::after { opacity: 0; }
   .hablar-about *,
   .hablar-about *::before,
   .hablar-about *::after { scroll-behavior: auto !important; }

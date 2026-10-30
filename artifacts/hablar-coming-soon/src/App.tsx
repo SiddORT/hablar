@@ -472,7 +472,7 @@ function Router() {
     const updateVisibility = () => {
       const scrollTop = scrollport.scrollTop;
       setShowReturnToTop((currentlyVisible) =>
-        currentlyVisible ? scrollTop > 180 : scrollTop > 260,
+        currentlyVisible ? scrollTop > 8 : scrollTop > 120,
       );
     };
     updateVisibility();
@@ -485,6 +485,15 @@ function Router() {
     if (!scrollport) return;
     let idleTimer: ReturnType<typeof setTimeout> | undefined;
     let disposed = false;
+    let directionAnchor = scrollport.scrollTop;
+    let scrollingUp = false;
+    const isLaunchVisible = () => {
+      const signupRect = signupSection?.getBoundingClientRect();
+      const viewportRect = scrollport.getBoundingClientRect();
+      return !signupRect
+        || signupRect.bottom <= viewportRect.top
+        || signupRect.top >= viewportRect.bottom;
+    };
     const measureVisibility = () => {
       const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
       if (!dock || dock.contains(document.activeElement)) return;
@@ -501,13 +510,9 @@ function Router() {
         if (element.tagName === 'P' && !element.textContent?.trim()) return false;
         return rectanglesOverlapWithMargin(element.getBoundingClientRect(), dockRect, 10);
       });
-      const signupRect = signupSection?.getBoundingClientRect();
-      const viewportRect = scrollport.getBoundingClientRect();
-      const launchVisible = !signupRect
-        || signupRect.bottom <= viewportRect.top
-        || signupRect.top >= viewportRect.bottom;
+      const launchVisible = isLaunchVisible();
       setDockState((previous) => {
-        const visible = !overlapsContent;
+        const visible = (location === '/' && scrollingUp) || !overlapsContent;
         return previous.visible === visible && previous.launchVisible === launchVisible
           ? previous
           : { visible, launchVisible };
@@ -519,13 +524,29 @@ function Router() {
       // Section boundaries must not toggle controls during an active scroll.
       idleTimer = setTimeout(measureVisibility, 180);
     };
+    const handleScroll = () => {
+      const scrollTop = Math.max(0, scrollport.scrollTop);
+      if (Math.abs(scrollTop - directionAnchor) >= 8) {
+        scrollingUp = scrollTop < directionAnchor;
+        directionAnchor = scrollTop;
+      }
+      if (location === '/' && scrollingUp) {
+        const launchVisible = isLaunchVisible();
+        setDockState((previous) =>
+          previous.visible && previous.launchVisible === launchVisible
+            ? previous
+            : { visible: true, launchVisible },
+        );
+      }
+      updateAfterScroll();
+    };
     const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
     const initialFrame = requestAnimationFrame(measureVisibility);
     const layoutObserver = new ResizeObserver(updateAfterScroll);
     layoutObserver.observe(scrollport);
     scrollport.querySelectorAll('.site-shell, #legal-main').forEach((element) => layoutObserver.observe(element));
     void document.fonts.ready.then(updateAfterScroll);
-    scrollport.addEventListener('scroll', updateAfterScroll, { passive: true });
+    scrollport.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', updateAfterScroll);
     dock?.addEventListener('focusout', updateAfterScroll);
     return () => {
@@ -533,7 +554,7 @@ function Router() {
       layoutObserver.disconnect();
       clearTimeout(idleTimer);
       cancelAnimationFrame(initialFrame);
-      scrollport.removeEventListener('scroll', updateAfterScroll);
+      scrollport.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', updateAfterScroll);
       dock?.removeEventListener('focusout', updateAfterScroll);
     };

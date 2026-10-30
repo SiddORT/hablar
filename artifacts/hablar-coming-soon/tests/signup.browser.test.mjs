@@ -506,14 +506,16 @@ test('return-to-top does not flicker near its scroll threshold', async (t) => {
       assert.equal(await button.isVisible(), true, `return-to-top should stay visible at ${top}px (${width}px viewport)`);
     }
 
-    await setScrollTop(170);
+    await setScrollTop(60);
+    assert.equal(await button.isVisible(), true, 'the arrow must remain available while returning toward the top');
+    await setScrollTop(4);
     await button.waitFor({ state: 'hidden' });
-    for (const top of [190, 230, 255, 205]) {
+    for (const top of [40, 80, 115, 65]) {
       await setScrollTop(top);
       assert.equal(await button.isHidden(), true, `return-to-top should stay hidden at ${top}px (${width}px viewport)`);
     }
 
-    await setScrollTop(270);
+    await setScrollTop(130);
     await button.waitFor({ state: 'visible' });
   }
 });
@@ -623,7 +625,7 @@ test('floating controls keep stable visibility while scrolling both pages', asyn
         assert.equal(frames[0].launchPointerEvents, expectedPointerEvents);
         assert.equal(frames[0].instagramPointerEvents, expectedPointerEvents);
         const previousSnapshot = snapshots.get(target.selector);
-        if (previousSnapshot) {
+        if (previousSnapshot && route !== '/') {
           assert.deepEqual(
             frames[0],
             previousSnapshot,
@@ -654,6 +656,38 @@ test('floating controls keep stable visibility while scrolling both pages', asyn
   }
 });
 
+test('floating actions return on upward scroll and the up arrow stays available until the top', async (t) => {
+  const page = await browser.newPage();
+  t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto(appUrl, { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(500);
+    await page.locator('.app-scrollport').evaluate((element) => {
+      const section = document.querySelector('.listening-moment');
+      element.scrollTo({
+        top: element.scrollTop + section.getBoundingClientRect().top
+          - element.getBoundingClientRect().top - element.clientHeight * 0.25,
+        behavior: 'instant',
+      });
+    });
+    await page.waitForFunction(() => document.querySelector('.launch-sticky-dock').getAttribute('aria-hidden') === 'true');
+    await page.locator('.app-scrollport').evaluate((element) => element.scrollBy({ top: -80, behavior: 'instant' }));
+    await page.waitForFunction(() => document.querySelector('.launch-sticky-dock').getAttribute('aria-hidden') === 'false');
+    await page.waitForTimeout(500);
+    assert.equal(await page.locator('.instagram-sticky-cta').isVisible(), true, 'actions must stay visible after pausing an upward scroll');
+    assert.equal(await page.locator('.launch-sticky-cta').isVisible(), true);
+    await page.locator('.app-scrollport').evaluate((element) => element.scrollTo({ top: 100, behavior: 'instant' }));
+    const arrow = page.getByRole('button', { name: 'Return to top' });
+    await arrow.waitFor({ state: 'visible' });
+    await arrow.click();
+    await page.waitForFunction(() => document.querySelector('.app-scrollport').scrollTop <= 8);
+    await arrow.waitFor({ state: 'hidden' });
+  }
+});
+
 test('floating dock stays anchored and does not toggle during continuous normal-motion wheel scrolling', async (t) => {
   const page = await browser.newPage();
   t.after(() => page.close());
@@ -668,8 +702,7 @@ test('floating dock stays anchored and does not toggle during continuous normal-
       await page.waitForTimeout(500);
       const start = await page.locator('.launch-sticky-dock').evaluate((dock) => ({
         top: dock.getBoundingClientRect().top,
-        visibleActions: dock.getAttribute('aria-hidden') === 'true'
-          ? 'none' : dock.classList.contains('is-launch-hidden') ? 'instagram' : 'both',
+        visible: dock.getAttribute('aria-hidden') !== 'true',
       }));
       for (let step = 0; step < 50; step += 1) {
         await page.mouse.wheel(0, direction * 180);
@@ -679,14 +712,13 @@ test('floating dock stays anchored and does not toggle during continuous normal-
           const dock = document.querySelector('.launch-sticky-dock');
           return {
             top: dock.getBoundingClientRect().top,
-            visibleActions: dock.getAttribute('aria-hidden') === 'true'
-              ? 'none' : dock.classList.contains('is-launch-hidden') ? 'instagram' : 'both',
+            visible: dock.getAttribute('aria-hidden') !== 'true',
             scrollTop: scrollport.scrollTop,
             maxScroll: scrollport.scrollHeight - scrollport.clientHeight,
           };
         });
         assert.ok(Math.abs(sample.top - start.top) < 1, `dock must not jump at ${width}px`);
-        assert.equal(sample.visibleActions, start.visibleActions, `visible dock actions must not toggle during active scrolling at ${width}px`);
+        assert.equal(sample.visible, direction === -1 ? true : start.visible, `dock should stay stable downward and remain visible upward at ${width}px`);
         if ((direction === 1 && sample.scrollTop >= sample.maxScroll - 1)
           || (direction === -1 && sample.scrollTop <= 1)) break;
       }

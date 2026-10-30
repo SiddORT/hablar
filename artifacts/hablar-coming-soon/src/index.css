@@ -97,9 +97,9 @@ a { color: inherit; }
 .brand-logo__trademark {
   position: absolute;
   z-index: 1;
-  top: 12%;
+  top: 30%;
   left: 90%;
-  transform: translate(-50%, -100%);
+  transform: translateY(-100%);
   color: var(--theme-text, #454545);
   font-family: 'DM Sans', sans-serif;
   font-size: var(--brand-trademark-size, 12px);
@@ -375,19 +375,19 @@ a { color: inherit; }
   white-space: nowrap;
   transform: translate(-50%, -50%) rotate(var(--topic-tilt, 0deg));
 }
-.hero-topic-item:nth-child(1) { left: 20%; top: 22%; --topic-tilt: -2deg; }
-.hero-topic-item:nth-child(2) { left: 67%; top: 9%; --topic-tilt: 1deg; }
-.hero-topic-item:nth-child(3) { left: 88%; top: 25%; --topic-tilt: -1.5deg; }
-.hero-topic-item:nth-child(4) { left: 10%; top: 42%; --topic-tilt: 1.5deg; }
-.hero-topic-item:nth-child(5) { left: 14%; top: 58%; --topic-tilt: -1deg; }
-.hero-topic-item:nth-child(6) { left: 91%; top: 48%; --topic-tilt: 2deg; }
-.hero-topic-item:nth-child(7) { left: 17%; top: 73%; --topic-tilt: -1.5deg; }
-.hero-topic-item:nth-child(8) { left: 78%; top: 64%; --topic-tilt: 1deg; }
-.hero-topic-item:nth-child(9) { left: 23%; top: 87%; --topic-tilt: 1.5deg; }
-.hero-topic-item:nth-child(10) { left: 63%; top: 94%; --topic-tilt: -1deg; }
-.hero-topic-item:nth-child(11) { left: 53%; top: 23%; --topic-tilt: 2deg; }
-.hero-topic-item:nth-child(12) { left: 54%; top: 76%; --topic-tilt: -2deg; }
-.hero-topic-item:nth-child(13) { left: 87%; top: 83%; --topic-tilt: 1deg; }
+.hero-topic-item:nth-child(1) { left: 18%; top: 22%; --topic-tilt: -2deg; }
+.hero-topic-item:nth-child(2) { left: 65%; top: 8%; --topic-tilt: 1deg; }
+.hero-topic-item:nth-child(3) { left: 89%; top: 30%; --topic-tilt: -1.5deg; }
+.hero-topic-item:nth-child(4) { left: 9%; top: 45%; --topic-tilt: 1.5deg; }
+.hero-topic-item:nth-child(5) { left: 16%; top: 62%; --topic-tilt: -1deg; }
+.hero-topic-item:nth-child(6) { left: 91%; top: 46%; --topic-tilt: 2deg; }
+.hero-topic-item:nth-child(7) { left: 14%; top: 77%; --topic-tilt: -1.5deg; }
+.hero-topic-item:nth-child(8) { left: 84%; top: 63%; --topic-tilt: 1deg; }
+.hero-topic-item:nth-child(9) { left: 29%; top: 90%; --topic-tilt: 1.5deg; }
+.hero-topic-item:nth-child(10) { left: 66%; top: 94%; --topic-tilt: -1deg; }
+.hero-topic-item:nth-child(11) { left: 46%; top: 31%; --topic-tilt: 2deg; }
+.hero-topic-item:nth-child(12) { left: 53%; top: 75%; --topic-tilt: -2deg; }
+.hero-topic-item:nth-child(13) { left: 89%; top: 82%; --topic-tilt: 1deg; }
 .hero-topic-item:nth-child(1),
 .hero-topic-item:nth-child(7),
 .hero-topic-item:nth-child(12) {
@@ -411,19 +411,19 @@ a { color: inherit; }
     padding: 7px 6px;
     font-size: 10.5px;
   }
-  .hero-topic-item:nth-child(1) { left: 26%; top: 19%; }
-  .hero-topic-item:nth-child(2) { left: 70%; top: 9%; }
-  .hero-topic-item:nth-child(3) { left: 80%; top: 26%; }
-  .hero-topic-item:nth-child(4) { left: 14%; top: 42%; }
-  .hero-topic-item:nth-child(5) { left: 12%; top: 59%; }
-  .hero-topic-item:nth-child(6) { left: 85%; top: 45%; }
-  .hero-topic-item:nth-child(7) { left: 17%; top: 72%; }
-  .hero-topic-item:nth-child(8) { left: 84%; top: 64%; }
-  .hero-topic-item:nth-child(9) { left: 30%; top: 87%; }
-  .hero-topic-item:nth-child(10) { left: 66%; top: 94%; }
-  .hero-topic-item:nth-child(11) { left: 52%; top: 21%; }
-  .hero-topic-item:nth-child(12) { left: 56%; top: 77%; }
-  .hero-topic-item:nth-child(13) { left: 86%; top: 83%; }
+  .hero-topic-item:nth-child(1) { left: 25%; top: 18%; }
+  .hero-topic-item:nth-child(2) { left: 62%; top: 7%; }
+  .hero-topic-item:nth-child(3) { left: 84%; top: 28%; }
+  .hero-topic-item:nth-child(4) { left: 9%; top: 41%; }
+  .hero-topic-item:nth-child(5) { left: 18%; top: 61%; }
+  .hero-topic-item:nth-child(6) { left: 91%; top: 46%; }
+  .hero-topic-item:nth-child(7) { left: 13%; top: 78%; }
+  .hero-topic-item:nth-child(8) { left: 82%; top: 63%; }
+  .hero-topic-item:nth-child(9) { left: 29%; top: 91%; }
+  .hero-topic-item:nth-child(10) { left: 69%; top: 93%; }
+  .hero-topic-item:nth-child(11) { left: 48%; top: 25%; }
+  .hero-topic-item:nth-child(12) { left: 52%; top: 75%; }
+  .hero-topic-item:nth-child(13) { left: 89%; top: 83%; }
 }
 .section { width: min(1120px, calc(100% - 64px)); margin: 0 auto; padding: 76px 0; }
 .section-heading { max-width: 720px; margin: 0 auto 42px; text-align: center; }

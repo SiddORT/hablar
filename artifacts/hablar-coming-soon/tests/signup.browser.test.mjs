@@ -70,45 +70,43 @@ async function openSignup(response = {
   return { page, form, requests };
 }
 
-test('About section uses the planned narrative and smiling mascot at desktop and mobile widths', async (t) => {
+test('Listening Moment stays readable with reduced motion and at mobile widths', async (t) => {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(appUrl, { waitUntil: 'networkidle' });
 
   const about = page.locator('#about');
   await assert.doesNotReject(() => about.getByRole('heading', {
-    name: 'You deserve to feel heard. Even when words are hard to find.',
+    name: 'Ever felt like you had so much to say, but nowhere to say it?',
   }).waitFor());
-  await assert.doesNotReject(() => about.getByRole('img', {
-    name: 'Smiling HABLAR mascot illustration',
-  }).waitFor());
-  assert.doesNotMatch(await about.innerText(), /More connected than ever|Still, so many feel unheard|A little room to be heard/i);
-  assert.equal(await about.locator('img').count(), 0);
-  assert.match(await about.locator('.hr-mascot-art').evaluate((element) => getComputedStyle(element).backgroundImage), /hablar-mascot-grid\.png/);
-
-  const themes = ['original', 'blue-green', 'soft-lavender', 'yellow-orange'];
-  for (const theme of themes) {
-    await page.locator('#hablar-theme').selectOption(theme);
-    const sectionColor = await about.evaluate((element) => getComputedStyle(element).color);
-    const headingColor = await about.locator('#about-heading').evaluate((element) => getComputedStyle(element).color);
-    assert.notEqual(sectionColor, 'rgba(0, 0, 0, 0)');
-    assert.notEqual(headingColor, 'rgba(0, 0, 0, 0)');
-  }
+  const aboutCopy = await about.innerText();
+  assert.match(aboutCopy, /not advice or answers/i);
+  assert.match(aboutCopy, /Not everything you carry is visible/);
+  assert.match(aboutCopy, /Sometimes, you just need someone to hear you out/);
+  assert.match(aboutCopy, /Come as you are\.\s*Speak as you feel\./);
+  assert.match(aboutCopy, /Coming soon/);
+  assert.doesNotMatch(aboutCopy, /We are open|available now|confidential|anonymous/i);
+  assert.equal(await about.locator('.hr-message').count(), 2);
 
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
-    const { sectionWidth, contentRight, viewportWidth, mascotWidth } = await about.evaluate((element) => {
+    const { sectionWidth, contentRight, viewportWidth, cards } = await about.evaluate((element) => {
       const section = element.getBoundingClientRect();
-      const mascot = element.querySelector('.hr-mascot-art').getBoundingClientRect();
+      const cardRects = Array.from(element.querySelectorAll('.hr-message'), (card) => {
+        const rect = card.getBoundingClientRect();
+        return { left: rect.left, right: rect.right, width: rect.width };
+      });
       return {
         sectionWidth: section.width,
-        contentRight: Math.max(section.right, mascot.right),
+        contentRight: Math.max(section.right, ...cardRects.map((rect) => rect.right)),
         viewportWidth: document.documentElement.clientWidth,
-        mascotWidth: mascot.width,
+        cards: cardRects,
       };
     });
     assert.ok(sectionWidth > 0);
-    assert.ok(mascotWidth > 0);
+    assert.equal(cards.length, 2);
+    assert.ok(cards.every((card) => card.width > 0 && card.left >= 0));
     assert.ok(contentRight <= viewportWidth, `About section overflows at ${width}px`);
   }
 });
@@ -146,18 +144,19 @@ test('hero story and interaction commitment use the requested wording and accent
   ]) {
     assert.equal(heroText.includes(removedCopy), false, `hero should not include "${removedCopy}"`);
   }
-  assert.equal(await hero.locator('.hero-commitments li').nth(0).textContent(), 'Your identity would remain anonymous to the person you connect with.');
+  assert.equal(
+    (await hero.locator('.hero-disclaimer p').first().textContent()).trim(),
+    'Your identity would remain anonymous to the person you connect with.',
+  );
   const interactionCopy = hero.locator('.hero-commitment-highlight');
-  assert.equal(await interactionCopy.textContent(), 'your first interaction is on us');
+  assert.equal((await interactionCopy.textContent()).trim(), 'Your First Interaction is on us.');
   assert.equal(
     await interactionCopy.evaluate((element) => getComputedStyle(element).color),
     'rgb(231, 51, 125)',
     'the interaction commitment should use the site pink accent',
   );
 
-  await page.locator('#hablar-theme').selectOption('soft-lavender');
-  await page.waitForFunction(() => document.documentElement.dataset.theme === 'soft-lavender');
-  const commitmentsBounds = await hero.locator('.hero-commitments').boundingBox();
+  const commitmentsBounds = await hero.locator('.hero-details').boundingBox();
   assert.ok(commitmentsBounds);
   assert.ok(
     commitmentsBounds.x >= 0 && commitmentsBounds.x + commitmentsBounds.width <= 360,

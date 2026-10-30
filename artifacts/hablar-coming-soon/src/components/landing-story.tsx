@@ -5,27 +5,34 @@ import './landing-story.css';
 import './landing-about-refresh.css';
 import './purpose-mission-flip.css';
 
-export function AboutServices() {
+export function ListeningMoment() {
   return (
     <section className="hablar-refresh hr-section" id="about" aria-labelledby="about-heading">
       <div className="hr-shell">
         <header className="hr-intro hr-reveal">
-          <span className="hr-eyebrow"><span className="hr-spark" aria-hidden="true" /> About HABLAR</span>
-          <h2 id="about-heading">You deserve to feel heard.<br /><span>Even when words are hard to find.</span></h2>
-          <p className="hr-lede">Feeling unheard can make a hard moment feel even heavier.</p>
-          <p className="hr-body">HABLAR is being built with the hope of offering a place to speak freely, share what is on your mind, and feel less alone. We are not open yet, but we look forward to creating room for real human conversation.</p>
-          <div className="hr-signoff" aria-hidden="true"><span /> A planned space to speak freely and feel less alone</div>
+          <span className="hr-eyebrow"><span className="hr-spark" aria-hidden="true" /> A moment to be heard</span>
+          <h2 id="about-heading">Ever felt like you had so much to say, but nowhere to say it?</h2>
+          <p className="hr-lede">Sometimes, what you need most is not advice or answers. It is the chance to be heard.</p>
+          <p className="hr-body">HABLAR is being built with the hope of making room for honest, human conversations. We are not open yet, but we believe every story deserves care and a listener who is willing to hear it.</p>
         </header>
 
-        <figure className="hr-photo hr-reveal">
-          <div
-            className="hr-mascot-art"
-            role="img"
-            aria-label="Smiling HABLAR mascot illustration"
-            style={{ backgroundImage: `url("${import.meta.env.BASE_URL}brand/hablar-mascot-grid.png")` }}
-          />
-        </figure>
+        <div className="hr-messages">
+          <article className="hr-message hr-message--rose hr-reveal">
+            <span className="hr-message-mark" aria-hidden="true">01</span>
+            <h3>Not everything you carry is visible</h3>
+            <p>There can be a lot beneath the words we share with the world.</p>
+          </article>
+          <article className="hr-message hr-message--mint hr-reveal">
+            <span className="hr-message-mark" aria-hidden="true">02</span>
+            <h3>Sometimes, you just need someone to hear you out</h3>
+            <p>No fixing the story. No perfect words required. Just the possibility of being listened to.</p>
+          </article>
+        </div>
 
+        <div className="hr-signoff hr-reveal">
+          <p>Come as you are. <span>Speak as you feel.</span></p>
+          <span className="hr-coming-soon">Coming soon</span>
+        </div>
       </div>
     </section>
   );
@@ -206,7 +213,7 @@ export default function LandingStory() {
   return (
     <>
       <PurposeMission />
-      <AboutServices />
+      <ListeningMoment />
       <Philosophy />
       <SafetyPrivacy />
       <ClosingLine />

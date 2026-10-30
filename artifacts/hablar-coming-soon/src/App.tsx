@@ -12,7 +12,7 @@ import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter
 import NotFound from '@/pages/not-found';
 import LegalPage from '@/pages/legal';
 import { usePageSeo } from '@/lib/use-page-seo';
-import { AboutServices, PurposeMission, ClosingLine } from '@/components/landing-story';
+import { ListeningMoment, PurposeMission, ClosingLine } from '@/components/landing-story';
 import { ThemeProvider, ThemeSelector } from '@/components/theme-selector';
 import { BrandLogo } from '@/components/brand-logo';
 
@@ -326,8 +326,8 @@ function Home() {
           </div>
         </div>
       </section>
+      <ListeningMoment />
       <PurposeMission />
-      <AboutServices />
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">
         <div className="emotion-circle">
           <div className="emotion-center">
@@ -490,7 +490,7 @@ function Router() {
         const dock = document.querySelector<HTMLElement>('.launch-sticky-dock');
         if (!instagramCta || !dock || dock.contains(document.activeElement)) return;
         const dockRect = dock.getBoundingClientRect();
-        const contentPanels = document.querySelectorAll<HTMLElement>('.ls-pm');
+        const contentPanels = document.querySelectorAll<HTMLElement>('.hablar-refresh, .ls-pm');
         const overlapsFeatureContent = Array.from(contentPanels).some((panel) => {
           const panelRect = panel.getBoundingClientRect();
           return panelRect.left < dockRect.right

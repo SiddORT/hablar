@@ -22,7 +22,3 @@ timeoutMs = 20000
 [nix]
 channel = "stable-25_05"
 packages = ["cargo", "libiconv", "libxcrypt", "openssl", "pkg-config", "postgresql", "rustc"]
-
-[[ports]]
-localPort = 25179
-externalPort = 80

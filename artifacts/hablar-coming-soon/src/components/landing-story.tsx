@@ -10,7 +10,7 @@ export function ListeningMoment() {
     <section className="listening-moment" id="listening-moment" aria-labelledby="listening-moment-heading">
       <div className="listening-moment__inner">
         <header className="listening-moment__heading hr-reveal">
-          <span className="listening-moment__eyebrow">A space to be heard</span>
+          <span className="listening-moment__eyebrow">A spaceremov to be heard</span>
           <h2 id="listening-moment-heading">A moment to be <span>heard</span></h2>
         </header>
         <p className="listening-moment__intro hr-reveal">

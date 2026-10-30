@@ -414,8 +414,8 @@ a { color: inherit; }
 .hero-topic-item:nth-child(7) { grid-column: 1; grid-row: 4; justify-self: start; margin-left: 8px; --topic-tilt: -1.5deg; }
 .hero-topic-item:nth-child(8) { grid-column: 3; grid-row: 3; justify-self: end; margin-right: 10px; --topic-tilt: 1deg; }
 .hero-topic-item:nth-child(9) { grid-column: 3; grid-row: 5; justify-self: end; margin-right: 16px; --topic-tilt: 1.5deg; }
-.hero-topic-item:nth-child(10) { grid-column: 2 / span 2; grid-row: 6; --topic-tilt: -1deg; }
-.hero-topic-item:nth-child(11) { grid-column: 2; grid-row: 5; align-self: end; margin-top: 0; margin-bottom: 0; --topic-tilt: 2deg; }
+.hero-topic-item:nth-child(10) { grid-column: 1; grid-row: 6; justify-self: end; --topic-tilt: -1deg; }
+.hero-topic-item:nth-child(11) { grid-column: 2 / span 2; grid-row: 6; justify-self: start; --topic-tilt: 2deg; }
 .hero-topic-item:nth-child(12) { grid-column: 1; grid-row: 5; justify-self: start; margin-left: 12px; --topic-tilt: -2deg; }
 .hero-topic-item:nth-child(13) { grid-column: 3; grid-row: 4; justify-self: end; margin-right: 6px; --topic-tilt: 1deg; }
 .hero-topic-hash { font-weight: 800; }

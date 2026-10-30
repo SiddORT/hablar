@@ -312,8 +312,8 @@ function Home() {
                 { label: 'sexuality', tone: 'blue' },
                 { label: 'trauma', tone: 'orange' },
                 { label: 'shame', tone: 'green' },
-                { label: 'financial-situation', tone: 'pink' },
                 { label: 'guilt', tone: 'blue' },
+                { label: 'financial-situation', tone: 'pink' },
                 { label: 'grief', tone: 'orange' },
                 { label: 'loss', tone: 'green' },
               ].map(({ label, tone }) => (

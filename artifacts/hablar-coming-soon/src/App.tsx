@@ -158,6 +158,7 @@ function Header() {
       </Link>
       <nav className="nav-links" aria-label="Main navigation">
         <a className="nav-plain" href="#about" data-testid="link-about">About HABLAR</a>
+        <a className="nav-plain" href="#our-services" data-testid="link-services">Our services</a>
         <a className="nav-plain" href="#purpose">Our mission</a>
         <ThemeSelector />
         <a className="nav-cta" href="#launch-note">Interested? We talk</a>

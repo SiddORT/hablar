@@ -176,13 +176,11 @@ function Footer() {
             src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`}
             alt="HABLAR"
           />
-          <p>A little more roomremo to be human. Come as you are.</p>
         </div>
         <nav className="footer-links" aria-label="Footer navigation">
           <Link href="/privacy">Privacy Notice</Link>
         </nav>
       </div>
-      <p className="footer-note">HABLAR is a listening space, not therapy, diagnosis, professional mental-health care, or emergency support. If you may be in immediate danger, contact local emergency services or a trusted person nearby.</p>
       <p className="footer-copyright">Copyright © 2026 HABLAR</p>
     </footer>
   );

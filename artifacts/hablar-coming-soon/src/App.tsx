@@ -5,7 +5,7 @@ import { CountryPicker, phoneCountries } from '@/components/country-picker';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { ArrowDown, ArrowUp, ArrowUpRight, Check, ShieldCheck } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Check, ShieldCheck } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
@@ -83,7 +83,7 @@ function Header() {
       </Link>
       <nav className="nav-links" aria-label="Main navigation">
         <a className="nav-plain" href="#about" data-testid="link-about">About HABLAR</a>
-        <a className="nav-plain" href="#our-promise">Our mission</a>
+        <a className="nav-plain" href="#purpose">Our mission</a>
         <ThemeSelector />
         <a className="nav-cta" href="#launch-note">Interested? Let's talk</a>
       </nav>
@@ -353,43 +353,6 @@ function Home() {
               </li>
             ))}
           </ul>
-        </div>
-      </section>
-      <section className="values-wrap" id="our-promise">
-        <div className="section values-layout">
-          <h2 className="values-big scroll-reveal">Listening is a kind of <span>care.</span></h2>
-          <div className="values-copy scroll-reveal">
-            We believe people deserve a space where their words are not measured, ranked, or rushed. A good listener does not need to have lived your story to make room for it.
-            <div className="value-points">
-              <div className="value-point"><span className="value-mark"><Check size={16} /></span><span><strong>Curiosity over assumptions</strong><br />We meet your story as yours.</span></div>
-              <div className="value-point"><span className="value-mark"><Check size={16} /></span><span><strong>Warmth over fixing</strong><br />Your feelings do not need a quick solution.</span></div>
-              <div className="value-point"><span className="value-mark"><Check size={16} /></span><span><strong>Human, not clinical</strong><br />This is listening, not therapy or diagnosis.</span></div>
-              <div className="value-point"><span className="value-mark"><Check size={16} /></span><span><strong>Room for every feeling</strong><br />There is no “too much” in being human.</span></div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="section quote-section" id="connection" aria-labelledby="connection-heading">
-        <div className="connection-card scroll-reveal">
-          <img
-            src={`${import.meta.env.BASE_URL}brand/hablar-indian-table-talk.webp`}
-            alt="A woman and man looking at each other in conversation across a table with a notebook and laptop"
-            width={1400}
-            height={933}
-            loading="lazy"
-            decoding="async"
-          />
-          <div className="connection-copy">
-            <span className="section-kicker">A human moment</span>
-            <h2 id="connection-heading">A little lighter, together.</h2>
-            <p>Sometimes the nicest thing is having someone meet your words with care, share a smile, and stay awhile.</p>
-            <div className="connection-actions">
-              <p className="connection-launch-note">HABLAR is coming soon. Sign up for a launch update.</p>
-              <a className="button-primary connection-cta" href="#launch-note">
-                Interested? Let's talk <ArrowDown size={16} aria-hidden="true" />
-              </a>
-            </div>
-          </div>
         </div>
       </section>
       <div className="boundary">

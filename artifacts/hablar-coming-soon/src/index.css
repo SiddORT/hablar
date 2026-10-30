@@ -577,25 +577,6 @@ a { color: inherit; }
   .emotion-card { gap: 10px; padding: 8px 12px 8px 8px; }
   .emotion-card .emotion-art { flex: 0 0 72px; width: 72px; border-radius: 16px; }
 }
-.values-wrap { background: #fff7e9; padding: 1px 0; }
-.values-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 70px; align-items: center; }
-.values-big { font: 700 clamp(37px, 5vw, 63px)/1.08 'Montserrat', sans-serif; letter-spacing: -.055em; }
-.values-big span { color: #db3c7a; }
-.values-copy { font-size: 17px; line-height: 1.75; color: #706967; }
-.value-points { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; margin-top: 29px; }
-.value-point { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.5; }
-.value-mark { flex: 0 0 27px; width: 27px; height: 27px; border-radius: 50%; background: #e3f5ed; color: #159777; display: grid; place-items: center; font-weight: 800; }
-.quote-section { padding-top: 82px; padding-bottom: 90px; }
-.connection-card { max-width: 1060px; margin: auto; border-radius: 36px; padding: 22px; background: #fff6e8; display: grid; grid-template-columns: 1.08fr .92fr; gap: 45px; align-items: center; }
-.connection-card img { width: 100%; height: 370px; object-fit: cover; display: block; border-radius: 26px; }
-.connection-copy { padding: 24px 38px 24px 0; }
-.connection-copy h2 { font: 700 clamp(32px, 4vw, 48px)/1.1 'Montserrat', sans-serif; letter-spacing: -.05em; margin: 16px 0; color: #454545; }
-.connection-copy p { font-size: 17px; line-height: 1.75; color: #716b68; margin: 0; }
-.connection-actions { display: grid; justify-items: start; gap: 16px; margin-top: 24px; }
-.connection-actions .connection-launch-note { font-size: 14px; line-height: 1.6; color: #59524e; }
-.connection-cta { min-height: 48px; max-width: 100%; background: #b82460; text-align: center; }
-.connection-cta svg { flex-shrink: 0; }
-.connection-cta:focus-visible { outline: 3px solid #075c54; outline-offset: 5px; }
 .boundary { border-top: 1px solid #eee2d9; border-bottom: 1px solid #eee2d9; padding: 29px 0; }
 .boundary-inner { width: min(1100px, calc(100% - 64px)); margin: auto; display: flex; gap: 18px; align-items: flex-start; }
 .boundary-icon { width: 36px; height: 36px; flex: 0 0 36px; border-radius: 50%; color: #a76828; background: #fff0d5; display: grid; place-items: center; font-weight: 800; }
@@ -762,12 +743,6 @@ a { color: inherit; }
   .emotion-card .emotion-art { flex: 0 0 52px; width: 52px; border-radius: 12px; }
   .emotion-card h3 { font-size: 14px; }
   .emotion-card p { font-size: 11.5px; line-height: 1.4; }
-  .values-layout { grid-template-columns: 1fr; gap: 25px; }
-  .value-points { grid-template-columns: 1fr; gap: 14px; }
-  .quote-section { padding: 50px 0; }
-  .connection-card { grid-template-columns: 1fr; gap: 22px; border-radius: 28px; padding: 14px; }
-  .connection-card img { height: 260px; border-radius: 19px; }
-  .connection-copy { padding: 10px 12px 22px; }
   .boundary-inner { width: calc(100% - 40px); }
   .signup-section { padding: 54px 0 0; }
   .signup-panel { grid-template-columns: 1fr; padding: 32px 22px; border-radius: 28px; gap: 20px; }
@@ -864,7 +839,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .legal-content h1,
 [data-theme] .legal-content h2 { color: var(--theme-text); }
 [data-theme] .site-shell p,
-[data-theme] .site-shell .values-copy,
 [data-theme] .site-shell .boundary p,
 [data-theme] .site-shell .footer-brand p,
 [data-theme] .site-shell .footer-note,
@@ -873,7 +847,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .legal-content li { color: var(--theme-muted); }
 [data-theme] .site-shell .section-kicker,
 [data-theme] .site-shell .hero h1 span,
-[data-theme] .site-shell .values-big span,
 [data-theme] .site-shell .ls-closing span,
 [data-theme] .site-shell .hr-intro h2 span,
 [data-theme] .legal-content a,
@@ -889,8 +862,7 @@ html[data-theme="yellow-orange"] {
 [data-theme] .legal-top { color: var(--theme-text); }
 [data-theme] .nav-cta,
 [data-theme] .button-primary,
-[data-theme] .launch-sticky-cta,
-[data-theme] .connection-cta { background: var(--theme-accent-button); color: #fff !important; }
+[data-theme] .launch-sticky-cta { background: var(--theme-accent-button); color: #fff !important; }
 [data-theme] .button-quiet,
 [data-theme] .theme-select { color: var(--theme-text); background: var(--theme-surface); border-color: var(--theme-border); }
 [data-theme] .button-quiet { background: color-mix(in srgb, var(--theme-surface) 88%, transparent); }
@@ -906,7 +878,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .story-message,
 [data-theme] .emotion-center p,
 [data-theme] .emotion-card p,
-[data-theme] .connection-copy p,
 [data-theme] .signup-panel p { color: var(--theme-muted); }
 [data-theme] .floating-note,
 [data-theme] .pill,
@@ -928,9 +899,6 @@ html[data-theme="yellow-orange"] {
 [data-theme] .slot-3,
 [data-theme] .slot-5 { background: var(--theme-surface); }
 [data-theme] .emotion-art { background-color: var(--theme-surface-soft); }
-[data-theme] .value-mark { background: var(--theme-secondary-soft); color: var(--theme-secondary); }
-[data-theme] .values-wrap,
-[data-theme] .connection-card,
 [data-theme] .signup-panel { background: var(--theme-surface-warm); }
 [data-theme] .footer { background: var(--theme-footer); }
 [data-theme] .signup-panel { color: var(--theme-text); }

@@ -325,7 +325,7 @@ a { color: inherit; }
 .hero-first-interaction { margin: 0 0 14px; }
 .hero-actions { display: flex; gap: 13px; align-items: center; flex-wrap: wrap; margin-top: 0; }
 .hero-actions .button-primary, .hero-actions .hero-instagram-cta { min-height: 48px; white-space: nowrap; }
-.hero-disclaimer { display: grid; gap: 4px; max-width: 500px; margin-top: 12px; color: var(--theme-text); font-size: 12px; line-height: 1.5; }
+.hero-disclaimer { display: grid; gap: 4px; max-width: 500px; margin-top: 12px; color: var(--theme-text); font-size: 8.4px; line-height: 1.5; }
 .hero-disclaimer p { margin: 0; }
 .hero-disclaimer p:first-child { opacity: .78; }
 .button-primary { display: inline-flex; align-items: center; justify-content: center; gap: 9px; }

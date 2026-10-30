@@ -324,8 +324,8 @@ function Home() {
         </div>
       </section>
       <ListeningMoment />
-      <AboutHablar />
       <PurposeMission />
+      <AboutHablar />
       <section className="section emotions-section" id="feelings" aria-labelledby="feelings-heading">
         <div className="emotion-circle">
           <div className="emotion-center">

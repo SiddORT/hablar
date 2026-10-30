@@ -233,8 +233,8 @@ export function ClosingLine() {
 export default function LandingStory() {
   return (
     <>
-      <PurposeMission />
       <ListeningMoment />
+      <PurposeMission />
       <AboutHablar />
       <Philosophy />
       <SafetyPrivacy />

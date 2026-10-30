@@ -9,6 +9,7 @@
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:seo": "node --test tests/seo.test.mjs",
+    "test:loader": "node --test tests/site-loader.browser.test.mjs",
     "test:signup": "node --test tests/signup.browser.test.mjs"
   },
   "devDependencies": {

@@ -52,17 +52,6 @@ export function AboutHablar() {
             </p>
           </div>
         </div>
-        <figure className="ha-art hr-reveal">
-          <span className="ha-art-halo" aria-hidden="true" />
-          <img
-            src={`${import.meta.env.BASE_URL}brand/hablar-mascot-grid.png`}
-            alt="HABLAR mascot shown with six different expressions"
-            width={1024}
-            height={576}
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
       </div>
     </section>
   );

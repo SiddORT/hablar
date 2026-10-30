@@ -126,7 +126,19 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
     (await about.locator('.ha-message--third').textContent()).trim(),
     "Because the first step toward feeling better is knowing you're not alone in the journey.",
   );
-  assert.equal(await about.locator('.ha-art img').getAttribute('src'), '/brand/hablar-mascot-grid.png');
+  assert.equal(await about.locator('img, figure, .ha-art').count(), 0, 'About should be text-only');
+  assert.equal(await about.locator('.ha-message').count(), 3);
+  assert.deepEqual(
+    await about.locator('.ha-message').evaluateAll((messages) => messages.map((message) =>
+      getComputedStyle(message, '::before').content,
+    )),
+    ['none', 'none', 'none'],
+    'About messages should not have generated number markers',
+  );
+  const desktopAboutBounds = await about.locator('.ha-copy').boundingBox();
+  assert.ok(desktopAboutBounds);
+  assert.ok(desktopAboutBounds.width > 700 && desktopAboutBounds.width < 900);
+  assert.ok(desktopAboutBounds.x >= 0 && desktopAboutBounds.x + desktopAboutBounds.width <= 1280);
 
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
@@ -159,6 +171,36 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
       element.width > 0 && element.height > 0 && element.left >= 0
       && element.right <= viewportWidth && element.visible),
     `Listening Moment should remain visible and fit at ${width}px with reduced motion`);
+
+    const aboutLayout = await about.evaluate((element) => {
+      const copy = element.querySelector('.ha-copy');
+      const copyBounds = copy.getBoundingClientRect();
+      const messages = Array.from(element.querySelectorAll('.ha-message'), (message) => {
+        const bounds = message.getBoundingClientRect();
+        return {
+          left: bounds.left,
+          right: bounds.right,
+          width: bounds.width,
+          height: bounds.height,
+          visible: getComputedStyle(message).visibility !== 'hidden' && Number(getComputedStyle(message).opacity) > 0,
+        };
+      });
+      return {
+        viewportWidth: document.documentElement.clientWidth,
+        sectionScrollWidth: element.scrollWidth,
+        sectionClientWidth: element.clientWidth,
+        copyBounds: { left: copyBounds.left, right: copyBounds.right, width: copyBounds.width },
+        messages,
+      };
+    });
+    assert.ok(aboutLayout.sectionScrollWidth <= aboutLayout.sectionClientWidth, `About should not overflow at ${width}px`);
+    assert.ok(aboutLayout.copyBounds.width > 0 && aboutLayout.copyBounds.width < aboutLayout.viewportWidth);
+    assert.ok(aboutLayout.copyBounds.left >= 0 && aboutLayout.copyBounds.right <= aboutLayout.viewportWidth);
+    assert.equal(aboutLayout.messages.length, 3);
+    assert.ok(aboutLayout.messages.every((message) =>
+      message.width > 0 && message.height > 0 && message.left >= 0
+      && message.right <= aboutLayout.viewportWidth && message.visible),
+    `About copy should remain readable and fit at ${width}px`);
   }
 });
 

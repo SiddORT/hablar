@@ -3,7 +3,6 @@
   --ha-muted: var(--theme-muted, #686d68);
   --ha-rose: var(--theme-accent, #c54c72);
   --ha-paper: var(--theme-page, #fffaf3);
-  --ha-surface: var(--theme-surface, #fffdf9);
   --ha-line: var(--theme-border, #ead8c9);
   position: relative;
   isolation: isolate;
@@ -17,15 +16,14 @@
 }
 
 .ha-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
-  align-items: center;
-  gap: clamp(36px, 7vw, 92px);
-  width: min(1120px, calc(100% - 72px));
+  width: min(900px, calc(100% - 72px));
   margin: 0 auto;
 }
 
-.ha-copy { min-width: 0; }
+.ha-copy {
+  width: min(100%, 820px);
+  margin: 0 auto;
+}
 
 .ha-heading { margin-bottom: clamp(26px, 4vw, 42px); }
 
@@ -52,7 +50,7 @@
 }
 
 .ha-heading h2 {
-  max-width: 570px;
+  max-width: 680px;
   margin: 18px 0 0;
   color: var(--ha-ink);
   font: 700 clamp(40px, 5vw, 62px)/1.08 'Montserrat', sans-serif;
@@ -67,24 +65,12 @@
 }
 
 .ha-message {
-  position: relative;
   margin: 0;
-  padding: 21px 0 21px 34px;
+  padding: 21px 0;
   color: var(--ha-muted);
   font-size: clamp(16px, 1.45vw, 18px);
   line-height: 1.72;
   text-wrap: pretty;
-}
-
-.ha-message::before {
-  position: absolute;
-  left: 0;
-  top: 25px;
-  color: var(--ha-rose);
-  font-size: 10px;
-  line-height: 1;
-  font-weight: 800;
-  letter-spacing: .1em;
 }
 
 .ha-message--lead {
@@ -94,65 +80,21 @@
   letter-spacing: -.025em;
 }
 
-.ha-message--lead::before { content: '01'; top: 34px; }
 .ha-message--second { border-top: 1px solid var(--ha-line); }
-.ha-message--second::before { content: '02'; }
 .ha-message--third { border-top: 1px solid var(--ha-line); }
-.ha-message--third::before { content: '03'; }
-
-.ha-art {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-width: 0;
-  min-height: 320px;
-  margin: 0;
-  padding: clamp(18px, 3vw, 34px);
-  border: 1px solid color-mix(in srgb, var(--ha-line) 86%, transparent);
-  border-radius: clamp(24px, 3vw, 38px);
-  background:
-    linear-gradient(145deg, color-mix(in srgb, var(--ha-surface) 95%, #fff1e8), var(--ha-surface));
-  box-shadow: 0 24px 70px rgba(98, 64, 45, .09);
-}
-
-.ha-art-halo {
-  position: absolute;
-  z-index: -1;
-  inset: 12% 10%;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(255, 218, 157, .55), rgba(245, 208, 221, .58) 52%, rgba(191, 235, 219, .65));
-  filter: blur(2px);
-}
-
-.ha-art img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 18px;
-  object-fit: contain;
-}
 
 @media (max-width: 760px) {
   .hablar-about { padding: 58px 0 64px; }
-  .ha-shell {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 30px;
-    width: min(calc(100% - 40px), 560px);
-  }
+  .ha-shell { width: min(calc(100% - 40px), 620px); }
   .ha-heading { margin-bottom: 24px; }
   .ha-heading h2 { margin-top: 15px; font-size: clamp(36px, 9vw, 50px); }
-  .ha-message { padding: 18px 0 18px 32px; font-size: 16px; }
+  .ha-message { padding: 18px 0; font-size: 16px; }
   .ha-message--lead { padding-top: 22px; font-size: clamp(20px, 5vw, 24px); }
-  .ha-message::before { top: 22px; }
-  .ha-message--lead::before { top: 30px; }
-  .ha-art { min-height: 0; padding: 14px; border-radius: 26px; }
-  .ha-art img { border-radius: 16px; }
 }
 
 @media (max-width: 380px) {
   .ha-shell { width: calc(100% - 32px); }
   .ha-heading h2 { font-size: 35px; }
-  .ha-message { padding-left: 28px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -108,6 +108,7 @@
 .ha-art__halo,
 .ha-art__form,
 .ha-art__orbit,
+.ha-art__planet,
 .ha-art__spark {
   position: absolute;
   display: block;
@@ -169,34 +170,25 @@
 .ha-art__orbit--three { inset: 24% 6%; transform: rotate(8deg); }
 .ha-art__orbit--four { inset: 12% 24%; transform: rotate(-38deg); }
 
-/* Logo-inspired yellow, orange, pink, violet, blue, and turquoise.
-   Mask only the new outlines so the original artwork stays visible through them. */
-.ha-art__orbit--five,
-.ha-art__orbit--six {
-  border: 0;
-  padding: 1px;
-  background: conic-gradient(
-    from 20deg,
-    #ffc900, #ff7800, #f50070, #8700cc, #006bff, #00b9dc, #00c9a5, #ffc900
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
+/* Filled logo-color planets, kept in the open spaces between pastel forms. */
+.ha-art__planet {
+  z-index: 1;
+  aspect-ratio: 1;
+  border-radius: 50%;
 }
 
-.ha-art__orbit--five {
-  inset: 5% 12%;
-  transform: rotate(-16deg);
+.ha-art__planet--pink {
+  top: 53%;
+  left: 14%;
+  width: 19%;
+  background: #f50070;
 }
 
-.ha-art__orbit--six {
-  inset: 26% 3%;
-  transform: rotate(-32deg);
-  background: conic-gradient(
-    from 160deg,
-    #ffc900, #ff7800, #f50070, #8700cc, #006bff, #00b9dc, #00c9a5, #ffc900
-  );
+.ha-art__planet--blue {
+  top: 14%;
+  left: 48%;
+  width: 12%;
+  background: #00b9dc;
 }
 
 .ha-art__spark {

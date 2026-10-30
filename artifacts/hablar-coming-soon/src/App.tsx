@@ -622,7 +622,7 @@ function Router() {
           type="button"
           aria-label="Return to top"
           title="Return to top"
-          hidden={!showReturnToTop || !showContentOverlayControls}
+          hidden={!showReturnToTop}
           onClick={() => {
             const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
             if (!scrollport) return;

@@ -412,38 +412,71 @@ test('hero story and interaction commitment use the requested wording and accent
   );
 });
 
-test('return-to-top is hidden until scrolling and works by keyboard on landing and legal pages', async (t) => {
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+test('return-to-top stays visible when sticky controls are hidden and works by keyboard', async (t) => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 844 } });
   t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
 
-  for (const route of ['/', '/privacy']) {
-    await page.goto(`${appUrl}${route}`, { waitUntil: 'networkidle' });
-    const scrollport = page.locator('.app-scrollport');
-    const button = page.getByRole('button', { name: 'Return to top' });
-    await button.waitFor({ state: 'hidden' });
-    await scrollport.evaluate((element) => {
-      element.scrollTo({ top: Math.max(500, element.scrollHeight - element.clientHeight), behavior: 'instant' });
-    });
-    await button.waitFor({ state: 'visible' });
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const route of ['/', '/privacy']) {
+      await page.goto(`${appUrl}${route}`, { waitUntil: 'networkidle' });
+      const scrollport = page.locator('.app-scrollport');
+      const button = page.getByRole('button', { name: 'Return to top' });
+      await button.waitFor({ state: 'hidden' });
+      if (route === '/') {
+        await scrollport.evaluate((element) => {
+          const section = document.querySelector('.listening-moment');
+          const sectionTop = section.getBoundingClientRect().top - element.getBoundingClientRect().top;
+          element.scrollTo({
+            top: element.scrollTop + sectionTop - element.clientHeight * 0.25,
+            behavior: 'instant',
+          });
+        });
+        await page.waitForFunction(() =>
+          document.querySelector('.launch-sticky-dock')?.classList.contains('is-content-section-visible'),
+        );
+        assert.equal(
+          await page.locator('.instagram-sticky-cta').evaluate((element) => getComputedStyle(element).visibility),
+          'hidden',
+          'the sticky controls should be hidden over landing-page content',
+        );
+        await button.waitFor({ state: 'visible' });
+      } else {
+        await scrollport.evaluate((element) => {
+          element.scrollTo({ top: Math.max(500, element.scrollHeight - element.clientHeight), behavior: 'instant' });
+        });
+        await button.waitFor({ state: 'visible' });
+      }
 
-    const bounds = await page.evaluate(() => {
-      const buttonRect = document.querySelector('.return-top-button').getBoundingClientRect();
-      const dockRect = document.querySelector('.launch-sticky-dock').getBoundingClientRect();
-      return {
-        button: { left: buttonRect.left, right: buttonRect.right, top: buttonRect.top, bottom: buttonRect.bottom },
-        dock: { left: dockRect.left, right: dockRect.right, top: dockRect.top, bottom: dockRect.bottom },
-      };
-    });
-    const overlaps = bounds.button.left < bounds.dock.right
-      && bounds.button.right > bounds.dock.left
-      && bounds.button.top < bounds.dock.bottom
-      && bounds.button.bottom > bounds.dock.top;
-    assert.equal(overlaps, false, 'return-to-top should not overlap the sticky actions');
+      const bounds = await page.evaluate(() => {
+        const buttonRect = document.querySelector('.return-top-button').getBoundingClientRect();
+        const dockRect = document.querySelector('.launch-sticky-dock').getBoundingClientRect();
+        return {
+          button: { left: buttonRect.left, right: buttonRect.right, top: buttonRect.top, bottom: buttonRect.bottom },
+          dock: { left: dockRect.left, right: dockRect.right, top: dockRect.top, bottom: dockRect.bottom },
+        };
+      });
+      const overlaps = bounds.button.left < bounds.dock.right
+        && bounds.button.right > bounds.dock.left
+        && bounds.button.top < bounds.dock.bottom
+        && bounds.button.bottom > bounds.dock.top;
+      assert.equal(overlaps, false, `return-to-top should not overlap sticky actions at ${width}px`);
 
-    await button.focus();
-    await page.keyboard.press('Enter');
-    await page.waitForFunction(() => document.querySelector('.app-scrollport').scrollTop < 2);
-    assert.equal(await page.evaluate(() => document.activeElement.matches('.site-shell, #legal-main')), true);
+      await page.evaluate(() => {
+        const scrollport = document.querySelector('.app-scrollport');
+        const originalScrollTo = scrollport.scrollTo.bind(scrollport);
+        scrollport.scrollTo = (options) => {
+          window.lastReturnTopScrollBehavior = options.behavior;
+          originalScrollTo(options);
+        };
+      });
+      await button.focus();
+      await page.keyboard.press('Enter');
+      await page.waitForFunction(() => document.querySelector('.app-scrollport').scrollTop < 2);
+      assert.equal(await page.evaluate(() => window.lastReturnTopScrollBehavior), 'instant');
+      assert.equal(await page.evaluate(() => document.activeElement.matches('.site-shell, #legal-main')), true);
+    }
   }
 });
 

@@ -72,6 +72,66 @@ function usePageMotion() {
   }, []);
 }
 
+const LOGO_SPECTRUM = [
+  { accent: '#a83237', tint: '#fbe6e5' },
+  { accent: '#a9255a', tint: '#f9e7ef' },
+  { accent: '#99400f', tint: '#fbe9dc' },
+  { accent: '#775500', tint: '#fcf4d9' },
+  { accent: '#176644', tint: '#e5f3eb' },
+  { accent: '#24558c', tint: '#e6effa' },
+  { accent: '#633c81', tint: '#f0eaf7' },
+] as const;
+
+function interpolateHex(start: string, end: string, amount: number) {
+  const channels = [1, 3, 5].map((offset) => {
+    const first = Number.parseInt(start.slice(offset, offset + 2), 16);
+    const second = Number.parseInt(end.slice(offset, offset + 2), 16);
+    return Math.round(first + (second - first) * amount).toString(16).padStart(2, '0');
+  });
+  return `#${channels.join('')}`;
+}
+
+function useLogoSpectrum() {
+  useEffect(() => {
+    const scrollport = document.querySelector<HTMLElement>('.app-scrollport');
+    const shell = document.querySelector<HTMLElement>('.site-shell');
+    if (!scrollport || !shell) return;
+
+    shell.classList.add('spectrum-active');
+    let frame = 0;
+    const updateSpectrum = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const maxScroll = Math.max(0, scrollport.scrollHeight - scrollport.clientHeight);
+        const progress = maxScroll === 0 ? 0 : Math.min(1, Math.max(0, scrollport.scrollTop / maxScroll));
+        const position = progress * (LOGO_SPECTRUM.length - 1);
+        const startIndex = Math.min(Math.floor(position), LOGO_SPECTRUM.length - 2);
+        const amount = position - startIndex;
+        const start = LOGO_SPECTRUM[startIndex];
+        const end = LOGO_SPECTRUM[startIndex + 1];
+        shell.style.setProperty('--spectrum-accent', interpolateHex(start.accent, end.accent, amount));
+        shell.style.setProperty('--spectrum-tint', interpolateHex(start.tint, end.tint, amount));
+      });
+    };
+
+    updateSpectrum();
+    scrollport.addEventListener('scroll', updateSpectrum, { passive: true });
+    window.addEventListener('resize', updateSpectrum);
+    const resizeObserver = new ResizeObserver(updateSpectrum);
+    resizeObserver.observe(shell);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      scrollport.removeEventListener('scroll', updateSpectrum);
+      window.removeEventListener('resize', updateSpectrum);
+      resizeObserver.disconnect();
+      shell.classList.remove('spectrum-active');
+      shell.style.removeProperty('--spectrum-accent');
+      shell.style.removeProperty('--spectrum-tint');
+    };
+  }, []);
+}
+
 function Header() {
   return (
     <header className="topbar">
@@ -244,6 +304,7 @@ function Signup() {
 
 function Home() {
   usePageMotion();
+  useLogoSpectrum();
   useEffect(() => {
     const targetId = window.location.hash.slice(1);
     if (!targetId) return;

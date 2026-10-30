@@ -1104,3 +1104,47 @@ html[data-theme="yellow-orange"] {
 @media (max-width: 400px) {
   .hero-topic-item { padding: 6px 5px; font-size: 10px; }
 }
+
+/* The landing-only spectrum shifts as visitors move through the page.
+   Content and controls continue to use the selected theme's contrast tokens. */
+.site-shell.spectrum-active .hero {
+  background: color-mix(in srgb, var(--theme-surface-warm) 88%, var(--spectrum-tint));
+}
+.site-shell.spectrum-active .hero h1 span,
+.site-shell.spectrum-active .section-kicker,
+.site-shell.spectrum-active .ha-eyebrow,
+.site-shell.spectrum-active .ha-emphasis,
+.site-shell.spectrum-active .ls-closing span {
+  color: var(--spectrum-accent);
+}
+.site-shell.spectrum-active .listening-moment {
+  --lm-accent: var(--spectrum-accent);
+  --lm-accent-soft: var(--spectrum-tint);
+  --lm-paper: color-mix(in srgb, var(--theme-page) 91%, var(--spectrum-tint));
+  background:
+    radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--spectrum-tint) 78%, transparent), transparent 24rem),
+    radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--theme-secondary-soft) 72%, transparent), transparent 26rem),
+    var(--lm-paper);
+}
+.site-shell.spectrum-active .ls-wrap,
+.site-shell.spectrum-active .emotions-section,
+.site-shell.spectrum-active .boundary,
+.site-shell.spectrum-active .ls-closing {
+  background-color: color-mix(in srgb, var(--theme-page) 92%, var(--spectrum-tint));
+}
+.site-shell.spectrum-active .hablar-about {
+  --ha-rose: var(--spectrum-accent);
+  --ha-paper: color-mix(in srgb, var(--theme-page) 91%, var(--spectrum-tint));
+  background:
+    radial-gradient(ellipse at 12% 12%, color-mix(in srgb, var(--spectrum-tint) 72%, transparent), transparent 32rem),
+    var(--ha-paper);
+}
+.site-shell.spectrum-active .signup-panel {
+  background: color-mix(in srgb, var(--theme-surface-warm) 88%, var(--spectrum-tint));
+}
+.site-shell.spectrum-active .footer {
+  background: color-mix(in srgb, var(--theme-footer) 88%, var(--spectrum-tint));
+}
+.site-shell.spectrum-active .ls-note {
+  border-left-color: var(--spectrum-accent);
+}

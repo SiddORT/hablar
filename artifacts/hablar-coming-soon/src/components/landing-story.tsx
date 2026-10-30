@@ -1,6 +1,6 @@
 import { useRef, useState, type PointerEvent } from 'react';
 import { Link } from 'wouter';
-import { Ear, EyeOff, MessageCircleMore, ShieldCheck, Phone, LockKeyhole, type LucideIcon } from 'lucide-react';
+import { Ear, MessageCircleMore, ShieldCheck, Phone, LockKeyhole, type LucideIcon } from 'lucide-react';
 import './landing-story.css';
 import './landing-about-refresh.css';
 import './purpose-mission-flip.css';
@@ -10,7 +10,6 @@ export function ListeningMoment() {
     <section className="listening-moment" id="listening-moment" aria-labelledby="listening-moment-heading">
       <div className="listening-moment__inner">
         <header className="listening-moment__heading hr-reveal">
-          <span className="listening-moment__eyebrow">A spaceremov to be heard</span>
           <h2 id="listening-moment-heading">A moment to be <span>heard</span></h2>
         </header>
         <p className="listening-moment__intro hr-reveal">
@@ -18,20 +17,6 @@ export function ListeningMoment() {
           <span>Maybe you don’t need answers.</span>
           <span>Maybe you just need someone to listen.</span>
         </p>
-        <div className="listening-moment__messages">
-          <article className="listening-moment__message-card hr-reveal">
-            <span className="listening-moment__message-icon" aria-hidden="true">
-              <EyeOff size={30} strokeWidth={1.8} />
-            </span>
-            <p>Not everything you carry is visible</p>
-          </article>
-          <article className="listening-moment__message-card listening-moment__message-card--secondary hr-reveal">
-            <span className="listening-moment__message-icon" aria-hidden="true">
-              <Ear size={30} strokeWidth={1.8} />
-            </span>
-            <p>Sometimes you just need someone to hear you out.</p>
-          </article>
-        </div>
         <p className="listening-moment__signoff hr-reveal">Come as you are. Speak as you feel.</p>
         <ul className="listening-moment__capsules hr-reveal" aria-label="What to expect from a conversation">
           <li>No labels</li>

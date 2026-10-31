@@ -64,7 +64,7 @@ export function AboutHablar() {
               HABLAR offers a safe and anonymous space for you to speak out and express yourself freely.
             </p>
             <p className="ha-message ha-message--third hr-reveal">
-              Because the first step toward feeling better is knowing you're not alone in the journey.
+              Because the first step towards feeling better is knowing you're not alone in the journey.
             </p>
           </div>
         </div>

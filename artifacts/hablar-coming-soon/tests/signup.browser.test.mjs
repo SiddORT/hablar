@@ -293,7 +293,7 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   );
   assert.equal(
     (await about.locator('.ha-message--third').textContent()).trim(),
-    "Because the first step toward feeling better is knowing you're not alone in the journey.",
+    "Because the first step towards feeling better is knowing you're not alone in the journey.",
   );
   const illustration = about.locator('.ha-art');
   assert.equal(await illustration.count(), 1, 'About should include its abstract conversation illustration');

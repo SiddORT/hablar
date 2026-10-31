@@ -1116,7 +1116,7 @@ test('landing page has no Terms page links and keeps the agreement required inli
   assert.equal(await agreement.getAttribute('required'), '');
   assert.equal(
     (await page.locator('label').filter({ has: agreement }).innerText()).replace(/\s+/g, ' ').trim(),
-    'I agree that this form is only a request for launch update; HABLAR’s listening service is not yet available, and no launch date is promised.',
+    'I agree that this form is only a request for one launch update; HABLAR’s listening services are not yet available, and no launch date is promised.',
   );
   assert.equal(await page.locator('label[for="email"]').innerText(), 'Email address');
   assert.equal(await page.locator('label[for="phone"]').innerText(), 'Phone number');

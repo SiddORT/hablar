@@ -161,7 +161,7 @@ function Header() {
         <a className="nav-plain" href="#our-services" data-testid="link-services">Our services</a>
         <a className="nav-plain" href="#purpose">Our mission</a>
         <ThemeSelector />
-        <a className="nav-cta" href="#launch-note">Interested? We talk</a>
+        <a className="nav-cta" href="#launch-note">Interested? Let's talk</a>
       </nav>
     </header>
   );
@@ -577,10 +577,10 @@ function Router() {
           <a
             className="launch-sticky-cta"
             href={`${import.meta.env.BASE_URL}#launch-note`}
-            aria-label="Interested? We talk"
+            aria-label="Interested? Let's talk"
             tabIndex={dockState.launchVisible && dockState.visible ? 0 : -1}
           >
-            Interested? We talk
+            Interested? Let's talk
             <ArrowUpRight size={17} aria-hidden="true" />
           </a>
         </div>

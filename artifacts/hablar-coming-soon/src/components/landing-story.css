@@ -142,6 +142,11 @@
   overflow-wrap: break-word;
   text-wrap: balance;
 }
+/* Each feelings line uses its own text-width rainbow without changing the heading layout. */
+.feelings-heading__rainbow {
+  display: inline-block;
+  color: var(--theme-text, #454545);
+}
 /* Wordmark hue order, deepened so the small text stays legible on each theme. */
 .listening-moment__rainbow {
   justify-self: center;
@@ -150,7 +155,8 @@
   color: var(--lm-ink);
 }
 @supports ((background-clip: text) or (-webkit-background-clip: text)) {
-  .listening-moment__rainbow {
+  .listening-moment__rainbow,
+  .feelings-heading__rainbow {
     background-image: linear-gradient(
       to right,
       #bc175b 0%,
@@ -168,7 +174,8 @@
   }
 }
 @media (forced-colors: active) {
-  .listening-moment__rainbow {
+  .listening-moment__rainbow,
+  .feelings-heading__rainbow {
     background-image: none;
     color: CanvasText;
     -webkit-text-fill-color: CanvasText;

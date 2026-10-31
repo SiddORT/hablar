@@ -421,7 +421,7 @@ function Home() {
           <div className="emotion-center">
             <div className="emotion-center-copy scroll-reveal">
               <span className="section-kicker">Every feeling belongs</span>
-              <h2 id="feelings-heading">Your Space<br />Your Story<br />Your Time</h2>
+              <h2 id="feelings-heading"><span className="feelings-heading__rainbow">Your Space</span><br /><span className="feelings-heading__rainbow">Your Story</span><br /><span className="feelings-heading__rainbow">Your Time</span></h2>
             </div>
           </div>
         </div>

@@ -50,6 +50,78 @@ after(async () => {
   await viteServer?.close();
 });
 
+test('feelings heading shares the listening rainbow with readable fallbacks and unchanged layout', async (t) => {
+  const page = await browser.newPage();
+  t.after(() => page.close());
+  await page.goto(`${appUrl}/#feelings`, { waitUntil: 'domcontentloaded' });
+  await page.getByTestId('site-loader').waitFor({ state: 'hidden' });
+  await page.evaluate(() => document.fonts.ready);
+  const heading = page.locator('#feelings-heading');
+  assert.equal(await heading.evaluate((element) => element.tagName), 'H2');
+  assert.equal(await heading.locator('br').count(), 2);
+  assert.deepEqual(await heading.locator('span').allTextContents(), ['Your Space', 'Your Story', 'Your Time']);
+  assert.equal(await heading.evaluate((element) => element.parentElement.classList.contains('scroll-reveal')), true);
+
+  for (const width of [320, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const theme of ['original', 'blue-green', 'soft-lavender', 'yellow-orange']) {
+      await page.selectOption('#hablar-theme', theme, { force: true });
+      await page.locator('#feelings').scrollIntoViewIfNeeded();
+      await page.waitForTimeout(750);
+      const result = await heading.evaluate((element) => {
+        const lines = [...element.querySelectorAll('span')];
+        const styles = lines.map((line) => getComputedStyle(line));
+        const expected = getComputedStyle(document.querySelector('.listening-moment__rainbow')).backgroundImage;
+        const bounds = () => {
+          const { x, y, width, height } = element.getBoundingClientRect();
+          return { x, y, width, height };
+        };
+        const before = bounds();
+        const gradients = styles.map((style) => style.backgroundImage);
+        const boxes = lines.map((line) => line.getBoundingClientRect());
+        lines.forEach((line) => line.removeAttribute('class'));
+        const after = bounds();
+        lines.forEach((line) => line.className = 'feelings-heading__rainbow');
+        return {
+          gradients, expected, before, after,
+          fits: boxes.every((box) => box.left >= 0 && box.right <= innerWidth),
+          stacked: boxes[0].bottom <= boxes[1].top && boxes[1].bottom <= boxes[2].top,
+        };
+      });
+      assert.ok(result.expected.includes('linear-gradient'));
+      assert.deepEqual(result.gradients, Array(3).fill(result.expected));
+      assert.deepEqual(result.before, result.after, `${width}px ${theme}: layout unchanged`);
+      assert.ok(result.fits && result.stacked, `${width}px ${theme}: three visible lines`);
+
+      await page.emulateMedia({ forcedColors: 'active' });
+      assert.ok(await heading.locator('span').evaluateAll((lines) => lines.every((line) => {
+        const style = getComputedStyle(line);
+        return style.backgroundImage === 'none' && style.webkitTextFillColor !== 'rgba(0, 0, 0, 0)';
+      })));
+      await page.emulateMedia({ forcedColors: 'none' });
+    }
+  }
+  // Disable the feature-query rule to simulate a browser without text clipping.
+  await page.evaluate(() => {
+    const visit = (container) => {
+      for (let index = container.cssRules.length - 1; index >= 0; index--) {
+        const rule = container.cssRules[index];
+        if (rule instanceof CSSSupportsRule && rule.conditionText.includes('background-clip: text')) {
+          container.deleteRule(index);
+        } else if (rule.cssRules) visit(rule);
+      }
+    };
+    for (const sheet of document.styleSheets) {
+      try { visit(sheet); } catch { /* Cross-origin font stylesheet. */ }
+    }
+  });
+  assert.ok(await heading.locator('span').evaluateAll((lines) => lines.every((line) => {
+    const style = getComputedStyle(line);
+    return style.backgroundImage === 'none' && style.color !== 'rgba(0, 0, 0, 0)'
+      && style.webkitTextFillColor !== 'rgba(0, 0, 0, 0)';
+  })));
+});
+
 test('feelings cards stay enlarged, centered and clear throughout their float on every layout', async (t) => {
   const page = await browser.newPage();
   t.after(() => page.close());

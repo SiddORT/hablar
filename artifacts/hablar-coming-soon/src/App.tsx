@@ -183,7 +183,7 @@ function Footer({ showClosingLine = false }: { showClosingLine?: boolean }) {
         </div>
         <div className="footer-legal">
           <nav className="footer-links" aria-label="Footer navigation">
-            <Link href="/privacy">Privacy Notice</Link>
+            <Link href="/privacy">Privacy Policy</Link>
           </nav>
           <p className="footer-copyright">Copyright © 2026 HABLAR</p>
         </div>

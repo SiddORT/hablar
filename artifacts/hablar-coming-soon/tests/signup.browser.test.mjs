@@ -95,7 +95,8 @@ test('Listening Moment removes only its heading and signoff without leaving layo
   assert.deepEqual(await listening.locator('.listening-moment__inner > *').evaluateAll(
     (elements) => elements.map((element) => element.tagName),
   ), ['P', 'UL']);
-  assert.equal(await page.locator('#about-heading').innerText(), 'A moment to be heard');
+  assert.equal((await page.locator('#about-heading').textContent()).trim(), 'About HABLAR');
+  assert.equal(await page.locator('#about-heading').evaluate((heading) => heading.tagName), 'H2');
   assert.equal(await page.locator('.footer-closing').innerText(), 'HABLAR — Come as you are. Speak as you feel.');
 
   for (const width of [1280, 390, 320]) {
@@ -282,7 +283,11 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
 
   const aboutCopy = await about.innerText();
   assert.match(aboutCopy, /About HABLAR/i);
-  assert.equal((await about.locator('#about-heading').textContent()).trim(), 'A moment to be heard');
+  assert.equal((await about.locator('#about-heading').textContent()).trim(), 'About HABLAR');
+  assert.equal(await about.locator('#about-heading').evaluate((heading) => heading.tagName), 'H2');
+  assert.equal(await about.getAttribute('aria-labelledby'), 'about-heading');
+  assert.equal(await about.locator('#about-heading .ha-spark').getAttribute('aria-hidden'), 'true');
+  assert.doesNotMatch(aboutCopy, /A moment to be heard/);
   assert.equal(
     (await about.locator('.ha-message--lead').textContent()).trim(),
     'In a world more connected than ever, millions of people still feel unheard. In such times, all you need is to be heard.',
@@ -297,9 +302,10 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   );
   const illustration = about.locator('.ha-art');
   assert.equal(await illustration.count(), 1, 'About should include its abstract conversation illustration');
-  assert.equal(await illustration.getAttribute('aria-hidden'), 'true', 'the illustration should be decorative');
-  assert.equal(await illustration.locator('svg.ha-art__bubble').count(), 1, 'the illustration should include an outlined chat bubble');
-  assert.equal(await illustration.locator('.ha-art__form').count(), 3, 'the chat bubble should sit among pastel abstract forms');
+  assert.equal(await about.locator('.ha-art-frame').getAttribute('aria-hidden'), 'true', 'the illustration should be decorative');
+  assert.equal(await illustration.locator('.ha-art__orbit').count(), 4, 'the illustration should retain its orbital outlines');
+  assert.equal(await illustration.locator('.ha-art__planet').count(), 2, 'the illustration should retain its filled planets');
+  assert.equal(await illustration.locator('.ha-art__form').count(), 3, 'the illustration should retain its pastel abstract forms');
   assert.equal(
     (await about.locator('.ha-message--lead').innerText()).replace(/\s+/g, ' ').trim(),
     'In a world more connected than ever, millions of people still feel unheard. In such times, all you need is to be heard.',

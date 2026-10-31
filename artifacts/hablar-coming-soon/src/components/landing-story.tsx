@@ -53,8 +53,7 @@ export function AboutHablar() {
       <div className="ha-shell">
         <div className="ha-copy">
           <header className="ha-heading hr-reveal">
-            <span className="ha-eyebrow"><span className="ha-spark" aria-hidden="true" /> About HABLAR</span>
-            <h2 id="about-heading">A moment to be heard</h2>
+            <h2 className="ha-eyebrow" id="about-heading"><span className="ha-spark" aria-hidden="true" /> About HABLAR</h2>
           </header>
           <div className="ha-messages">
             <p className="ha-message ha-message--lead hr-reveal">

@@ -134,6 +134,14 @@
   color: color-mix(in srgb, var(--lm-ink) 72%, var(--lm-surface));
   font: 400 clamp(15px, 1.5vw, 17px)/1.5 'DM Sans', sans-serif;
 }
+.listening-moment__tagline {
+  max-width: 680px;
+  margin: 0 auto;
+  color: var(--lm-ink);
+  font: 400 clamp(15px, 1.5vw, 17px)/1.5 'DM Sans', sans-serif;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
 /* Wordmark hue order, deepened so the small text stays legible on each theme. */
 .listening-moment__rainbow {
   justify-self: center;

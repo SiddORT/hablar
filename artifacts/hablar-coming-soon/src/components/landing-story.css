@@ -138,7 +138,7 @@
   max-width: 680px;
   margin: 0 auto;
   color: var(--lm-ink);
-  font: 400 clamp(15px, 1.5vw, 17px)/1.5 'DM Sans', sans-serif;
+  font: 700 clamp(18px, 2vw, 22px)/1.5 'DM Sans', sans-serif;
   overflow-wrap: break-word;
   text-wrap: balance;
 }

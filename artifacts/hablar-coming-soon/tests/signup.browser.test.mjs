@@ -1106,7 +1106,7 @@ test('landing page has no Terms page links and keeps the agreement required inli
   assert.equal(await consent.getAttribute('required'), '');
   assert.equal(
     await consentLabel.innerText(),
-    'I consent to HABLAR processing my contact details to send signup confirmation by email when I provide an email address, send one launch update, and notify the HABLAR administrator about my signup, as described in the Privacy Notice Policy.',
+    'I consent to HABLAR processing my contact details to send signup confirmation by email when I provide an email address, send launch update, and notify the HABLAR administrator about my signup, as described in the Privacy Notice Policy.',
   );
   const privacyLink = consentLabel.getByRole('link', { name: 'Privacy Notice Policy', exact: true });
   assert.equal(await privacyLink.getAttribute('href'), '/privacy');
@@ -1116,7 +1116,7 @@ test('landing page has no Terms page links and keeps the agreement required inli
   assert.equal(await agreement.getAttribute('required'), '');
   assert.equal(
     (await page.locator('label').filter({ has: agreement }).innerText()).replace(/\s+/g, ' ').trim(),
-    'I agree that this form is only a request for one launch update; HABLAR’s listening services are not yet available, and no launch date is promised.',
+    'I agree that this form is only a request for launch update; HABLAR’s listening services are not yet available, and no launch date is promised.',
   );
   assert.equal(await page.locator('label[for="email"]').innerText(), 'Email address');
   assert.equal(await page.locator('label[for="phone"]').innerText(), 'Phone number');

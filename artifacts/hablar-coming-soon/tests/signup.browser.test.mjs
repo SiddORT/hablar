@@ -70,6 +70,62 @@ async function openSignup(response = {
   return { page, form, requests };
 }
 
+test('Listening Moment removes only its heading and signoff without leaving layout gaps', async (t) => {
+  const page = await browser.newPage();
+  t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(appUrl, { waitUntil: 'networkidle' });
+  await page.evaluate(() => document.fonts.ready);
+
+  const listening = page.locator('#listening-moment').and(
+    page.getByRole('region', { name: 'A moment to be heard', exact: true }),
+  );
+  assert.equal(await listening.getAttribute('id'), 'listening-moment');
+  assert.equal(await listening.getAttribute('aria-labelledby'), null);
+  assert.equal(await listening.locator('header, h2, #listening-moment-heading, .listening-moment__signoff').count(), 0);
+  assert.doesNotMatch(await listening.innerText(), /A moment to be heard|Come as you are|Speak as you feel/i);
+  assert.deepEqual(await listening.locator('.listening-moment__intro > span').allTextContents(), [
+    'Maybe you don’t need advice.',
+    'Maybe you don’t need answers.',
+    'Maybe you just need someone to listen.',
+  ]);
+  assert.deepEqual(await listening.locator('.listening-moment__capsules li').allTextContents(), [
+    'No labels', 'No assumptions', 'No judgment', 'Just real conversations',
+  ]);
+  assert.deepEqual(await listening.locator('.listening-moment__inner > *').evaluateAll(
+    (elements) => elements.map((element) => element.tagName),
+  ), ['P', 'UL']);
+  assert.equal(await page.locator('#about-heading').innerText(), 'A moment to be heard');
+  assert.equal(await page.locator('.footer-closing').innerText(), 'HABLAR — Come as you are. Speak as you feel.');
+
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await listening.scrollIntoViewIfNeeded();
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    const layout = await listening.evaluate((section) => {
+      const inner = section.querySelector('.listening-moment__inner');
+      const intro = inner.firstElementChild.getBoundingClientRect();
+      const capsules = inner.lastElementChild.getBoundingClientRect();
+      const bounds = inner.getBoundingClientRect();
+      return {
+        leadingGap: intro.top - bounds.top,
+        trailingGap: bounds.bottom - capsules.bottom,
+        contentGap: capsules.top - intro.bottom,
+        fits: section.scrollWidth <= section.clientWidth,
+        childrenFit: Array.from(inner.querySelectorAll('.listening-moment__intro > span, li')).every((child) => {
+          const rect = child.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.right <= window.innerWidth;
+        }),
+      };
+    });
+    assert.ok(Math.abs(layout.leadingGap) < 1 && Math.abs(layout.trailingGap) < 1,
+      `${width}px: no space reserved for removed elements: ${JSON.stringify(layout)}`);
+    assert.ok(layout.contentGap >= 18 && layout.contentGap <= 44,
+      `${width}px: introduction and capsules retain natural spacing: ${JSON.stringify(layout)}`);
+    assert.ok(layout.fits && layout.childrenFit, `${width}px: remaining content fits`);
+  }
+});
+
 test('Listening Moment and About HABLAR remain separate, ordered, and readable', async (t) => {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   t.after(() => page.close());
@@ -79,7 +135,7 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   const hero = page.locator('.hero');
   const listening = page.locator('#listening-moment');
   const about = page.locator('#about');
-  await listening.getByRole('heading', { name: 'A moment to be heard' }).waitFor();
+  assert.equal(await listening.getByRole('heading').count(), 0);
   assert.equal(await hero.evaluate((element) => element.nextElementSibling?.id), 'listening-moment');
   const purpose = page.locator('#purpose');
   assert.equal(await listening.evaluate((element) => element.nextElementSibling?.id), 'our-services');
@@ -88,11 +144,12 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   assert.equal(await page.locator('[data-testid="link-about"]').getAttribute('href'), '#about');
 
   const listeningLines = [
-    'Not everything you carry is visible',
-    'Sometimes you just need someone to hear you out.',
+    'Maybe you don’t need advice.',
+    'Maybe you don’t need answers.',
+    'Maybe you just need someone to listen.',
   ];
   assert.deepEqual(
-    await listening.locator('.listening-moment__message-card p').allTextContents(),
+    await listening.locator('.listening-moment__intro > span').allTextContents(),
     listeningLines,
   );
   assert.deepEqual(await listening.locator('.listening-moment__capsules li').allTextContents(), [
@@ -102,15 +159,10 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
     'Just real conversations',
   ]);
   const listeningSequence = await listening.locator(
-    '.listening-moment__heading, .listening-moment__message-card, .listening-moment__capsules, .listening-moment__signoff',
-  ).evaluateAll((elements) => elements.map((element) => {
-    if (element.classList.contains('listening-moment__heading')) return 'heading';
-    if (element.classList.contains('listening-moment__message-card')) return 'message-card';
-    if (element.classList.contains('listening-moment__capsules')) return 'capsules';
-    return 'signoff';
-  }));
+    '.listening-moment__inner > *',
+  ).evaluateAll((elements) => elements.map((element) => element.tagName));
   assert.deepEqual(listeningSequence, [
-    'heading', 'message-card', 'message-card', 'signoff', 'capsules',
+    'P', 'UL',
   ]);
   const listeningText = await listening.innerText();
   assert.doesNotMatch(listeningText, /coming soon|we are open|available now/i);
@@ -184,9 +236,9 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
     }, theme);
     for (const width of [1280, 390, 320]) {
       await page.setViewportSize({ width, height: 844 });
-      const { viewportWidth, elements, cards, sectionScrollWidth, sectionClientWidth } = await listening.evaluate((element) => {
+      const { viewportWidth, elements, sectionScrollWidth, sectionClientWidth } = await listening.evaluate((element) => {
         const measured = Array.from(element.querySelectorAll(
-          '.listening-moment__heading, .listening-moment__message-card, .listening-moment__capsules li, .listening-moment__signoff',
+          '.listening-moment__intro > span, .listening-moment__capsules li',
         ), (child) => {
           const rect = child.getBoundingClientRect();
           return {
@@ -197,81 +249,19 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
             visible: getComputedStyle(child).visibility !== 'hidden' && Number(getComputedStyle(child).opacity) > 0,
           };
         });
-        const cardBounds = Array.from(element.querySelectorAll('.listening-moment__message-card'), (card) => {
-          const rect = card.getBoundingClientRect();
-          const style = getComputedStyle(card);
-          const parseColor = (value) => {
-            const srgb = value.match(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
-            if (srgb) return srgb.slice(1).map((channel) => Number(channel) * 255);
-            const oklab = value.match(/oklab\(\s*([-.\d]+)\s+([-.\d]+)\s+([-.\d]+)/);
-            if (oklab) {
-              const [lightness, axisA, axisB] = oklab.slice(1).map(Number);
-              const lRoot = lightness + 0.3963377774 * axisA + 0.2158037573 * axisB;
-              const mRoot = lightness - 0.1055613458 * axisA - 0.0638541728 * axisB;
-              const sRoot = lightness - 0.0894841775 * axisA - 1.291485548 * axisB;
-              const l = lRoot ** 3;
-              const m = mRoot ** 3;
-              const s = sRoot ** 3;
-              const linear = [
-                4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-                -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-                -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
-              ];
-              return linear.map((channel) => {
-                const encoded = channel <= 0.0031308
-                  ? 12.92 * channel
-                  : 1.055 * Math.max(0, channel) ** (1 / 2.4) - 0.055;
-                return Math.min(255, Math.max(0, encoded * 255));
-              });
-            }
-            return value.match(/[\d.]+/g).slice(0, 3).map(Number);
-          };
-          const channels = parseColor(style.color);
-          const background = parseColor(style.backgroundColor);
-          const luminance = ([red, green, blue]) => {
-            const linear = [red, green, blue].map((channel) => {
-              const normalized = channel / 255;
-              return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
-            });
-            return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
-          };
-          const textLuminance = luminance(channels);
-          const backgroundLuminance = luminance(background);
-          return {
-            left: rect.left,
-            right: rect.right,
-            top: rect.top,
-            bottom: rect.bottom,
-            backgroundColor: style.backgroundColor,
-            contrast: (Math.max(textLuminance, backgroundLuminance) + 0.05)
-              / (Math.min(textLuminance, backgroundLuminance) + 0.05),
-          };
-        });
         return {
           viewportWidth: document.documentElement.clientWidth,
           elements: measured,
-          cards: cardBounds,
           sectionScrollWidth: element.scrollWidth,
           sectionClientWidth: element.clientWidth,
         };
       });
-      assert.equal(elements.length, 8);
-      assert.equal(cards.length, 2);
+      assert.equal(elements.length, 7);
       assert.ok(sectionScrollWidth <= sectionClientWidth, `Listening Moment should not overflow at ${width}px`);
       assert.ok(elements.every((element) =>
         element.width > 0 && element.height > 0 && element.left >= 0
         && element.right <= viewportWidth && element.visible),
       `Listening Moment should remain visible and fit at ${width}px with reduced motion`);
-      assert.notEqual(cards[0].backgroundColor, cards[1].backgroundColor, `cards should be distinct in ${theme ?? 'default'} theme`);
-      assert.ok(
-        cards.every((card) => card.contrast >= 4.5),
-        `card text should remain legible in ${theme ?? 'default'} theme: ${JSON.stringify(cards)}`,
-      );
-      if (width <= 760) {
-        assert.ok(cards[0].bottom <= cards[1].top, `message cards should stack without overlap at ${width}px`);
-      } else {
-        assert.ok(cards[0].right <= cards[1].left, `message cards should sit side by side without overlap at ${width}px`);
-      }
     }
   }
 

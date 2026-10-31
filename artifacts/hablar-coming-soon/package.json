@@ -10,7 +10,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:seo": "node --test tests/seo.test.mjs",
     "test:loader": "node --test tests/site-loader.browser.test.mjs",
-    "test:signup": "node --test tests/signup.browser.test.mjs"
+    "test:signup": "node --test tests/signup.browser.test.mjs",
+    "test:listening-removal": "node --test --test-name-pattern='Listening Moment removes only' tests/signup.browser.test.mjs"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",

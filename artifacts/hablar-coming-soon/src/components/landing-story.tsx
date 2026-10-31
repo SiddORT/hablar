@@ -7,17 +7,13 @@ import './purpose-mission-flip.css';
 
 export function ListeningMoment() {
   return (
-    <section className="listening-moment" id="listening-moment" aria-labelledby="listening-moment-heading">
+    <section className="listening-moment" id="listening-moment" aria-label="A moment to be heard">
       <div className="listening-moment__inner">
-        <header className="listening-moment__heading hr-reveal">
-          <h2 id="listening-moment-heading">A moment to be <span>heard</span></h2>
-        </header>
         <p className="listening-moment__intro hr-reveal">
           <span className="listening-moment__rainbow">Maybe you don’t need advice.</span>
           <span className="listening-moment__rainbow">Maybe you don’t need answers.</span>
           <span className="listening-moment__rainbow">Maybe you just need someone to listen.</span>
         </p>
-        <p className="listening-moment__signoff hr-reveal">Come as you are Speak as you feel</p>
         <ul className="listening-moment__capsules hr-reveal" aria-label="What to expect from a conversation">
           <li>No labels</li>
           <li>No assumptions</li>

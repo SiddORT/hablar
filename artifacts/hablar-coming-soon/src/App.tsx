@@ -350,7 +350,7 @@ function Home() {
             <h1 className="hero-reveal">Your safe space <span>to express</span></h1>
             <p className="hero-lede hero-reveal">Because every story deserves a space, every person deserves to be heard, and sometimes, one heartfelt conversation can make a difference.</p>
             <div className="hero-details hero-reveal">
-              <p className="hero-commitment-highlight hero-first-interaction">Your First Interaction is on us.</p>
+              <p className="hero-commitment-highlight hero-first-interaction">Your first interaction is on us.</p>
               <div className="hero-actions">
                 <a className="button-primary" href="#launch-note" data-testid="link-hero-preregister">
                   Pre-register

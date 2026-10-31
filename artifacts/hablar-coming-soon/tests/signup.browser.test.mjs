@@ -97,7 +97,7 @@ test('Listening Moment removes only its heading and signoff without leaving layo
   ), ['P', 'UL']);
   assert.equal((await page.locator('#about-heading').textContent()).trim(), 'About HABLAR');
   assert.equal(await page.locator('#about-heading').evaluate((heading) => heading.tagName), 'H2');
-  assert.equal(await page.locator('.footer-closing').innerText(), 'HABLAR — Come as you are. Speak as you feel.');
+  assert.equal(await page.locator('.footer-closing').innerText(), 'HABLAR — Come as you are, Speak as you feel');
 
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
@@ -277,7 +277,7 @@ test('Listening Moment and About HABLAR remain separate, ordered, and readable',
   const listeningText = await listening.innerText();
   assert.doesNotMatch(listeningText, /coming soon|we are open|available now/i);
   assert.equal(await page.locator('.ls-closing').count(), 0);
-  assert.match(await page.locator('.footer-brand > .brand-logo--footer + .footer-closing').innerText(), /HABLAR — Come as you are\.\s*Speak as you feel\./);
+  assert.equal(await page.locator('.footer-brand > .brand-logo--footer + .footer-closing').innerText(), 'HABLAR — Come as you are, Speak as you feel');
   await page.locator('[data-testid="link-about"]').click();
   assert.equal(new URL(page.url()).hash, '#about');
 
@@ -608,7 +608,7 @@ test('signup, safety boundary, and footer stay ordered with the closing line bel
 
   const expectedBoundary =
     'Disclaimer: HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support services. If you are in immediate danger or need urgent help, or dealing with any of these issues contact your local emergency services or a trusted professional nearby.';
-  const expectedClosingLine = 'HABLAR — Come as you are. Speak as you feel.';
+  const expectedClosingLine = 'HABLAR — Come as you are, Speak as you feel';
   const introduction = page.locator('#launch-note .signup-panel > div').first();
   assert.equal(await introduction.locator('h2').textContent(), "A reminder that you're never truly alone !");
   assert.equal(await introduction.locator('p').textContent(), 'Hablar is a safe space for you');

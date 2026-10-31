@@ -178,7 +178,7 @@ function Footer({ showClosingLine = false }: { showClosingLine?: boolean }) {
             alt="HABLAR"
           />
           {showClosingLine && (
-            <p className="footer-closing">HABLAR — Come as you are. <span>Speak as you feel.</span></p>
+            <p className="footer-closing">HABLAR — Come as you are, <span>Speak as you feel</span></p>
           )}
         </div>
         <div className="footer-legal">

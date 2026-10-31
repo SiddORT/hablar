@@ -1101,6 +1101,17 @@ test('landing page has no Terms page links and keeps the agreement required inli
 
   assert.equal(await page.locator('a[href="/terms"]').count(), 0);
   assert.equal(await page.locator('a').filter({ hasText: /Terms & Conditions/i }).count(), 0);
+  const consent = page.locator('input[name="consent"]');
+  const consentLabel = page.locator('label').filter({ has: consent });
+  assert.equal(await consent.getAttribute('required'), '');
+  assert.equal(
+    await consentLabel.innerText(),
+    'I consent to HABLAR processing my contact details to send signup confirmation by email when I provide an email address, send one launch update, and notify the HABLAR administrator about my signup, as described in the Privacy Notice Policy.',
+  );
+  const privacyLink = consentLabel.getByRole('link', { name: 'Privacy Notice Policy', exact: true });
+  assert.equal(await privacyLink.getAttribute('href'), '/privacy');
+  assert.equal(await privacyLink.getAttribute('target'), '_blank');
+  assert.equal(await privacyLink.getAttribute('rel'), 'noreferrer');
   const agreement = page.locator('input[name="termsAccepted"]');
   assert.equal(await agreement.getAttribute('required'), '');
   assert.equal(

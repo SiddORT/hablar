@@ -291,7 +291,7 @@ function Signup() {
           </div>
           <label className="consent">
             <input type="checkbox" name="consent" required />
-            <span>I consent to HABLAR processing my contact details to send one signup confirmation by email when I provide an email address, send one launch update, and notify the HABLAR administrator about my signup, as described in the <Link href="/privacy" target="_blank" rel="noreferrer">Privacy Notice</Link>.</span>
+            <span>I consent to HABLAR processing my contact details to send signup confirmation by email when I provide an email address, send one launch update, and notify the HABLAR administrator about my signup, as described in the <Link href="/privacy" target="_blank" rel="noreferrer">Privacy Notice Policy</Link>.</span>
           </label>
           <label className="consent">
             <input type="checkbox" name="termsAccepted" required />

@@ -273,9 +273,9 @@ function Signup() {
           <p>Hablar is a safe space for you</p>
         </div>
         <form className="form-wrap" onSubmit={submitSignup} noValidate>
-          <label className="form-label" htmlFor="email">Email address <span style={{ fontWeight: 400, color: '#888' }}>— optional</span></label>
+          <label className="form-label" htmlFor="email">Email address</label>
           <input className="contact-input" id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" />
-          <label className="form-label" htmlFor="phone">Phone number <span style={{ fontWeight: 400, color: '#888' }}>— optional</span></label>
+          <label className="form-label" htmlFor="phone">Phone number</label>
           <div className="phone-entry-row">
             <CountryPicker value={phoneCountry} onChange={setPhoneCountry} />
             <input
@@ -295,7 +295,7 @@ function Signup() {
           </label>
           <label className="consent">
             <input type="checkbox" name="termsAccepted" required />
-            <span>I agree that this form is only a request for one launch update; HABLAR’s listening service is not yet available, and no launch date is promised.</span>
+            <span>I agree that this form is only a request for  launch update; HABLAR’s listening service is not yet available, and no launch date is promised.</span>
           </label>
           <button className="button-primary form-submit" type="submit" disabled={signup.isPending}>
             {signup.isPending ? 'Saving your place…' : 'Register Now'}
@@ -430,7 +430,7 @@ function Home() {
       <div className="boundary">
         <div className="boundary-inner">
           <div className="boundary-icon"><ShieldCheck size={18} aria-hidden="true" /></div>
-          <p><strong>A clear, caring boundary:</strong> HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support services. If you are in immediate danger or need urgent help, or dealing with any of these issues contact your local emergency services or a trusted professional nearby.</p>
+          <p><strong>Disclaimer:</strong> HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support services. If you are in immediate danger or need urgent help, or dealing with any of these issues contact your local emergency services or a trusted professional nearby.</p>
         </div>
       </div>
       <Footer showClosingLine />

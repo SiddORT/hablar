@@ -607,7 +607,7 @@ test('signup, safety boundary, and footer stay ordered with the closing line bel
   await page.goto(appUrl, { waitUntil: 'networkidle' });
 
   const expectedBoundary =
-    'A clear, caring boundary: HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support services. If you are in immediate danger or need urgent help, or dealing with any of these issues contact your local emergency services or a trusted professional nearby.';
+    'Disclaimer: HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support services. If you are in immediate danger or need urgent help, or dealing with any of these issues contact your local emergency services or a trusted professional nearby.';
   const expectedClosingLine = 'HABLAR — Come as you are. Speak as you feel.';
   const introduction = page.locator('#launch-note .signup-panel > div').first();
   assert.equal(await introduction.locator('h2').textContent(), "A reminder that you're never truly alone !");
@@ -1103,7 +1103,14 @@ test('landing page has no Terms page links and keeps the agreement required inli
   assert.equal(await page.locator('a').filter({ hasText: /Terms & Conditions/i }).count(), 0);
   const agreement = page.locator('input[name="termsAccepted"]');
   assert.equal(await agreement.getAttribute('required'), '');
-  assert.match(await page.locator('label').filter({ has: agreement }).innerText(), /request for one launch update.*not yet available.*no launch date is promised/i);
+  assert.equal(
+    (await page.locator('label').filter({ has: agreement }).innerText()).replace(/\s+/g, ' ').trim(),
+    'I agree that this form is only a request for launch update; HABLAR’s listening service is not yet available, and no launch date is promised.',
+  );
+  assert.equal(await page.locator('label[for="email"]').innerText(), 'Email address');
+  assert.equal(await page.locator('label[for="phone"]').innerText(), 'Phone number');
+  assert.equal(await page.getByLabel('Email address', { exact: true }).getAttribute('required'), null);
+  assert.equal(await page.getByLabel('Phone number', { exact: true }).getAttribute('required'), null);
 });
 
 test('browser form validates contact details and both consent checkboxes', async (t) => {

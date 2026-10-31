@@ -502,7 +502,7 @@ a { color: inherit; }
   letter-spacing: -.045em;
   text-align: center;
 }
-.emotions-section { padding-top: 54px; padding-bottom: 54px; }
+.emotions-section { padding-top: 24px; padding-bottom: 54px; }
 .emotion-circle {
   position: relative;
   width: min(100%, 1120px);
@@ -799,7 +799,7 @@ a { color: inherit; }
   .section-heading p { font-size: 15px; }
   .story-inner { width: calc(100% - 40px); padding: 56px 0; }
   .story-message { font-size: clamp(28px, 8vw, 38px); }
-  .emotions-section { padding-top: 48px; padding-bottom: 36px; }
+  .emotions-section { padding-top: 24px; padding-bottom: 36px; }
   .emotion-circle { gap: 16px; }
   .emotion-ring { gap: 36px 10px; }
   .emotion-center { width: min(100%, 560px); padding: 0 4px; }

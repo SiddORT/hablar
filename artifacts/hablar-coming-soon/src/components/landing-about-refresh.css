@@ -7,7 +7,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: clamp(48px, 6vw, 76px) 0;
+  padding: clamp(48px, 6vw, 76px) 0 24px;
   color: var(--ha-ink);
   background:
     radial-gradient(ellipse at 12% 12%, rgba(245, 221, 204, .58), transparent 32rem),
@@ -195,7 +195,7 @@
 .ha-art__spark--two { bottom: 17%; left: 15%; width: 7px; height: 7px; background: #b77d9c; }
 
 @media (max-width: 760px) {
-  .hablar-about { padding: 40px 0 44px; }
+  .hablar-about { padding: 40px 0 24px; }
   .ha-shell {
     grid-template-columns: minmax(0, 1fr);
     gap: 24px;

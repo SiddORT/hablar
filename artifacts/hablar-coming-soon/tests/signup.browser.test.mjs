@@ -126,6 +126,115 @@ test('Listening Moment removes only its heading and signoff without leaving layo
   }
 });
 
+test('hero topic card contains all 14 topics without a logo, clipping, or collisions', async (t) => {
+  const page = await browser.newPage();
+  t.after(() => page.close());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(appUrl, { waitUntil: 'networkidle' });
+  await page.evaluate(() => document.fonts.ready);
+  const card = page.getByRole('list', { name: 'Topics you may want to talk about', exact: true });
+  const expectedTopics = [
+    '#relationships', '#heartbreak', '#friendship', '#family', '#marriage',
+    '#work', '#sexuality', '#trauma', '#shame', '#guilt',
+    '#financial-situation', '#grief', '#loss', '#childhood',
+  ];
+  assert.equal(await card.count(), 1);
+  assert.deepEqual(await card.getByRole('listitem').allTextContents(), expectedTopics);
+  assert.equal(await page.locator('.hero-art img, .hero-art .brand-logo, .hero-center-logo').count(), 0);
+  assert.equal(await page.locator('.topbar .brand-logo, .footer .brand-logo').count(), 2);
+  assert.equal(await page.locator('.hero h1').textContent(), 'Your safe space to express');
+  assert.equal(await page.locator('.hero-lede').textContent(), 'Because every story deserves a space, every person deserves to be heard, and sometimes, one heartfelt conversation can make a difference.');
+  assert.equal(await page.locator('.hero-first-interaction').textContent(), 'Your First Interaction is on us.');
+  assert.equal(await page.getByTestId('link-hero-preregister').getAttribute('href'), '#launch-note');
+  assert.equal(await page.getByTestId('link-hero-instagram').getAttribute('href'), 'https://www.instagram.com/hablar.wetalk/');
+  assert.equal(await page.locator('.hero-disclaimer').innerText(), 'Your identity would remain anonymous to the person you connect with.');
+
+  for (const fontSize of ['16px', '32px']) {
+    await page.evaluate((value) => { document.documentElement.style.fontSize = value; }, fontSize);
+    for (const theme of [null, 'original', 'blue-green', 'soft-lavender', 'yellow-orange']) {
+      await page.evaluate((value) => {
+        if (value) document.documentElement.dataset.theme = value;
+        else delete document.documentElement.dataset.theme;
+      }, theme);
+      for (const width of [1440, 1024, 851, 850, 768, 681, 680, 390, 320]) {
+        await page.setViewportSize({ width, height: 900 });
+        await card.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(100);
+        const result = await card.evaluate((element) => {
+          const bounds = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          const copy = document.querySelector('.hero-copy').getBoundingClientRect();
+          const swatch = document.createElement('span');
+          swatch.style.backgroundColor = 'var(--theme-surface)';
+          element.append(swatch);
+          const themedSurface = getComputedStyle(swatch).backgroundColor;
+          swatch.remove();
+          const canvas = document.createElement('canvas');
+          canvas.width = canvas.height = 1;
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
+          const luminance = (color) => {
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, 1, 1);
+            const linear = [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3).map((channel) => {
+              const value = channel / 255;
+              return value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4;
+            });
+            return linear[0] * .2126 + linear[1] * .7152 + linear[2] * .0722;
+          };
+          const pills = [...element.querySelectorAll('li')].map((pill) => {
+            const rect = pill.getBoundingClientRect();
+            const css = getComputedStyle(pill);
+            const range = document.createRange();
+            range.selectNodeContents(pill);
+            const text = range.getBoundingClientRect();
+            const light = luminance(css.color);
+            const background = luminance(css.backgroundColor);
+            return {
+              left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom,
+              fits: pill.scrollWidth <= pill.clientWidth + 1 && pill.scrollHeight <= pill.clientHeight + 1
+                && text.left >= rect.left + parseFloat(css.paddingLeft) - 1
+                && text.right <= rect.right - parseFloat(css.paddingRight) + 1
+                && text.top >= rect.top && text.bottom <= rect.bottom,
+              visible: css.visibility === 'visible' && Number(css.opacity) === 1,
+              fontSize: parseFloat(css.fontSize),
+              contrast: (Math.max(light, background) + .05) / (Math.min(light, background) + .05),
+            };
+          });
+          const overlap = (a, b) => a.left < b.right && a.right > b.left
+            && a.top < b.bottom && a.bottom > b.top;
+          const rows = [...new Set(pills.map((pill) => pill.top))].map((top) =>
+            pills.filter((pill) => Math.abs(pill.top - top) < 1));
+          return {
+            fits: bounds.left >= 0 && bounds.right <= innerWidth
+              && element.scrollWidth <= element.clientWidth
+              && document.querySelector('.app-scrollport').scrollWidth <= innerWidth,
+            styled: style.backgroundColor === themedSurface && parseFloat(style.borderRadius) > 0
+              && style.borderTopStyle === 'solid' && style.boxShadow !== 'none',
+            separate: !overlap(bounds, copy),
+            contained: pills.every((pill) =>
+              pill.left >= bounds.left + parseFloat(style.paddingLeft)
+              && pill.right <= bounds.right - parseFloat(style.paddingRight)
+              && pill.top >= bounds.top + parseFloat(style.paddingTop)
+              && pill.bottom <= bounds.bottom - parseFloat(style.paddingBottom)),
+            clear: pills.every((pill, index) => pills.every((other, otherIndex) =>
+              index === otherIndex || !overlap(pill, other))),
+            balanced: rows.every((row) => Math.abs(
+              (row[0].left + row.at(-1).right) / 2 - (bounds.left + bounds.right) / 2,
+            ) < 1),
+            pills,
+          };
+        });
+        const context = `${theme ?? 'default'}, ${width}px, root text ${fontSize}: ${JSON.stringify(result)}`;
+        assert.ok(result.fits && result.styled && result.separate && result.contained
+          && result.clear && result.balanced, context);
+        assert.equal(result.pills.length, 14, context);
+        assert.ok(result.pills.every((pill) => pill.fits && pill.visible && pill.contrast >= 4.5
+          && pill.fontSize >= (fontSize === '32px' ? 30 : 15)), context);
+      }
+    }
+  }
+});
+
 test('Listening Moment and About HABLAR remain separate, ordered, and readable', async (t) => {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   t.after(() => page.close());

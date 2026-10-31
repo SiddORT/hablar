@@ -3,7 +3,7 @@
 - [Container runtime scope](container-runtime.md) — Python API packaging was approved; nested Docker exec failures can prevent local health checks.
 - [Static SEO route delivery](seo-routing.md) — SPA fallbacks can serve homepage metadata despite generated legal-page files; check direct URL responses.
 - [One-time launch email behavior](launch-email-delivery.md) — Claim the launch campaign permanently before sending; never retry uncertain sends that could duplicate the update.
-- [Hero pill grid sizing](hero-pill-grid.md) — Use reserved-center grid slots on desktop, natural wrapping on narrow screens, and verify full label-plus-padding fit.
+- [Hero pill sizing](hero-pill-grid.md) — Prefer normal-flow wrapping for topic cards; verify the full label plus padding, not just the pill box.
 - [Floating dock geometry](floating-dock-geometry.md) — Keep hidden actions in layout and settle responsive repositioning before overlap checks.
 - [Animated card clearance](animated-card-clearance.md) — Verify rotated bounds throughout staggered motion; resting gaps alone can hide collisions.
 - [Responsive browser measurements](responsive-browser-measurements.md) — Bring sections into view and settle layout before measuring repeated viewport, theme, and text-scale changes.

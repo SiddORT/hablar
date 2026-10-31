@@ -374,12 +374,7 @@ function Home() {
             </div>
           </div>
           <div className="hero-art hero-reveal">
-            <BrandLogo
-              className="hero-center-logo"
-              src={`${import.meta.env.BASE_URL}brand/hablar-logo-transparent.png`}
-              alt="HABLAR"
-            />
-            <ul className="hero-topic-list" aria-label="Topics you may want to talk about">
+            <ul className="hero-topic-list hero-topic-card" role="list" aria-label="Topics you may want to talk about">
               {[
                 { label: 'relationships', tone: 'pink' },
                 { label: 'heartbreak', tone: 'purple' },
@@ -394,6 +389,7 @@ function Home() {
                 { label: 'financial-situation', tone: 'pink' },
                 { label: 'grief', tone: 'orange' },
                 { label: 'loss', tone: 'green' },
+                { label: 'childhood', tone: 'purple' },
               ].map(({ label, tone }) => (
                 <li className={`hero-topic-item hero-topic-item--${tone}`} key={label}>
                   <span className="hero-topic-hash" aria-hidden="true">#</span>

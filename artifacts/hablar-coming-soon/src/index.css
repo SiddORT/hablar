@@ -394,7 +394,7 @@ a { color: inherit; }
 .hero-lede { max-width: 500px; font-size: 19px; line-height: 1.65; color: #65605e; margin: 0 0 18px; }
 .hero-details { max-width: 540px; }
 .hero .hero-details .hero-commitment-highlight { color: #e7337d; font-weight: 700; }
-.hero-first-interaction { margin: 0 0 14px; }
+.hero-first-interaction { margin: 0 0 14px; font-size: 14px; }
 .hero-actions { display: flex; gap: 13px; align-items: center; flex-wrap: wrap; margin-top: 0; }
 .hero-actions .button-primary, .hero-actions .hero-instagram-cta { min-height: 48px; white-space: nowrap; }
 .hero-disclaimer { display: grid; gap: 4px; max-width: 500px; margin-top: 12px; color: var(--theme-text); font-size: 8.4px; line-height: 1.5; }

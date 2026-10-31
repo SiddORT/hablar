@@ -11,6 +11,7 @@
     "test:seo": "node --test tests/seo.test.mjs",
     "test:loader": "node --test tests/site-loader.browser.test.mjs",
     "test:signup": "node --test tests/signup.browser.test.mjs",
+    "test:spacing": "node --test tests/landing-spacing.browser.test.mjs",
     "test:listening-removal": "node --test --test-name-pattern='Listening Moment removes only' tests/signup.browser.test.mjs"
   },
   "devDependencies": {

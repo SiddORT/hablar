@@ -18,3 +18,9 @@ Place the up arrow above, and right-aligned with, the sticky buttons rather than
 **Why:** Real normal-motion scrolling reproduced disappearing/reappearing controls and a mobile bottom-to-top jump even though settled, reduced-motion tests passed. Faster frame scheduling alone did not fix the independent visibility rules. State-dependent clearance can also return different results at the same position.
 
 **How to apply:** Test continuous normal-motion wheel movement, reversals, pointer-over-control scrolling, and settled overlap behavior on desktop/mobile. Wait for fonts before comparing baseline positions. Preserve focused controls. The return-to-top arrow can use separate show/hide thresholds.
+
+Do not require identical return-to-top visibility when revisiting the same near-top position from opposite directions.
+
+**Why:** The arrow intentionally uses hysteresis; an existing legal-page snapshot comparison failed with both the original and updated landing styles because it treated that direction-dependent state as a regression.
+
+**How to apply:** Assert the arrow's threshold behavior separately from stable dock geometry instead of including it in direction-independent snapshots.

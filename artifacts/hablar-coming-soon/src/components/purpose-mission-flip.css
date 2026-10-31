@@ -14,6 +14,7 @@
 
 .pm-card-inner {
   position: relative;
+  display: grid;
   min-height: inherit;
   height: 100%;
   transform-style: preserve-3d;
@@ -23,8 +24,10 @@
 .pm-card.is-flipped .pm-card-inner { transform: rotateY(180deg); }
 
 .pm-face {
-  position: absolute;
-  inset: 0;
+  /* Both faces contribute their natural height, including enlarged back copy. */
+  position: relative;
+  grid-area: 1 / 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

@@ -604,12 +604,12 @@ test('signup, safety boundary, and footer stay ordered with the closing line bel
     'A clear, caring boundary: HABLAR is a human listening space, not professional mental-health care, therapy, diagnosis, or emergency support services. If you are in immediate danger or need urgent help, or dealing with any of these issues contact your local emergency services or a trusted professional nearby.';
   const expectedClosingLine = 'HABLAR — Come as you are. Speak as you feel.';
   const introduction = page.locator('#launch-note .signup-panel > div').first();
-  assert.equal(await introduction.locator('h2').textContent(), 'Hablar is a safe space for you.');
-  assert.equal(await introduction.locator('p').textContent(), "A reminder that you're never truly alone");
+  assert.equal(await introduction.locator('h2').textContent(), "A reminder that you're never truly alone !");
+  assert.equal(await introduction.locator('p').textContent(), 'Hablar is a safe space for you');
   assert.equal(await introduction.locator('.section-kicker').count(), 0);
   assert.deepEqual(await introduction.locator('*').allTextContents(), [
-    'Hablar is a safe space for you.',
-    "A reminder that you're never truly alone",
+    "A reminder that you're never truly alone !",
+    'Hablar is a safe space for you',
   ]);
   assert.equal((await page.locator('#launch-note button[type="submit"]').textContent()).trim(), 'Register Now');
   await page.evaluate(() => document.fonts.ready);

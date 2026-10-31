@@ -44,7 +44,8 @@ export function OurServices() {
         <h2 id="our-services-heading">Our services</h2>
         <p>We offer a space where you can talk freely, navigating through your thoughts or a difficult moment. We’re here to listen - No labels; No assumptions; No judgment; Just real conversations; genuine support and a reminder that someone is here to hear you.</p>
         <hr className="our-services__divider" aria-hidden="true" />
-        <p>We believe that being heard can make a difference. A conversation at HABLAR, at that very moment can bring in clarity, comfort, and a fresh perspective. It’s a reminder that you matter, your feelings matter, your thoughts matter.</p>
+        <p>We believe that being heard can make a difference.</p>
+        <p>A conversation at HABLAR, at that very moment can bring in clarity, comfort, and a fresh perspective. It’s a reminder that you matter, your feelings matter, your thoughts matter.</p>
       </div>
     </section>
   );

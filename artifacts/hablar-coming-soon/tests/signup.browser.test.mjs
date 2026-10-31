@@ -342,7 +342,8 @@ test('Our services preserves exact copy, reference layout, order, and responsive
   assert.equal(await section.getByRole('heading', { name: 'Our services', level: 2 }).count(), 1);
   assert.deepEqual(await section.locator('p').allTextContents(), [
     'We offer a space where you can talk freely, navigating through your thoughts or a difficult moment. We’re here to listen - No labels; No assumptions; No judgment; Just real conversations; genuine support and a reminder that someone is here to hear you.',
-    'We believe that being heard can make a difference. A conversation at HABLAR, at that very moment can bring in clarity, comfort, and a fresh perspective. It’s a reminder that you matter, your feelings matter, your thoughts matter.',
+    'We believe that being heard can make a difference.',
+    'A conversation at HABLAR, at that very moment can bring in clarity, comfort, and a fresh perspective. It’s a reminder that you matter, your feelings matter, your thoughts matter.',
   ]);
   assert.deepEqual(await section.evaluate((element) => [
     element.previousElementSibling?.id, element.nextElementSibling?.id,
@@ -364,7 +365,8 @@ test('Our services preserves exact copy, reference layout, order, and responsive
     getComputedStyle(element).pointerEvents), 'none');
   assert.equal(await section.locator('.our-services__rule, .our-services__divider').evaluateAll((elements) =>
     elements.every((element) => element.getAttribute('aria-hidden') === 'true')), true);
-  assert.equal(await section.locator('p').count(), 2, 'copy must remain selectable paragraphs, not artwork');
+  assert.equal(await section.locator('p').count(), 3, 'copy must remain selectable paragraphs, not artwork');
+  assert.equal(await section.locator('.our-services__divider').count(), 1, 'keep the single existing divider');
 
   // Sweep each text size together and settle the visible section after resizing
   // so measurements reflect the current responsive styles, not the prior layout.
@@ -418,7 +420,8 @@ test('Our services preserves exact copy, reference layout, order, and responsive
            const paragraphs = element.querySelectorAll('p');
           return {
              rootFont: getComputedStyle(document.documentElement).fontSize,
-            usesTheme,
+             usesTheme,
+             paragraphGap: paragraphs[2].getBoundingClientRect().top - paragraphs[1].getBoundingClientRect().bottom,
             width: bounds.width,
             centered: Math.abs(bounds.left - (window.innerWidth - bounds.right)) < 1,
             fits: bounds.left >= 0 && bounds.right <= window.innerWidth
@@ -469,10 +472,12 @@ test('Our services preserves exact copy, reference layout, order, and responsive
          assert.ok(layout.divider, `${context}: fine divider between paragraphs`);
         assert.ok(layout.children.every((child) => child.readable && child.plain), `${context}: ${JSON.stringify(layout)}`);
          assert.ok(layout.children.every((child) => child.contrast >= 4.5), `${context}: readable text contrast`);
-         assert.equal(layout.children.length, 4, 'measure the label, heading, and both paragraphs');
+          assert.equal(layout.children.length, 5, 'measure the label, heading, and all three paragraphs');
+          assert.ok(layout.paragraphGap >= parseFloat(fontSize), `${context}: clear gap between belief and conversation paragraphs`);
         assert.ok(layout.children[0].bottom < layout.children[1].top, context);
         assert.ok(layout.children[1].bottom < layout.children[2].top, context);
          assert.ok(layout.children[2].bottom < layout.children[3].top, context);
+          assert.ok(layout.children[3].bottom < layout.children[4].top, context);
       }
     }
   }

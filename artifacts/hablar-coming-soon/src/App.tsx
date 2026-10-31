@@ -269,8 +269,8 @@ function Signup() {
     <section className="signup-section" id="launch-note">
       <div className="signup-panel scroll-reveal">
         <div>
-          <h2>A reminder that you're never truly alone !</h2>
-          <p>Hablar is a safe space for you</p>
+          <h2>Hablar is a safe space for you</h2>
+          <p>A reminder that you're never truly alone !</p>
         </div>
         <form className="form-wrap" onSubmit={submitSignup} noValidate>
           <label className="form-label" htmlFor="email">Email address</label>

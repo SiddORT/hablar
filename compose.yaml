@@ -56,7 +56,7 @@ services:
       - "443:8443"
       - "127.0.0.1:8080:8080"
     volumes:
-      - /var/www/habler.co.in/deploy/certs:/etc/nginx/certs:ro
+      - /var/www/uat-landing.hablar.co.in/deploy/certs:/etc/nginx/certs:ro
     depends_on:
       api:
         condition: service_healthy

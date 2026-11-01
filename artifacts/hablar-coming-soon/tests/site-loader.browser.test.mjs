@@ -149,9 +149,8 @@ test('feelings cards stay enlarged, centered and clear throughout their float on
       const overlaps = (a, b) =>
         a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
       const ring = section.querySelector('.emotion-ring');
-      const oldWidth = innerWidth <= 360 ? Math.min(ring.clientWidth, 260)
-        : innerWidth <= 980 ? Math.min((ring.clientWidth - (innerWidth <= 680 ? 10 : 14)) / 2, 240)
-        : Math.max(168, Math.min(innerWidth * .19, 218));
+      const expectedWidth = innerWidth <= 980 ? Math.min(ring.clientWidth * .36, 172.8)
+        : Math.max(120.96, Math.min(innerWidth * .1368, 156.96));
       const sizes = cards.map((card) => {
         const art = card.querySelector('.emotion-art');
         const style = getComputedStyle(art, '::before');
@@ -174,6 +173,8 @@ test('feelings cards stay enlarged, centered and clear throughout their float on
         const copy = rect(section.querySelector('.emotion-center'));
         const container = rect(section);
         samples.push({
+          between: bounds.slice(0, 2).every((card) => card.bottom < copy.top)
+            && bounds.slice(2).every((card) => card.top > copy.bottom),
           clear: bounds.every((card, index) => !overlaps(card, copy)
             && card.left >= container.left && card.right <= container.right
             && card.top >= container.top && card.bottom <= container.bottom
@@ -181,19 +182,21 @@ test('feelings cards stay enlarged, centered and clear throughout their float on
           translate: cards.map((card) => parseFloat(getComputedStyle(card).translate.split(' ')[1] || '0')),
         });
       }
-      return { sizes, oldWidth, samples,
+      return { sizes, expectedWidth, samples,
         overflow: document.querySelector('.app-scrollport').scrollWidth > innerWidth };
     });
     assert.equal(result.overflow, false, `No horizontal overflow at ${width}px`);
     for (const size of result.sizes) {
-      assert.ok(Math.abs(size.width / result.oldWidth - .72) < .015, `20% enlargement over the previous 60% card width at ${width}px`);
-      const oldHeight = (result.oldWidth - (width <= 980 ? 18 : 20)) * .75 + (width <= 980 ? 18 : 20);
-      assert.ok(Math.abs(size.height / oldHeight - .72) < .02, `20% enlargement over the previous 60% card height at ${width}px`);
+      assert.ok(Math.abs(size.width - result.expectedWidth) < 1, `Responsive card width at ${width}px`);
+      const frame = width <= 980 ? 12.56 : 14;
+      const expectedHeight = (result.expectedWidth - frame) * .75 + frame;
+      assert.ok(Math.abs(size.height - expectedHeight) < 1, `Responsive card height at ${width}px`);
       assert.ok(Math.abs(size.centerOffsetX) < 1, `Artwork horizontally centered at ${width}px`);
       assert.ok(Math.abs(size.centerOffsetY) < 1, `Artwork vertically centered at ${width}px`);
       assert.ok(Math.abs(size.cropRatio - 8 / 7) < .01, 'Undistorted sprite crop');
     }
     assert.ok(result.samples.every((sample) => sample.clear), `Clear of copy, edges and other cards at ${width}px`);
+    assert.ok(result.samples.every((sample) => sample.between), `Heading stays between the top and bottom mascot pairs at ${width}px`);
     for (let index = 0; index < 4; index++) {
       const travel = result.samples.map((sample) => sample.translate[index]);
       assert.ok(Math.max(...travel) - Math.min(...travel) > 17, 'Float travels noticeably more than 7px');

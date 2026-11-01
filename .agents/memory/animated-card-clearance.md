@@ -8,3 +8,9 @@ Check animated-card clearance across the full staggered cycle using transformed 
 **Why:** Smaller cards can still collide: staggered rows approach each other at different times, and rotation expands their vertical bounds. A visually comfortable resting gap hid a slight collision during movement.
 
 **How to apply:** When changing card size, tilt, travel, or responsive gaps, sample each card's own animation phase across a cycle and compare transformed bounds against neighboring cards, copy, and section edges. Keep reduced-motion cards stationary.
+
+Keep “Your Space / Your Story / Your Time” between the upper and lower mascot pairs on responsive layouts, not above a separate mascot grid.
+
+**Why:** The user explicitly requested the text remain between the mascots on smaller screens.
+
+**How to apply:** Preserve this composition when changing mobile or tablet sizing; allow room for the full animated bounds around the central copy.

@@ -595,43 +595,24 @@ a { color: inherit; }
 }
 @media (max-width: 980px) {
   .emotion-circle {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-height: 0;
+    min-height: 540px;
   }
   .emotion-circle::before {
-    top: 125px;
     width: min(78vw, 440px);
-    transform: translate(-50%, 0);
   }
   .emotion-center {
-    position: relative;
-    order: 0;
-    top: auto;
-    left: auto;
     width: min(100%, 560px);
-    margin: 0 auto;
-    transform: none;
-    padding: 30px 8px 34px;
+    padding: 0 8px;
   }
   .emotion-center h2 { font-size: clamp(25px, 4.6vw, 34px); }
-  .emotion-ring {
-    position: relative;
-    order: 1;
-    inset: auto;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 36px 14px;
-    padding: 12px 0 0;
-  }
   .emotion-card {
-    position: relative;
-    inset: auto;
-    width: min(72%, 172.8px);
-    justify-self: center;
+    width: min(36%, 172.8px);
     padding: 5.28px;
   }
+  .emotion-card.slot-0 { top: 24px; left: 5%; }
+  .emotion-card.slot-1 { top: 24px; right: 5%; }
+  .emotion-card.slot-2 { bottom: 24px; left: 5%; }
+  .emotion-card.slot-3 { bottom: 24px; right: 5%; }
 }
 .boundary { border-top: 1px solid #eee2d9; border-bottom: 1px solid #eee2d9; padding: 29px 0; }
 .boundary-inner { width: min(1100px, calc(100% - 64px)); margin: auto; display: flex; gap: 18px; align-items: flex-start; }
@@ -800,8 +781,6 @@ a { color: inherit; }
   .story-inner { width: calc(100% - 40px); padding: 56px 0; }
   .story-message { font-size: clamp(28px, 8vw, 38px); }
   .emotions-section { padding-top: 24px; padding-bottom: 36px; }
-  .emotion-circle { gap: 16px; }
-  .emotion-ring { gap: 36px 10px; }
   .emotion-center { width: min(100%, 560px); padding: 0 4px; }
   .emotion-center h2 { font-size: clamp(24px, 7.2vw, 34px); }
   .emotion-card { border-radius: 11px; }
@@ -1075,8 +1054,6 @@ html[data-theme="yellow-orange"] {
 }
 
 @media (max-width: 360px) {
-  .emotion-ring { grid-template-columns: 1fr; }
-  .emotion-card { width: min(72%, 187.2px); justify-self: center; }
   [data-theme] .theme-select { width: 108px; padding-right: 24px; }
   [data-theme] .nav-links { gap: 6px; }
   [data-theme] .nav-cta { padding: 8px; font-size: 11px; }

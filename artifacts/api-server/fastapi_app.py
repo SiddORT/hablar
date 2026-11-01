@@ -17,7 +17,7 @@ import asyncpg
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, StrictBool, field_validator, model_validator
@@ -560,6 +560,7 @@ async def service_root() -> HealthResponse:
 async def create_waitlist_signup(
     request: Request,
     payload: WaitlistSignupInput,
+    background_tasks: BackgroundTasks,
 ) -> WaitlistSignupResponse:
     email = str(payload.email) if payload.email else None
     phone = payload.phone
@@ -649,7 +650,8 @@ async def create_waitlist_signup(
     if inserted_signup:
         if smtp_ready and mail_config:
             if email:
-                await _send_waitlist_email_with_log(
+                background_tasks.add_task(
+                    _send_waitlist_email_with_log,
                     request.app.state.db_pool,
                     confirmation_log_id,
                     mail_config,
@@ -657,7 +659,8 @@ async def create_waitlist_signup(
                     "Waitlist confirmation email",
                 )
             if mail_config.admin_recipient:
-                await _send_waitlist_email_with_log(
+                background_tasks.add_task(
+                    _send_waitlist_email_with_log,
                     request.app.state.db_pool,
                     admin_log_id,
                     mail_config,

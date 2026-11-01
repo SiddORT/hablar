@@ -8,3 +8,5 @@
 - [Animated card clearance](animated-card-clearance.md) — Verify rotated bounds throughout staggered motion; resting gaps alone can hide collisions.
 - [Responsive browser measurements](responsive-browser-measurements.md) — Bring sections into view and settle layout before measuring repeated viewport, theme, and text-scale changes.
 - [About solar-system artwork](about-solar-system.md) — Additional circles mean filled planets in logo colors, not additional orbital outlines.
+- [Signup acknowledgement](signup-acknowledgement.md) — Acknowledge saved contacts without waiting for SMTP; interrupted submissions must not auto-retry.
+- [API workflow lifecycle](api-workflow-lifecycle.md) — Reload processes can outlive managed workflows; confirm readiness through the routed health endpoint.

@@ -143,7 +143,7 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         else:
             fastapi_app.app.state.db_pool = self.app_state_before
 
-    async def submit(self, *, email=None, phone=None, inserted=True):
+    async def submit(self, *, email=None, phone=None, inserted=True, run_background=True):
         row = (
             {"id": "test-signup-id", "created_at": self.submitted_at}
             if inserted
@@ -160,9 +160,12 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         )
         # Call the original endpoint function so these unit tests do not need
         # an HTTP client or exercise rate limiting.
+        background_tasks = fastapi_app.BackgroundTasks()
         response = await fastapi_app.create_waitlist_signup.__wrapped__(
-            request, payload
+            request, payload, background_tasks
         )
+        if run_background:
+            await background_tasks()
         return response, pool
 
     def assert_branded_email(self, message):
@@ -179,6 +182,19 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         ]
         self.assertEqual(len(logo_parts), 1)
         self.assertEqual(logo_parts[0]["Content-ID"], f"<{EMAIL_LOGO_CID}>")
+
+    async def test_signup_returns_with_persisted_logs_before_email_delivery(self):
+        with patch.object(fastapi_app, "send_email", new_callable=AsyncMock) as send:
+            response, pool = await self.submit(
+                email="person@example.com", run_background=False
+            )
+        self.assertEqual(response.message, self.ACKNOWLEDGMENT)
+        send.assert_not_awaited()
+        self.assertEqual(len(pool.connection.email_logs), 2)
+        self.assertTrue(all(
+            log["status"] == "queued"
+            for log in pool.connection.email_logs.values()
+        ))
 
     async def test_new_email_signup_sends_confirmation_and_admin_notice(self):
         with patch.object(fastapi_app, "send_email", new_callable=AsyncMock) as send:

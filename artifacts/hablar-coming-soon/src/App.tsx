@@ -259,7 +259,9 @@ function Signup() {
         onError: (error) => {
           setFeedback({
             kind: 'error',
-            message: error.message || 'The sign-up could not be saved. Please try again.',
+            message: error instanceof TypeError
+              ? 'We couldn’t confirm your signup because the connection was interrupted. Please check your connection and try again.'
+              : error.message || 'The sign-up could not be saved. Please try again.',
           });
         },
       },

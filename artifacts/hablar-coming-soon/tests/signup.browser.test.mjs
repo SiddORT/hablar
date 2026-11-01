@@ -70,6 +70,39 @@ async function openSignup(response = {
   return { page, form, requests };
 }
 
+test('signup connection failure preserves details and allows a deliberate retry', async (t) => {
+  const { page, form } = await openSignup();
+  t.after(() => page.close());
+  await page.getByTestId('site-loader').waitFor({ state: 'hidden' });
+  let attempts = 0;
+  await page.route('**/api/waitlist', async (route) => {
+    attempts++;
+    if (attempts === 1) {
+      await route.abort('failed');
+    } else {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Thanks. Your contact has been recorded for one launch update.' }),
+      });
+    }
+  });
+  await form.locator('input[name="email"]').fill('signup-check@example.com');
+  await form.locator('input[name="consent"]').check();
+  await form.locator('input[name="termsAccepted"]').check();
+  await form.getByRole('button', { name: 'Register Now' }).click();
+  const feedback = form.locator('.form-status');
+  await feedback.filter({ hasText: 'connection was interrupted' }).waitFor();
+  assert.equal(await form.locator('input[name="email"]').inputValue(), 'signup-check@example.com');
+  assert.equal(await form.locator('input[name="consent"]').isChecked(), true);
+  assert.equal(await form.locator('input[name="termsAccepted"]').isChecked(), true);
+  assert.equal(attempts, 1, 'No automatic retry of an uncertain submission');
+  await form.getByRole('button', { name: 'Register Now' }).click();
+  await feedback.filter({ hasText: 'Your contact has been recorded' }).waitFor();
+  assert.equal(attempts, 2);
+  assert.equal(await form.locator('input[name="email"]').inputValue(), '');
+});
+
 test('Listening Moment removes only its heading and signoff without leaving layout gaps', async (t) => {
   const page = await browser.newPage();
   t.after(() => page.close());

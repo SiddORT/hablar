@@ -291,11 +291,11 @@ function Signup() {
           </div>
           <label className="consent">
             <input type="checkbox" name="consent" required />
-            <span>I consent to HABLAR processing my contact details to send signup confirmation by email when I provide an email address, send launch update, and notify the HABLAR administrator about my signup, as described in the <Link href="/privacy" target="_blank" rel="noreferrer">Privacy Notice Policy</Link>.</span>
+            <span>I consent to HABLAR using my contact details to send launch updates and signup confirmation, where applicable, and to notify its administrator of my signup, as outlined in the <Link href="/privacy" target="_blank" rel="noreferrer">Privacy Policy</Link>.</span>
           </label>
           <label className="consent">
             <input type="checkbox" name="termsAccepted" required />
-            <span>I agree that this form is only a request for launch update; HABLAR’s listening services are not yet available, and no launch date is promised.</span>
+            <span>I understand that this is a request for launch updates. HABLAR’s listening services are not yet live, and no launch date is guaranteed. I also confirm to avail the service and HABLAR T&amp;C once services start.</span>
           </label>
           <button className="button-primary form-submit" type="submit" disabled={signup.isPending}>
             {signup.isPending ? 'Saving your place…' : 'Register Now'}

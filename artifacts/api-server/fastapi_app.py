@@ -63,9 +63,9 @@ async def _insert_waitlist_email_log(
             attempted_at, completed_at
         )
         VALUES (
-            $1, $2, $3, $4,
-            CASE WHEN $3 = 'pending' THEN NOW() ELSE NULL END,
-            CASE WHEN $3 = 'skipped' THEN NOW() ELSE NULL END
+            $1, $2, $3::varchar, $4,
+            CASE WHEN $3::varchar = 'pending' THEN NOW() ELSE NULL END,
+            CASE WHEN $3::varchar = 'skipped' THEN NOW() ELSE NULL END
         )
         RETURNING id
         """,
@@ -87,14 +87,14 @@ async def _set_waitlist_email_log_status(
             await connection.execute(
                 """
                 UPDATE waitlist_email_logs
-                SET status = $2,
+                SET status = $2::varchar,
                     reason_code = $3,
                     attempted_at = CASE
-                        WHEN $2 = 'pending' THEN NOW()
+                        WHEN $2::varchar = 'pending' THEN NOW()
                         ELSE attempted_at
                     END,
                     completed_at = CASE
-                        WHEN $2 IN (
+                        WHEN $2::varchar IN (
                             'accepted_by_smtp', 'failed', 'uncertain', 'skipped'
                         ) THEN NOW()
                         ELSE completed_at

@@ -10,3 +10,4 @@
 - [About solar-system artwork](about-solar-system.md) — Additional circles mean filled planets in logo colors, not additional orbital outlines.
 - [Signup acknowledgement](signup-acknowledgement.md) — Acknowledge saved contacts without waiting for SMTP; interrupted submissions must not auto-retry.
 - [API workflow lifecycle](api-workflow-lifecycle.md) — Reload processes can outlive managed workflows; confirm readiness through the routed health endpoint.
+- [PostgreSQL parameter types](postgres-parameter-types.md) — Repeated status parameters need explicit types across VARCHAR assignments and CASE comparisons.

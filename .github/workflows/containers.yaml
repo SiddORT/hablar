@@ -128,4 +128,4 @@ jobs:
             -o BatchMode=yes \
             -o StrictHostKeyChecking=yes \
             "$VPS_USER@$VPS_HOST" \
-            "cd /var/www/habler.co.in && ./deployscripts/deploy.sh '$COMMIT_SHA'"
+            "cd /var/www/uat-landing.hablar.co.in && ./deployscripts/deploy.sh '$COMMIT_SHA'"

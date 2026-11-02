@@ -17,6 +17,8 @@ COPY artifacts/api-server/fastapi_app.py ./
 COPY artifacts/api-server/email_delivery.py ./
 COPY --chmod=0755 artifacts/api-server/assets/ ./assets/
 RUN chmod 0644 /app/assets/hablar-email-logo.png
+COPY artifacts/api-server/migrate.py ./
+COPY lib/db/drizzle/ /app/migrations/
 USER 10001:10001
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \

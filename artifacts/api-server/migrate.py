@@ -69,6 +69,7 @@ CONSTRAINTS = {
     "waitlist_email_logs": {
         "waitlist_email_logs_pkey",
         "waitlist_email_logs_signup_id_fkey",
+        "waitlist_email_logs_signup_id_waitlist_signups_id_fk",
         "waitlist_email_logs_type_check",
         "waitlist_email_logs_status_check",
     },
@@ -141,10 +142,12 @@ async def verify_schema(conn):
         SELECT pg_get_constraintdef(oid)
         FROM pg_constraint
         WHERE conrelid = 'public.waitlist_email_logs'::regclass
-          AND conname = 'waitlist_email_logs_signup_id_fkey'
+          AND contype = 'f'
+          AND pg_get_constraintdef(oid) =
+              'FOREIGN KEY (signup_id) REFERENCES waitlist_signups(id) ON DELETE CASCADE'
         """
     )
-    if not fk or "ON DELETE CASCADE" not in fk.upper():
+    if not fk:
         raise RuntimeError("Cascading foreign key verification failed")
 
     print("Existing schema verified.")

@@ -692,7 +692,7 @@ async def create_waitlist_signup(
     # A saved contact does not imply that email delivery succeeded.
     return WaitlistSignupResponse(
         message=(
-            "Thanks for signing up — we’ve recorded your contact for one HABLAR "
+            "Thanks for signing up — we’ve recorded your contact for a HABLAR "
             "launch update."
         )
     )

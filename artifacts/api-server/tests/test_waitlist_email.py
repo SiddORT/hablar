@@ -113,7 +113,7 @@ class FakePool:
 
 class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
     ACKNOWLEDGMENT = (
-        "Thanks for signing up — we’ve recorded your contact for one HABLAR "
+        "Thanks for signing up — we’ve recorded your contact for a HABLAR "
         "launch update."
     )
 

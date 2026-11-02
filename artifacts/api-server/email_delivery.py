@@ -17,10 +17,10 @@ from zoneinfo import ZoneInfo
 
 CONFIRMATION_SUBJECT = "You’re on the list — HABLAR is coming soon"
 CONFIRMATION_COPY = (
-    "Thank you for signing up for HABLAR’s one launch update. This email "
+    "Thank you for signing up for HABLAR’s launch update. This email "
     "confirms your signup; it isn’t the launch update itself. We’ll send that "
     "update when HABLAR is ready. We’re building a space for honest "
-    "conversations and thoughtful listening. More soon."
+    "conversations and thoughtful listening."
 )
 LAUNCH_UPDATE_SUBJECT = "A HABLAR update"
 LAUNCH_UPDATE_COPY = (

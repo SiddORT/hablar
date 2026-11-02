@@ -68,7 +68,7 @@ CONSTRAINTS = {
     "waitlist_signups": {"waitlist_signups_pkey"},
     "waitlist_email_logs": {
         "waitlist_email_logs_pkey",
-        "waitlist_email_logs_signup_id_waitlist_signups_id_fk",
+        "waitlist_email_logs_signup_id_fkey",
         "waitlist_email_logs_type_check",
         "waitlist_email_logs_status_check",
     },
@@ -141,7 +141,7 @@ async def verify_schema(conn):
         SELECT pg_get_constraintdef(oid)
         FROM pg_constraint
         WHERE conrelid = 'public.waitlist_email_logs'::regclass
-          AND conname = 'waitlist_email_logs_signup_id_waitlist_signups_id_fk'
+          AND conname = 'waitlist_email_logs_signup_id_fkey'
         """
     )
     if not fk or "ON DELETE CASCADE" not in fk.upper():

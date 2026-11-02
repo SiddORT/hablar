@@ -1,4 +1,3 @@
-cat > artifacts / api - server / migrate.py << "PY"
 #!/usr/bin/env python3
 import argparse
 import asyncio
@@ -13,7 +12,7 @@ INITIAL = "0000_initial.sql"
 HISTORY = "public.hablar_schema_migrations"
 LOCK_ID = 726184203
 
-EXPECTED_COLUMNS = {
+COLUMNS = {
     "waitlist_signups": {
         "id": ("uuid", True),
         "email_ciphertext": ("bytea", False),
@@ -48,7 +47,7 @@ EXPECTED_COLUMNS = {
     },
 }
 
-EXPECTED_INDEXES = {
+INDEXES = {
     "waitlist_signups": {
         "waitlist_signups_pkey",
         "waitlist_email_lookup_hash_unique",
@@ -65,7 +64,7 @@ EXPECTED_INDEXES = {
     },
 }
 
-EXPECTED_CONSTRAINTS = {
+CONSTRAINTS = {
     "waitlist_signups": {"waitlist_signups_pkey"},
     "waitlist_email_logs": {
         "waitlist_email_logs_pkey",
@@ -79,12 +78,12 @@ EXPECTED_CONSTRAINTS = {
 }
 
 
-def checksum(path):
+def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 async def verify_schema(conn):
-    for table, expected in EXPECTED_COLUMNS.items():
+    for table, expected in COLUMNS.items():
         rows = await conn.fetch(
             """
             SELECT column_name, udt_name, is_nullable
@@ -94,69 +93,61 @@ async def verify_schema(conn):
             table,
         )
         actual = {
-            r["column_name"]: (
-                r["udt_name"],
-                r["is_nullable"] == "NO",
+            row["column_name"]: (
+                row["udt_name"],
+                row["is_nullable"] == "NO",
             )
-            for r in rows
+            for row in rows
         }
         if actual != expected:
-            raise RuntimeError(
-                f"Schema mismatch in {table}.\nExpected: {expected}\nActual: {actual}"
-            )
+            raise RuntimeError(f"Column mismatch in {table}: {actual}")
 
-        indexes = await conn.fetch(
+        rows = await conn.fetch(
             """
-            SELECT indexname
-            FROM pg_indexes
+            SELECT indexname FROM pg_indexes
             WHERE schemaname = 'public' AND tablename = $1
             """,
             table,
         )
-        actual_indexes = {r["indexname"] for r in indexes}
-        if actual_indexes != EXPECTED_INDEXES[table]:
-            raise RuntimeError(f"Index mismatch in {table}: {actual_indexes}")
+        actual = {row["indexname"] for row in rows}
+        if actual != INDEXES[table]:
+            raise RuntimeError(f"Index mismatch in {table}: {actual}")
 
-        constraints = await conn.fetch(
+        rows = await conn.fetch(
             """
-            SELECT conname
-            FROM pg_constraint
+            SELECT conname FROM pg_constraint
             WHERE conrelid = $1::regclass
             """,
             f"public.{table}",
         )
-        actual_constraints = {r["conname"] for r in constraints}
-        if actual_constraints != EXPECTED_CONSTRAINTS[table]:
-            raise RuntimeError(f"Constraint mismatch in {table}: {actual_constraints}")
+        actual = {row["conname"] for row in rows}
+        if actual != CONSTRAINTS[table]:
+            raise RuntimeError(f"Constraint mismatch in {table}: {actual}")
 
-    indexes = await conn.fetch(
-        """
-        SELECT indexname, indexdef
-        FROM pg_indexes
-        WHERE schemaname = 'public'
-        AND indexname IN (
-            'waitlist_email_lookup_hash_unique',
-            'waitlist_phone_lookup_hash_unique'
+    for name in (
+        "waitlist_email_lookup_hash_unique",
+        "waitlist_phone_lookup_hash_unique",
+    ):
+        definition = await conn.fetchval(
+            "SELECT indexdef FROM pg_indexes "
+            "WHERE schemaname = 'public' AND indexname = $1",
+            name,
         )
-        """
-    )
-    for row in indexes:
-        definition = row["indexdef"].lower()
-        if "where" not in definition or "is not null" not in definition:
-            raise RuntimeError(f"Expected partial unique index: {row['indexname']}")
+        if not definition or "WHERE" not in definition.upper():
+            raise RuntimeError(f"Invalid partial index: {name}")
 
     fk = await conn.fetchval(
         """
         SELECT pg_get_constraintdef(oid)
         FROM pg_constraint
-        WHERE conname = 'waitlist_email_logs_signup_id_waitlist_signups_id_fk'
-        AND conrelid = 'public.waitlist_email_logs'::regclass
+        WHERE conrelid = 'public.waitlist_email_logs'::regclass
+          AND conname = 'waitlist_email_logs_signup_id_waitlist_signups_id_fk'
         """
     )
     if not fk or "ON DELETE CASCADE" not in fk.upper():
-        raise RuntimeError("Expected cascading signup foreign key not found")
+        raise RuntimeError("Cascading foreign key verification failed")
 
-    print("Existing UAT schema verified successfully.")
+    print("Existing schema verified.")
 
 
 async def ensure_history(conn):
@@ -172,38 +163,35 @@ async def ensure_history(conn):
 
 
 async def baseline(conn):
-    await verify_schema(conn)
-
     path = MIGRATIONS / INITIAL
     if not path.is_file():
-        raise RuntimeError(f"Missing initial migration: {path}")
+        raise RuntimeError(f"Missing migration: {INITIAL}")
 
-    digest = checksum(path)
+    await verify_schema(conn)
+    await ensure_history(conn)
 
     async with conn.transaction():
-        await ensure_history(conn)
         existing = await conn.fetchrow(
             f"SELECT checksum FROM {HISTORY} WHERE name = $1",
             INITIAL,
         )
-
         if existing:
-            if existing["checksum"] != digest:
+            if existing["checksum"] != digest(path):
                 raise RuntimeError("Initial migration checksum mismatch")
             print("Initial migration already baselined.")
             return
 
         count = await conn.fetchval(f"SELECT count(*) FROM {HISTORY}")
         if count:
-            raise RuntimeError("Migration history already exists; refusing baseline.")
+            raise RuntimeError("History is not empty; refusing baseline.")
 
         await conn.execute(
             f"INSERT INTO {HISTORY} (name, checksum) VALUES ($1, $2)",
             INITIAL,
-            digest,
+            digest(path),
         )
 
-    print(f"Baselined {INITIAL} ({digest}).")
+    print("Initial migration baselined. No application tables were changed.")
 
 
 async def apply(conn):
@@ -211,11 +199,10 @@ async def apply(conn):
     if not paths:
         raise RuntimeError("No SQL migrations found.")
 
-    async with conn.transaction():
-        await ensure_history(conn)
+    await ensure_history(conn)
 
     for path in paths:
-        digest = checksum(path)
+        checksum = digest(path)
 
         async with conn.transaction():
             existing = await conn.fetchrow(
@@ -224,17 +211,17 @@ async def apply(conn):
             )
 
             if existing:
-                if existing["checksum"] != digest:
-                    raise RuntimeError(f"Applied migration was modified: {path.name}")
+                if existing["checksum"] != checksum:
+                    raise RuntimeError(f"Applied migration modified: {path.name}")
                 print(f"Already applied: {path.name}")
                 continue
 
-            print(f"Applying: {path.name}")
+            print(f"Applying {path.name}")
             await conn.execute(path.read_text(encoding="utf-8"))
             await conn.execute(
                 f"INSERT INTO {HISTORY} (name, checksum) VALUES ($1, $2)",
                 path.name,
-                digest,
+                checksum,
             )
 
     print("Migrations complete.")
@@ -242,18 +229,18 @@ async def apply(conn):
 
 async def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["baseline", "apply"])
-    args = parser.parse_args()
+    parser.add_argument("command", choices=("baseline", "apply"))
+    command = parser.parse_args().command
 
-    database_url = os.environ.get("DATABASE_URL")
-    if not database_url:
-        raise RuntimeError("DATABASE_URL is not configured.")
+    url = os.environ.get("DATABASE_URL")
+    if not url:
+        raise RuntimeError("DATABASE_URL is missing")
 
-    conn = await asyncpg.connect(database_url)
+    conn = await asyncpg.connect(url)
     try:
         await conn.execute("SELECT pg_advisory_lock($1)", LOCK_ID)
         try:
-            if args.command == "baseline":
+            if command == "baseline":
                 await baseline(conn)
             else:
                 await apply(conn)
@@ -265,4 +252,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-PY

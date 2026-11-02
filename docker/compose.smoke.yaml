@@ -1,20 +1,31 @@
 services:
   api:
-    environment:
+    image: ${SMOKE_IMAGE_PREFIX:?Run scripts/container-smoke.sh}-api:local
+    pull_policy: never
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+      target: runtime
+    environment: !override
       DATABASE_URL: "postgresql://smoke:smoke-only-not-production@smoke-db:5432/smoke?sslmode=disable"
-    depends_on:
+      SESSION_SECRET: "disposable-ci-only-key-not-for-real-data-0123456789"
+      PORT: "8080"
+      FORWARDED_ALLOW_IPS: "*"
+    depends_on: !override
       smoke-db:
         condition: service_healthy
     ports: []
   
   website:
+    image: ${SMOKE_IMAGE_PREFIX:?Run scripts/container-smoke.sh}-website:local
+    pull_policy: never
     build:
       context: .
       dockerfile: docker/website.Dockerfile
       target: runtime
-    ports:
-      - "127.0.0.1:18080:8080"
-    volumes:
+    ports: !override
+      - "127.0.0.1:${HTTP_PORT:-18080}:8080"
+    volumes: !override
       - ./docker/nginx.smoke.conf.template:/etc/nginx/templates/default.conf.template:ro
   
   smoke-db:

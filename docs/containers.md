@@ -117,7 +117,8 @@ on process exits. Monitor health and errors on your chosen host.
 
 Dependency installs use `pnpm@10.26.1 --frozen-lockfile` and
 `uv@0.13.4 sync --locked --no-dev` with the committed lockfiles. The API image
-contains only its Python environment and source, not the Node workspace.
+contains its Python environment, source, and branded email PNG under
+`/app/assets/`, not the Node workspace.
 The website runtime contains only nginx, its configuration, and built assets.
 
 Run the disposable container checks on a normal Docker host:
@@ -128,9 +129,20 @@ pnpm run typecheck
 bash scripts/container-smoke.sh
 ```
 
-The script builds both images, uses a temporary test-only PostgreSQL container
+The script builds both production Dockerfiles from the current checkout's
+repository root with unique local-only image tags and a unique Compose project.
+It ignores the checkout's `.env`, removes inherited host certificate mounts and
+published ports, and replaces the API environment with synthetic settings (no
+SMTP credentials). Before starting services, it runs
+`docker/check-email-assets.py` inside the built API image with no network,
+mounts, database, or user override. That check requires UID/GID `10001:10001`,
+reads nonempty PNG bytes at `/app/assets/hablar-email-logo.png`, and constructs
+and serializes all three branded messages through the real email asset loader.
+
+The script then uses a temporary test-only PostgreSQL container
 and synthetic credentials, verifies health, SPA routes, real static assets,
-API error/POST forwarding, and non-root users, then removes its containers.
+API error/POST forwarding, and non-root users, then removes only its uniquely
+named containers, local image tags, and disposable resources.
 It never connects to your external database, applies schema, or submits real
 contact data. The test override `docker/compose.smoke.yaml` is **not** a
 production Compose file. Containers need working Docker exec/health-check
@@ -138,7 +150,8 @@ support; restricted nested-container environments may not support those.
 
 ## GitHub Actions and image tags
 
-`.github/workflows/containers.yaml` validates all workspace types and runs the
+`.github/workflows/containers.yaml` validates all workspace types, runs the
+offline waitlist/launch email unit tests with locked Python dependencies, and runs the
 container checks on pull requests, pushes to `main`, pushes of `v*` tags, and
 manual runs. Publication happens **only on pushes to `main` or `v*` tags**,
 after validation succeeds. Manual runs validate without publishing.
@@ -197,6 +210,108 @@ TLS termination, domain routing, database backups, secret delivery and
 host monitoring remain operator responsibilities. Keep the default loopback
 binding behind a trusted HTTPS reverse proxy. If terminating HTTPS upstream,
 review forwarded-protocol handling as part of that host's proxy configuration.
-A provider-specific deploy job can be added after the target host, access
-method, and approval policy are known. This workflow only builds and publishes;
-it does not deploy to a cloud or VPS.
+The existing workflow also deploys successful `main` pushes to UAT, as described
+below. It does not target LIVE.
+
+## UAT API email-asset rollout (operator action only)
+
+This packaging fix does not authorize a VPS or LIVE deployment. No rollout was
+performed as part of the fix. The workflow's existing `deploy` job is retained:
+after validation/publication on `main`, it SSHs on port `3141`, changes to
+`/var/www/uat-landing.hablar.co.in`, and invokes
+`./deployscripts/deploy.sh '<full github.sha>'`.
+**That VPS script is absent from this checkout and has not been verified.**
+Before authorizing a merge that triggers UAT deployment, review the host-side
+script to confirm it pulls the matching SHA-tagged images and recreates the API,
+rather than merely restarting the old container. Do not assume this from the
+workflow's invocation alone.
+
+Use the **final merged `main` SHA**, not a task-branch SHA or pre-merge base SHA.
+The normal push workflow publishes
+`ghcr.io/siddort/hablar-api:sha-<full-40-character-merged-sha>` only after its
+validation job (including the checkout-built API smoke test) passes. A manual
+workflow run validates but does not publish. Wait for the matching push run to
+finish successfully; do not substitute the moving `main` image tag. Obtain the
+API image digest from that publication for a strictly immutable image reference.
+
+For an explicitly authorized **API-only** manual UAT update, use the existing
+UAT Compose project and its existing protected configuration. Do not copy
+example secrets, change `SESSION_SECRET`, apply schemas/migrations, change
+database settings, remove volumes, or run `down`. The checked-in `compose.yaml`
+currently reads API settings directly from its environment/Compose `.env`;
+`API_ENV_FILE` alone does **not** inject settings into that file. Preserve the
+host's actual existing configuration mechanism.
+
+Example operator commands (replace both placeholders with verified values;
+`UAT_ENV_FILE` must be the current protected Compose environment file, not a new
+file, and preserve any existing project-name/override flags):
+
+```sh
+cd /var/www/uat-landing.hablar.co.in
+UAT_ENV_FILE=/absolute/path/to/existing/uat-compose.env
+# Digest from the successful publication for the final merged SHA:
+export API_IMAGE='ghcr.io/siddort/hablar-api@sha256:<verified-api-digest>'
+# Persist that same API_IMAGE reference in the existing UAT configuration
+# without changing any other values.
+docker compose --env-file "$UAT_ENV_FILE" -f compose.yaml config --quiet
+docker compose --env-file "$UAT_ENV_FILE" -f compose.yaml pull api
+docker compose --env-file "$UAT_ENV_FILE" -f compose.yaml up \
+  -d --no-build --no-deps --force-recreate --wait --wait-timeout 180 api
+
+# Confirm the running container uses the pulled image ID and default user.
+cid="$(docker compose --env-file "$UAT_ENV_FILE" -f compose.yaml ps -q api)"
+test -n "$cid"
+test "$(docker inspect --format '{{.Image}}' "$cid")" = \
+  "$(docker image inspect --format '{{.Id}}' "$API_IMAGE")"
+test "$(docker inspect --format '{{.Config.User}}' "$cid")" = 10001:10001
+
+# Use the check file from a checkout of the same final merged SHA.
+CHECKOUT=/absolute/path/to/verified/merged-checkout
+docker compose --env-file "$UAT_ENV_FILE" -f compose.yaml exec -T api \
+  python - < "$CHECKOUT/docker/check-email-assets.py"
+curl --fail https://uat-landing.hablar.co.in/api/healthz
+```
+
+The expected offline result is
+`Email assets readable as UID/GID 10001; all three branded templates rendered offline.`
+The check runs as the container's default non-root user, verifies the exact logo
+path and embedded bytes, imports only the email module, and never invokes SMTP
+or the API/database lifecycle. Do not submit signups or call launch-send routes
+for this verification. Confirm API health is `{"status":"ok"}` and check UAT
+website availability. `restart api` alone is insufficient: it cannot replace
+the old image or supply a missing asset.
+
+### Packaging-fix verification handoff
+
+Changed files: `.dockerignore`, `docker/api.Dockerfile`,
+`docker/compose.smoke.yaml`, `docker/check-email-assets.py`,
+`scripts/container-smoke.sh`, `.github/workflows/containers.yaml`, and this
+document. API source, email delivery behavior, logo artwork, database schemas,
+stored contacts, encryption secrets, and existing persistent volumes are
+unchanged.
+
+Executed in the development workspace:
+
+- `bash -n scripts/container-smoke.sh` — passed.
+- `uv run --locked python -m unittest discover -s artifacts/api-server/tests -p 'test_waitlist_email.py'`
+  — 11 passed, with mocked database and SMTP.
+- `uv run --locked python -m unittest discover -s artifacts/api-server/tests -p 'test_launch_update.py'`
+  — 6 passed, with mocked database and SMTP.
+- Merged Compose configuration assertions — passed: checkout API Dockerfile,
+  unique local image, only disposable database dependency, synthetic-only API
+  environment even with a sentinel SMTP value set, no API mounts, one loopback
+  website port, and no inherited host certificate mount.
+- `bash scripts/container-smoke.sh` — both production images built; the
+  network-disabled, default-user API image check passed for the exact logo
+  path and all three branded templates. The full service/HTTP checks could
+  not finish because this nested Docker host rejects container exec, including
+  PostgreSQL health checks, with `OCI runtime exec failed` / `setns`.
+  This is **not** a passing full smoke run. The same unchanged health gates
+  must pass on a capable Docker host/normal CI before image publication.
+
+The existing CI publication uses the same repository-root production
+Dockerfiles and remains gated on validation; the UAT invocation is unchanged.
+No remote CI run or host-side deployment script was verified here, no image
+was published, and no UAT/LIVE deployment was performed. Use the task handoff
+for the actual task-branch commit SHA; the final merge/publication SHA is only
+available after merge and must be taken from the successful `main` push run.

@@ -11,6 +11,9 @@
 !artifacts/hablar-coming-soon/**
 !artifacts/api-server/
 !artifacts/api-server/fastapi_app.py
+!artifacts/api-server/email_delivery.py
+!artifacts/api-server/assets/
+!artifacts/api-server/assets/hablar-email-logo.png
 !lib/
 !lib/**
 !attached_assets/

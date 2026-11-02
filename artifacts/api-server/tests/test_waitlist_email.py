@@ -244,7 +244,7 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(logs["admin_signup_notice"]["status"], "accepted_by_smtp")
 
-    async def test_duplicate_signup_sends_no_messages_and_same_acknowledgment(self):
+    async def test_duplicate_signup_sends_no_messages_and_shows_registered_message(self):
         with patch.object(fastapi_app, "send_email", new_callable=AsyncMock) as send:
             new_response, new_pool = await self.submit(email="person@example.com")
             duplicate_response, duplicate_pool = await self.submit(
@@ -252,12 +252,26 @@ class WaitlistEmailTests(unittest.IsolatedAsyncioTestCase):
             )
 
         self.assertEqual(send.await_count, 2)
-        self.assertEqual(new_response.message, duplicate_response.message)
+        self.assertEqual(
+            duplicate_response.message,
+            "You’re already registered. No additional email will be sent.",
+        )
         self.assertEqual(new_response.message, self.ACKNOWLEDGMENT)
         self.assertNotIn("sent successfully", new_response.message.lower())
         self.assertNotIn("every", new_response.message.lower())
         self.assertEqual(len(new_pool.connection.email_logs), 2)
         self.assertEqual(len(duplicate_pool.connection.email_logs), 0)
+
+    async def test_duplicate_phone_signup_shows_registered_message_without_sending(self):
+        with patch.object(fastapi_app, "send_email", new_callable=AsyncMock) as send:
+            response, pool = await self.submit(phone="+919876543210", inserted=False)
+
+        self.assertEqual(
+            response.message,
+            "You’re already registered. No additional email will be sent.",
+        )
+        send.assert_not_awaited()
+        self.assertEqual(len(pool.connection.email_logs), 0)
 
     async def test_smtp_failures_do_not_fail_signup_or_log_contact_details(self):
         contact = "private.person@example.com"

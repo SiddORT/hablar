@@ -684,8 +684,12 @@ async def create_waitlist_signup(
                         "ADMIN_NOTIFICATION_EMAIL is not configured."
                     )
 
-    # Keep the response identical for new and existing contacts. It makes no
-    # claim that an email was delivered, which may be unavailable or fail.
+    if not inserted_signup:
+        return WaitlistSignupResponse(
+            message="You’re already registered. No additional email will be sent."
+        )
+
+    # A saved contact does not imply that email delivery succeeded.
     return WaitlistSignupResponse(
         message=(
             "Thanks for signing up — we’ve recorded your contact for one HABLAR "

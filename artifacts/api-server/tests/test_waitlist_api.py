@@ -256,17 +256,20 @@ class WaitlistHttpIntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(missing_terms, 422)
         self.assertEqual(self.store.records, [])
 
-    async def test_duplicate_email_returns_same_acknowledgment_without_new_record(self):
+    async def test_duplicate_email_returns_registered_message_without_new_record(self):
         first_status, first_response = await self.post_signup()
         duplicate_status, duplicate_response = await self.post_signup(
             email=" PERSON@example.com "
         )
         self.assertEqual((first_status, duplicate_status), (201, 201))
-        self.assertEqual(first_response, duplicate_response)
+        self.assertNotEqual(first_response, duplicate_response)
+        self.assertEqual(duplicate_response, {
+            "message": "You’re already registered. No additional email will be sent."
+        })
         self.assertEqual(len(self.store.records), 1)
         self.assertEqual(len(self.store.email_logs), 2)
 
-    async def test_duplicate_phone_returns_same_acknowledgment_without_new_record(self):
+    async def test_duplicate_phone_returns_registered_message_without_new_record(self):
         first_status, first_response = await self.post_signup(
             email=None,
             phone="+14155550123",
@@ -276,7 +279,10 @@ class WaitlistHttpIntegrationTests(unittest.IsolatedAsyncioTestCase):
             phone="+1 (415) 555-0123",
         )
         self.assertEqual((first_status, duplicate_status), (201, 201))
-        self.assertEqual(first_response, duplicate_response)
+        self.assertNotEqual(first_response, duplicate_response)
+        self.assertEqual(duplicate_response, {
+            "message": "You’re already registered. No additional email will be sent."
+        })
         self.assertEqual(len(self.store.records), 1)
         self.assertEqual(len(self.store.email_logs), 2)
 

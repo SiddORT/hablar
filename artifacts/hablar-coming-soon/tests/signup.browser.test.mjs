@@ -70,6 +70,23 @@ async function openSignup(response = {
   return { page, form, requests };
 }
 
+test('duplicate signup displays the already-registered message from the API', async (t) => {
+  const message = 'You’re already registered. No additional email will be sent.';
+  const { page, form, requests } = await openSignup({
+    status: 201,
+    body: { message },
+  });
+  t.after(() => page.close());
+  await page.getByTestId('site-loader').waitFor({ state: 'hidden' });
+  await form.locator('input[name="email"]').fill('person@example.com');
+  await form.locator('input[name="consent"]').check();
+  await form.locator('input[name="termsAccepted"]').check();
+  await form.getByRole('button', { name: 'Register Now' }).click();
+  await form.getByRole('status').waitFor();
+  assert.equal(await form.getByRole('status').innerText(), message);
+  assert.equal(requests.length, 1);
+});
+
 test('signup connection failure preserves details and allows a deliberate retry', async (t) => {
   const { page, form } = await openSignup();
   t.after(() => page.close());

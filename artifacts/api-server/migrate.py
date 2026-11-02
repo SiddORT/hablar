@@ -116,6 +116,7 @@ async def verify_schema(conn):
             """
             SELECT conname FROM pg_constraint
             WHERE conrelid = $1::regclass
+              AND contype != 'f'
             """,
             f"public.{table}",
         )

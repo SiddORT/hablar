@@ -68,8 +68,6 @@ CONSTRAINTS = {
     "waitlist_signups": {"waitlist_signups_pkey"},
     "waitlist_email_logs": {
         "waitlist_email_logs_pkey",
-        "waitlist_email_logs_signup_id_fkey",
-        "waitlist_email_logs_signup_id_waitlist_signups_id_fk",
         "waitlist_email_logs_type_check",
         "waitlist_email_logs_status_check",
     },

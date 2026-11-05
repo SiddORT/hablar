@@ -297,7 +297,7 @@ function Signup() {
           </label>
           <label className="consent">
             <input type="checkbox" name="termsAccepted" required />
-            <span>I understand that this is a request for launch updates. HABLAR’s listening services are not yet live, and no launch date is guaranteed. I also confirm to avail the service and HABLAR T&amp;C once services start.</span>
+            <span>I understand that this is a request for launch updates. HABLAR’s listening services are not yet live, and no launch date is guaranteed. I’m interested in availing the HABLAR services in future and understand that the applicable terms and conditions will be provided when services start.</span>
           </label>
           <button className="button-primary form-submit" type="submit" disabled={signup.isPending}>
             {signup.isPending ? 'Saving your place…' : 'Register Now'}
